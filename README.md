@@ -1,4 +1,4 @@
-# Proyecto: Platformer - " "
+# Proyecto: Platformer - "Basketball fever"
 
 ## 1. Integrantes del Equipo
 - Bahamonde, Franco
@@ -9,7 +9,7 @@
 ## 2. Dominio y Alcance del Sistema
 
 ### Descripción del Problema
-Se busca desarrollar una aplicación de escritorio del clásico **Juego de Plataformas**. El jugador deberá atravesar obstáculos que aumentan a medida que se avance en el juego, en un mapa extenso (diferenciado en escenarios), con el objetivo de llegar a la meta final resolviendo cada uno de los obstaculos que se le presenten.
+Se busca desarrollar una aplicación de escritorio del clasico Juego de plataformas. El jugador toma el lugar de un basquetbolista inmerso en un mundo de fantasía ambientado con la tematica de dicho deporte. En cada uno de los tres niveles se deberá avanzar verticalmente por un mapa extenso (diferenciado en escenarios), atravesando distintos obstaculos y enemigos hasta llegar a la meta final. 
 
 ### Objetivo del Sistema
 El sistema será un juego funcional y extensible que permitirá al jugador experimentar las mecánicas básicas del género. El diseño debe ser escalable para facilitar la adición de nuevos tipos de enemigos, puzzles, personajes o mapas en el futuro, aplicando rigurosamente los conceptos del paradigma orientado a objetos. 
@@ -22,14 +22,21 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
 - **Mecánicas de Juego**
     - El jugador empieza con 0 monedas iniciales, las cuales tendra que ir recolectando entre niveles, debiendo recolectar una cantidad de monedas determinada para poder avanzar al siguiente nivel.
-    - El jugador podrá conseguir items de diferentes cajas que estarán disponibles por el mapa, otorgando bonificaciones temporales las cuales facilitaran el nivel para el jugador.
-    - El puntaje del jugador se calculará en función del tiempo en el que completa el nivel, coleccionables recolectados y enemigos derrotados.
+
+    - Para recolectar una moneda, el jugador deberá meter una pelota en el aro, lo cual se verá obstaculizado por la aparición de enemigos, si lo logra, avanza al siguiente escenario hasta llegar al final del nivel.
+    ![alt text](src/images/image.png)
+
+    - El puntaje del jugador se calculará en función del tiempo en el que completa el nivel y enemigos derrotados.
+
+- **Sistema de combate**
+    - El jugador tiene como arma principal una pelota de basquet, la cual arroja a los enemigos para derrotarlos, la pelota puede lanzarse en cualquier dirección.
+    - Si el enemigo esta lo suficientemente cerca el jugador podra combatir cuerpo a cuerpo.
 
 - **Interfaz Gráfica (IGU):**
     - Contador de tiempo
     - Vidas
     - Puntaje
-    - Visualización del mapa
+    - Monedas recogidas / monedas totales
 
 ## 4. Stack Tecnológico
 - **Lenguaje:** Java 25
