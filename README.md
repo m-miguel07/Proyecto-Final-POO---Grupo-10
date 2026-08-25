@@ -38,6 +38,15 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
     - Puntaje
     - Monedas recogidas / monedas totales
 
+
+## 3. Arquitectura y Diseño
+
+### Diagramas de Diseño
+
+#### **Diagrama de Clases UML (Conceptual)**
+
+ ![Diagrama UML](src/images/image2.png)
+
 ## 4. Stack Tecnológico
 - **Lenguaje:** Java 25
 - **IDE:** Visual Studio Code
