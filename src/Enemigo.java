@@ -1,4 +1,5 @@
 public abstract class Enemigo extends Entidad{
+    //Atributos
     private Integer danioBase;
 
     public Enemigo(Integer puntosVida, Double velocidad, Integer danioBase){
@@ -16,6 +17,17 @@ public abstract class Enemigo extends Entidad{
         return this.danioBase;
     }
 
+    //Setters
+    public Boolean setDanioBase(Integer danioBase){
+        if (danioBase <= 0) {
+            return false;
+        } 
+
+        this.danioBase = danioBase;
+        return true;
+    }
+
+   //Comportamientos 
     @Override
     public void atacar(Entidad objetivo){
         objetivo.setPuntosVida(objetivo.getPuntosVida() - this.getDanioBase());
