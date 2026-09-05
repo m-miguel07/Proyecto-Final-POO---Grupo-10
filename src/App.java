@@ -9,24 +9,21 @@ public class App {
         }
 
         public boolean estaVivo(){
-            if(this.vida > 0){
-                return true;
-            }
-            return false;
+            return this.vida > 0;
         }
 
         public void revivir(){
             this.vida = 100;
         }
 
-        public void recibirDaño(int daño){
-            this.vida = this.vida - daño;
+        public void recibirDanio(int danio){
+            this.vida = this.vida - danio;
         }
     }
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, World!");
         Personaje personaje = new Personaje(100);
-        personaje.recibirDaño(100);
+        personaje.recibirDanio(100);
         System.out.println(personaje.estaVivo());
         personaje.revivir();
         System.out.println(personaje.estaVivo());

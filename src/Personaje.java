@@ -45,6 +45,4 @@ public class Personaje extends Entidad{
         Integer danioProbocado = this.armaEquipada.getDanioBase();
         objetivo.setPuntosVida(objetivo.getPuntosVida() - danioProbocado);
     }
-
-
 }

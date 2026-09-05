@@ -1,4 +1,4 @@
-public abstract class Enemigo extends Entidad{
+public abstract class Enemigo extends Entidad {
     //Atributos
     private Integer danioBase;
 
@@ -6,7 +6,7 @@ public abstract class Enemigo extends Entidad{
         super(puntosVida,velocidad);
 
         if (danioBase < 0){
-            throw new IllegalArgumentException("El daño base no puede ser negativo.");
+            throw new IllegalArgumentException("El danio base no puede ser negativo.");
         }
 
         this.danioBase = danioBase;

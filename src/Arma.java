@@ -8,7 +8,7 @@ public abstract class Arma {
     //Constructor
     public Arma (Integer danioBase, Integer alcance, double velocidad){
         if (danioBase <= 0){
-            throw new IllegalArgumentException("El daño base debe ser positivo");
+            throw new IllegalArgumentException("El danio base debe ser positivo");
         }
 
         if (alcance <= 0){

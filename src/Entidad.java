@@ -3,7 +3,7 @@ public abstract class Entidad {
     //Atributos
     private Integer puntosVida;
     private Double  velocidad;
-
+    
     //Constructor
     public Entidad (Integer puntosVida, Double velocidad) {
         this.puntosVida = puntosVida;
