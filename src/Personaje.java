@@ -1,7 +1,7 @@
 public class Personaje extends Entidad{
 
     private Arma armaEquipada;
-    private Integer monedaRecoletadas;
+    private Integer monedasRecolectadas;
     private Integer puntaje;
 
 
@@ -14,8 +14,8 @@ public class Personaje extends Entidad{
         return this.armaEquipada;
     }
 
-    public Integer getMonedaRecolectadas(){
-        return this.monedaRecoletadas;
+    public Integer getMonedasRecolectadas(){
+        return this.monedasRecolectadas;
     }
 
     public Integer getPuntaje(){
@@ -28,10 +28,10 @@ public class Personaje extends Entidad{
         return true;
     }
 
-    public boolean setMoneadaRecolectadas(Integer monedaRecolectada){
+    public boolean setMonedasRecolectadas(Integer monedasRecolectadas){
         // puse mayor a cero por que no se puede recolectar algo que no se tiene(osea cero) ni tampoco cantidades negativas.
-        if (monedaRecolectada > 0){
-            this.monedaRecoletadas = monedaRecolectada;
+        if (monedasRecolectadas > 0){
+            this.monedasRecolectadas = monedasRecolectadas;
             return true;
         }
         return false;
@@ -42,7 +42,7 @@ public class Personaje extends Entidad{
 
     @Override
     public void atacar(Entidad objetivo){
-        Integer danioProbocado = this.armaEquipada.getDanioBase();
-        objetivo.setPuntosVida(objetivo.getPuntosVida() - danioProbocado);
+        Integer danioProvocado = this.armaEquipada.getDanioBase();
+        objetivo.setPuntosVida(objetivo.getPuntosVida() - danioProvocado);
     }
 }
