@@ -24,7 +24,7 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
     - El jugador empieza con 0 monedas iniciales, las cuales tendra que ir recolectando entre niveles, debiendo recolectar una cantidad de monedas determinada para poder avanzar al siguiente nivel.
 
     - Para recolectar una moneda, el jugador deberá meter una pelota en el aro, lo cual se verá obstaculizado por la aparición de enemigos, si lo logra, avanza al siguiente escenario hasta llegar al final del nivel.
-    ![alt text](src/images/image.png)
+    ![alt text](src/assets/image.png)
 
     - El puntaje del jugador se calculará en función del tiempo en el que completa el nivel y enemigos derrotados.
 
@@ -45,7 +45,7 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
 #### **Diagrama de Clases UML (Conceptual)**
 
- ![Diagrama UML](src/images/image2.png)
+ ![Diagrama UML](src/assets/image2.png)
 
 ## 4. Stack Tecnológico
 - **Lenguaje:** Java 25
