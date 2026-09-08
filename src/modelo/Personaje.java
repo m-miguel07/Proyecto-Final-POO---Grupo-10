@@ -37,12 +37,9 @@ public class Personaje extends Entidad{
         return false;
     }
 
-
     //comportamientos
-
     @Override
     public void atacar(Entidad objetivo){
-        Integer danioProvocado = this.armaEquipada.getDanioBase();
-        objetivo.setPuntosVida(objetivo.getPuntosVida() - danioProvocado);
+        this.armaEquipada.aplicarDanio(objetivo);
     }
 }

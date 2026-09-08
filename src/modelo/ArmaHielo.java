@@ -30,12 +30,15 @@ public class ArmaHielo extends Arma {
 
     //Comportamientos
     public void congelar(Entidad objetivo) {
+        objetivo.setVelocidad(0.0); //duraria la cantidad que determine duración relentizacioń, falta implementar.
     }
 
     public void ralentizar(Entidad objetivo) {
+        objetivo.setVelocidad(objetivo.getVelocidad() - (objetivo.getVelocidad() - 0.7)); //idem congelar()
     }
 
     @Override
-    public void aplicarDanio() {
+    public void aplicarDanio(Entidad objetivo){
+        //A implementar
     }
 }

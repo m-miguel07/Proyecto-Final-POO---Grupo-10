@@ -35,6 +35,7 @@ public class ArmaFuego extends Arma {
     }
 
     @Override
-    public void aplicarDanio() {
+    public void aplicarDanio(Entidad objetivo) {
+        //A implementar
     }
 }

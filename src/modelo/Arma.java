@@ -38,5 +38,5 @@ public abstract class Arma {
     }
 
     //Comportamientos
-    public abstract void aplicarDanio();
+    public abstract void aplicarDanio(Entidad objetivo);
 }
