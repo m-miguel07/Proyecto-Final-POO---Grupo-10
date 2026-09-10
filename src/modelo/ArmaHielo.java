@@ -1,25 +1,28 @@
+package modelo;
+
 public class ArmaHielo extends Arma {
+
     //Atributos
-    private Integer duracionRalentizacion;
+    private int duracionRalentizacion;
 
     //Constructor
-    public ArmaHielo (Integer danioBase, Integer alcance, double velocidad, Integer duracionRalentizacion) {
-        super (danioBase, alcance, velocidad);
+    public ArmaHielo(int danioBase, int alcance, double velocidad, int duracionRalentizacion) {
+        super(danioBase, alcance, velocidad);
 
         if (duracionRalentizacion <= 0) {
-            throw new IllegalArgumentException ("La duracion de la ralentización debe ser positiva");
+            throw new IllegalArgumentException("La duracion de la ralentizacion debe ser positiva");
         }
 
         this.duracionRalentizacion = duracionRalentizacion;
     }
 
     //Getters
-    public Integer getDuracionRalentizacion() {
+    public int getDuracionRalentizacion() {
         return this.duracionRalentizacion;
     }
 
     //Setters
-    public boolean setDuracionRalentizacion(Integer duracionRalentizacion) {
+    public boolean setDuracionRalentizacion(int duracionRalentizacion) {
         if (duracionRalentizacion <= 0) {
             return false;
         }
@@ -30,15 +33,15 @@ public class ArmaHielo extends Arma {
 
     //Comportamientos
     public void congelar(Entidad objetivo) {
-        objetivo.setVelocidad(0.0); //duraria la cantidad que determine duración relentizacioń, falta implementar.
+        objetivo.setVelocidad(0.0); //duraria la cantidad que determine duracionRalentizacion, falta implementar.
     }
 
     public void ralentizar(Entidad objetivo) {
-        objetivo.setVelocidad(objetivo.getVelocidad() - (objetivo.getVelocidad() - 0.7)); //idem congelar()
+        objetivo.setVelocidad(objetivo.getVelocidad() * 0.7);
     }
 
     @Override
-    public void aplicarDanio(Entidad objetivo){
-        //A implementar
+    public void aplicarDanio(Entidad objetivo) {
+        objetivo.recibirDanio(this.getDanioBase());
     }
 }

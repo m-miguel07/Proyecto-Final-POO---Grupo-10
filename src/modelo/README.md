@@ -26,3 +26,5 @@
 + ArmaHielo    : Aplica ralentización y congelación dado n golpes
 + ArmaFuego    : Aplica quemadura 
 
+
+

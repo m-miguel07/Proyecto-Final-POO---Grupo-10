@@ -1,10 +1,12 @@
+package modelo;
+
 public class ArmaFuego extends Arma {
 
     //Atributos
-    private Integer danioPorQuemadura;
+    private int danioPorQuemadura;
 
     //Constructor
-    public ArmaFuego(Integer danioBase, Integer alcance, double velocidad, Integer danioPorQuemadura) {
+    public ArmaFuego(int danioBase, int alcance, double velocidad, int danioPorQuemadura) {
         super(danioBase, alcance, velocidad);
 
         if (danioPorQuemadura <= 0) {
@@ -15,12 +17,12 @@ public class ArmaFuego extends Arma {
     }
 
     //Getters
-    public Integer getDanioPorQuemadura() {
+    public int getDanioPorQuemadura() {
         return this.danioPorQuemadura;
     }
 
     //Setters
-    public boolean setDanioPorQuemadura(Integer danioPorQuemadura) {
+    public boolean setDanioPorQuemadura(int danioPorQuemadura) {
         if (danioPorQuemadura <= 0) {
             return false;
         }
@@ -31,11 +33,11 @@ public class ArmaFuego extends Arma {
 
     //Comportamientos
     public void quemar(Entidad objetivo) {
-        objetivo.setPuntosVida(objetivo.getPuntosVida() - this.danioPorQuemadura);
+        objetivo.recibirDanio(this.danioPorQuemadura);
     }
 
     @Override
     public void aplicarDanio(Entidad objetivo) {
-        //A implementar
+        objetivo.recibirDanio(this.getDanioBase());
     }
 }

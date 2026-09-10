@@ -1,13 +1,9 @@
-public class EnemigoTerrestre extends Enemigo {
-    
-    //Constructor
-    public EnemigoTerrestre(Integer puntosVida, Double velocidad, Integer danioBase) {
-        super(puntosVida, velocidad, danioBase);
-    }
+package modelo;
 
-    //Comportamientos
-    @Override
-    public void atacar(Entidad objetivo) {
-        objetivo.setPuntosVida(objetivo.getPuntosVida() - this.getDanioBase());
+public class EnemigoTerrestre extends Enemigo {
+
+    //Constructor
+    public EnemigoTerrestre(int danioBase, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+        super(danioBase, puntosVida, ancho, alto, velocidad, posicionX, posicionY);
     }
 }

@@ -1,36 +1,41 @@
-public class Personaje extends Entidad{
+package modelo;
+
+public class Personaje extends Entidad {
 
     private Arma armaEquipada;
-    private Integer monedasRecolectadas;
-    private Integer puntaje;
+    private int monedasRecolectadas;
+    private int puntaje;
 
 
-    public Personaje(Integer puntosVida, Double velocidad){
-        super(puntosVida, velocidad);
+    public Personaje(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+
+        this.monedasRecolectadas = 0;
+        this.puntaje = 0;
     }
 
     //Getters
-    public Arma getArmaEquipada(){
+    public Arma getArmaEquipada() {
         return this.armaEquipada;
     }
 
-    public Integer getMonedasRecolectadas(){
+    public int getMonedasRecolectadas() {
         return this.monedasRecolectadas;
     }
 
-    public Integer getPuntaje(){
+    public int getPuntaje() {
         return this.puntaje;
     }
 
     //Setters
-    public boolean setArmaEquipada(Arma arma){
-        this.armaEquipada =  arma;
+    public boolean setArmaEquipada(Arma arma) {
+        this.armaEquipada = arma;
         return true;
     }
 
-    public boolean setMonedasRecolectadas(Integer monedasRecolectadas){
+    public boolean setMonedasRecolectadas(int monedasRecolectadas) {
         // puse mayor a cero por que no se puede recolectar algo que no se tiene(osea cero) ni tampoco cantidades negativas.
-        if (monedasRecolectadas > 0){
+        if (monedasRecolectadas > 0) {
             this.monedasRecolectadas = monedasRecolectadas;
             return true;
         }
@@ -39,7 +44,11 @@ public class Personaje extends Entidad{
 
     //comportamientos
     @Override
-    public void atacar(Entidad objetivo){
+    public void atacar(Entidad objetivo) {
+        if (this.armaEquipada == null) {
+            throw new IllegalStateException("El personaje no tiene un arma equipada");
+        }
+
         this.armaEquipada.aplicarDanio(objetivo);
     }
 }
