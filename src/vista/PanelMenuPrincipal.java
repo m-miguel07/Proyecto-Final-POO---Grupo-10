@@ -25,7 +25,7 @@ public class PanelMenuPrincipal extends JPanel {
 
     public PanelMenuPrincipal(String rutaImagen){
         super(new BorderLayout());
-        this.setOpaque(false);
+        this.setOpaque(false); //setOpaque() hace que los paneles no tengan fondo, permitiendo que paintComponent() dibuje el fondo sin que lo tape el fondo de los paneles.
 
         ImageIcon imagen = new ImageIcon(rutaImagen);
         this.imagenOrigen = imagen.getImage();
@@ -69,6 +69,24 @@ public class PanelMenuPrincipal extends JPanel {
         this.add(contenedorBotones,BorderLayout.SOUTH);
     }
 
+    //Getters
+    public JButton getBotonNuevoJuego(){
+        return this.botonNuevoJuego;
+    }
+
+    public JButton getBotonContinuar(){
+        return this.getBotonNuevoJuego();
+    }
+
+    public JButton getBotonOpciones(){
+        return this.getBotonOpciones();
+    }
+
+    public JButton getBotonSalir(){
+        return this.getBotonSalir();
+    }
+
+    //Metodos
     private void escalarBotones(){
         for (Component c : panelBotones.getComponents()){
             if (c instanceof JButton){

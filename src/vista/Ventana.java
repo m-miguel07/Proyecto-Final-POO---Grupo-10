@@ -19,6 +19,7 @@ public class Ventana extends JFrame {
     public static final String CARD_SPLASH_MATERIA = "SPLASH_MATERIA";
     public static final String CARD_SPLASH_PRUEBA = "SPLASH_PRUEBA";
     public static final String CARD_MENU_PRINCIPAL = "MENU_PRINCIPAL";
+    
     private final CardLayout cardLayout;
     private final JPanel contenedor;
 
