@@ -1,18 +1,23 @@
 package vista;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.awt.Image;
+import java.io.IOException;
 
 //EN PROGRESO
 
 public class Ventana extends JFrame {
     
-    public static final int ANCHO_PANTALLA = 1366;
-    public static final int ALTO_PANTALLA = 768;
+    public static final int ANCHO_PANTALLA = 1920;
+    public static final int ALTO_PANTALLA = 1080;
 
     public static final String CARD_SPLASH_MATERIA = "SPLASH_MATERIA";
+    public static final String SPLASH_PRUEBA = "SPLASH_PRUEBA";
 
     private final CardLayout cardLayout;
     private final JPanel contenedor;
@@ -20,23 +25,33 @@ public class Ventana extends JFrame {
     public Ventana(){
         this.setTitle("Basketball Fever");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.setResizable(false);
+        this.setMinimumSize(new Dimension(1280,720));
 
+        this.pack(); //Colocar el pack() antes de setExtendedState ajusta la ventana para que se muestre maximizada al iniciar la secuencia.
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setResizable(true);
+
+        try {
+            Image icono = ImageIO.read(getClass().getResource("/assets/icon.png"));
+            this.setIconImage(icono);
+        } catch(IOException | NullPointerException e) {
+            System.err.println("No se pudo cargar icono.");
+        }
+      
         cardLayout = new CardLayout();
         contenedor = new JPanel(cardLayout);
 
-        contenedor.add(new SplashImagen(), CARD_SPLASH_MATERIA);
+        contenedor.setPreferredSize(new Dimension(ANCHO_PANTALLA, ALTO_PANTALLA));
+
+        contenedor.add(new SplashImagen("src/assets/splash.png"), CARD_SPLASH_MATERIA);
+        contenedor.add(new SplashImagen("src/assets/Image2.png"), SPLASH_PRUEBA);
 
         this.add(contenedor);
-        this.pack();
         this.setLocationRelativeTo(null);
     }
 
     public void mostrarSplash(String nombre){
         cardLayout.show(contenedor,nombre);
-        contenedor.revalidate();
-        contenedor.repaint();   
     }
 
 }

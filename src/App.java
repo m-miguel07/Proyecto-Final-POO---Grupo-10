@@ -1,10 +1,10 @@
-import vista.Ventana;
+
+import controlador.ControladorSplash;
 
 public class App {
 
     public static void main(String[] args) throws Exception {
         //Prueba
-        Ventana ventana = new Ventana();
-        ventana.setVisible(true);
+        new ControladorSplash(); 
     }
 }
