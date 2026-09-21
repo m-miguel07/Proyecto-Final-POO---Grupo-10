@@ -17,20 +17,18 @@ public class Ventana extends JFrame {
     public static final int ALTO_PANTALLA = 1080;
 
     public static final String CARD_SPLASH_MATERIA = "SPLASH_MATERIA";
-    public static final String SPLASH_PRUEBA = "SPLASH_PRUEBA";
-
+    public static final String CARD_SPLASH_PRUEBA = "SPLASH_PRUEBA";
+    public static final String CARD_MENU_PRINCIPAL = "MENU_PRINCIPAL";
     private final CardLayout cardLayout;
     private final JPanel contenedor;
 
     public Ventana(){
         this.setTitle("Basketball Fever");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setMinimumSize(new Dimension(1280,720));
-
-        this.pack(); //Colocar el pack() antes de setExtendedState ajusta la ventana para que se muestre maximizada al iniciar la secuencia.
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.setResizable(true);
+        this.setResizable(false);
 
+        //Establecer icono de la app
         try {
             Image icono = ImageIO.read(getClass().getResource("/assets/icon.png"));
             this.setIconImage(icono);
@@ -44,13 +42,13 @@ public class Ventana extends JFrame {
         contenedor.setPreferredSize(new Dimension(ANCHO_PANTALLA, ALTO_PANTALLA));
 
         contenedor.add(new SplashImagen("src/assets/splash.png"), CARD_SPLASH_MATERIA);
-        contenedor.add(new SplashImagen("src/assets/Image2.png"), SPLASH_PRUEBA);
+        contenedor.add(new SplashImagen(""), CARD_SPLASH_PRUEBA);
+        contenedor.add(new PanelMenuPrincipal(""), CARD_MENU_PRINCIPAL);
 
         this.add(contenedor);
-        this.setLocationRelativeTo(null);
     }
 
-    public void mostrarSplash(String nombre){
+    public void mostrarTarjeta(String nombre){
         cardLayout.show(contenedor,nombre);
     }
 

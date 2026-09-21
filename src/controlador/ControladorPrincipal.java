@@ -4,25 +4,28 @@ import javax.swing.SwingUtilities;
 
 import vista.Ventana;
 
-public class ControladorSplash {
+public class ControladorPrincipal {
     private Ventana ventana;
-    private final int tiempoMateriaMS = 4000;
+    private final int tiempoSplashMS = 3500;
 
-    public ControladorSplash(){
+    public ControladorPrincipal(){
         this.ventana =  new Ventana();
         this.iniciarSecuencia();
     }
 
     public void iniciarSecuencia(){
-        ventana.mostrarSplash(Ventana.CARD_SPLASH_MATERIA);
+        ventana.mostrarTarjeta(Ventana.CARD_SPLASH_MATERIA);
         ventana.setVisible(true);
 
         new Thread(() -> {
             try {
-                Thread.sleep(tiempoMateriaMS);
+                Thread.sleep(tiempoSplashMS);
                 SwingUtilities.invokeLater(() -> {
-                    ventana.mostrarSplash(Ventana.SPLASH_PRUEBA); //Mostraría el video, aun no implementado
+                    ventana.mostrarTarjeta(Ventana.CARD_SPLASH_PRUEBA); //Mostraría el video, aun no implementado 
                 });
+                
+                Thread.sleep(tiempoSplashMS);
+                ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
             } catch(InterruptedException e){
                 Thread.currentThread().interrupt();
             }
