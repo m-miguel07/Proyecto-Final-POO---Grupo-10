@@ -6,8 +6,8 @@ public class ArmaHielo extends Arma {
     private int duracionRalentizacion;
 
     //Constructor
-    public ArmaHielo(int danioBase, int alcance, double velocidad, int duracionRalentizacion) {
-        super(danioBase, alcance, velocidad);
+    public ArmaHielo(int danioBase, int alcance, double velocidad, int duracionRalentizacion, double posicionX, double posicionY, int ancho, int alto) {
+        super(danioBase, alcance, velocidad, posicionX, posicionY, ancho, alto);
 
         if (duracionRalentizacion <= 0) {
             throw new IllegalArgumentException("La duracion de la ralentizacion debe ser positiva");

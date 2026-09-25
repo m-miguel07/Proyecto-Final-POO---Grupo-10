@@ -6,8 +6,8 @@ public class ArmaFuego extends Arma {
     private int danioPorQuemadura;
 
     //Constructor
-    public ArmaFuego(int danioBase, int alcance, double velocidad, int danioPorQuemadura) {
-        super(danioBase, alcance, velocidad);
+    public ArmaFuego(int danioBase, int alcance, double velocidad, int danioPorQuemadura, double posicionX, double posicionY, int ancho, int alto) {
+        super(danioBase, alcance, velocidad, posicionX, posicionY, ancho, alto);
 
         if (danioPorQuemadura <= 0) {
             throw new IllegalArgumentException("El danio por quemadura debe ser positivo");
