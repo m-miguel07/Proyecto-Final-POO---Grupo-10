@@ -49,7 +49,7 @@ public class Ventana extends JFrame {
         this.panelVideo = new PanelVideoIntro(() -> mostrarTarjeta(CARD_MENU_PRINCIPAL));
         contenedor.add(panelVideo, CARD_VIDEO);
 
-        contenedor.add(new PanelMenuPrincipal(""), CARD_MENU_PRINCIPAL);
+        contenedor.add(new PanelMenuPrincipal("src/assets/menu-bg.jpeg"), CARD_MENU_PRINCIPAL);
 
         this.add(contenedor);
     }

@@ -12,7 +12,6 @@ import java.awt.Image;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PanelMenuPrincipal extends JPanel {
@@ -37,19 +36,14 @@ public class PanelMenuPrincipal extends JPanel {
         this.botonSalir = new JButton ("Salir");
 
         //Titulo
-        JLabel etiquetaTituloSup = new JLabel("BASKETBALL");
-        etiquetaTituloSup.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 100));
-        JLabel etiquetaTituloInf = new JLabel("FEVER");
-        etiquetaTituloInf.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 100));
+        Splash imagenTitulo = new Splash("src/assets/title.png");
+        imagenTitulo.setPreferredSize(new Dimension(670,450));
+        imagenTitulo.setOpaque(false);
 
-        JPanel panelTitulo = new JPanel(new GridLayout(0,1,5,5));
-        panelTitulo.add(etiquetaTituloSup);
-        panelTitulo.add(etiquetaTituloInf);
-        panelTitulo.setOpaque(false);
-
-        JPanel contenedorTitulo = new JPanel (new FlowLayout(FlowLayout.LEFT));
-        contenedorTitulo.setBorder(BorderFactory.createEmptyBorder(125,100,0,0));
-        contenedorTitulo.add(panelTitulo);
+        //Contenedores y paneles
+        JPanel contenedorTitulo = new JPanel (new FlowLayout(FlowLayout.CENTER));
+        contenedorTitulo.setBorder(BorderFactory.createEmptyBorder(25,0,0,0));
+        contenedorTitulo.add(imagenTitulo);
         contenedorTitulo.setOpaque(false);
 
         this.panelBotones = new JPanel(new GridLayout(0,1,10,20));
@@ -60,12 +54,16 @@ public class PanelMenuPrincipal extends JPanel {
         panelBotones.setOpaque(false);
         escalarBotones();
 
-        JPanel contenedorBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        contenedorBotones.setBorder(BorderFactory.createEmptyBorder(0,100,100,0));
+        JPanel contenedorBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        contenedorBotones.setBorder(BorderFactory.createEmptyBorder(0,0,100,0));
         contenedorBotones.add(panelBotones);
         contenedorBotones.setOpaque(false);
 
-        this.add(contenedorTitulo,BorderLayout.NORTH);
+        //Listeners
+        botonSalir.addActionListener(e -> System.exit(0));
+
+
+        this.add(contenedorTitulo,BorderLayout.CENTER);
         this.add(contenedorBotones,BorderLayout.SOUTH);
     }
 
