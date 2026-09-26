@@ -17,11 +17,12 @@ public class Ventana extends JFrame {
     public static final int ALTO_PANTALLA = 1080;
 
     public static final String CARD_SPLASH_MATERIA = "SPLASH_MATERIA";
-    public static final String CARD_SPLASH_PRUEBA = "SPLASH_PRUEBA";
+    public static final String CARD_VIDEO = "SPLASH_VIDEO";
     public static final String CARD_MENU_PRINCIPAL = "MENU_PRINCIPAL";
 
     private final CardLayout cardLayout;
     private final JPanel contenedor;
+    private PanelVideoIntro panelVideo;
 
     public Ventana(){
         this.setTitle("Basketball Fever");
@@ -42,8 +43,12 @@ public class Ventana extends JFrame {
 
         contenedor.setPreferredSize(new Dimension(ANCHO_PANTALLA, ALTO_PANTALLA));
 
-        contenedor.add(new SplashImagen("src/assets/splash.png"), CARD_SPLASH_MATERIA);
-        contenedor.add(new SplashImagen(""), CARD_SPLASH_PRUEBA);
+
+        contenedor.add(new Splash("src/assets/splash.png"), CARD_SPLASH_MATERIA);
+
+        this.panelVideo = new PanelVideoIntro(() -> mostrarTarjeta(CARD_MENU_PRINCIPAL));
+        contenedor.add(panelVideo, CARD_VIDEO);
+
         contenedor.add(new PanelMenuPrincipal(""), CARD_MENU_PRINCIPAL);
 
         this.add(contenedor);
@@ -51,6 +56,11 @@ public class Ventana extends JFrame {
 
     public void mostrarTarjeta(String nombre){
         cardLayout.show(contenedor,nombre);
+        contenedor.revalidate();
+        contenedor.repaint();
     }
 
+    public PanelVideoIntro getPanelVideo(){
+        return this.panelVideo;
+    }
 }

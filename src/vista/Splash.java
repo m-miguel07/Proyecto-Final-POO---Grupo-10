@@ -6,11 +6,12 @@ import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Image;
 
+
 //Se modificó la implementación usando awt.Graphics, reemplazando la solución anterior con imagenEscalada.
-public class SplashImagen extends JPanel {
+public class Splash extends JPanel {
     private Image imagenOrigen;
 
-    public SplashImagen(String rutaImagen){
+    public Splash(String rutaImagen){
         ImageIcon imagen = new ImageIcon(rutaImagen);
         this.imagenOrigen = imagen.getImage();
     }

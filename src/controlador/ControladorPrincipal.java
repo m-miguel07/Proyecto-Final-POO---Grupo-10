@@ -1,15 +1,19 @@
 package controlador;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.swing.SwingUtilities;
 
 import vista.Ventana;
 
 public class ControladorPrincipal {
     private Ventana ventana;
-    private final int tiempoSplashMS = 3500;
+    private final int tiempoSplashMS = 3000;
+    private final AtomicBoolean videoTerminado;
 
     public ControladorPrincipal(){
         this.ventana =  new Ventana();
+        this.videoTerminado = new AtomicBoolean(false);
         this.iniciarSecuencia();
     }
 
@@ -20,15 +24,32 @@ public class ControladorPrincipal {
         new Thread(() -> {
             try {
                 Thread.sleep(tiempoSplashMS);
-                SwingUtilities.invokeLater(() -> {
-                    ventana.mostrarTarjeta(Ventana.CARD_SPLASH_PRUEBA); //Mostraría el video, aun no implementado 
-                });
+                SwingUtilities.invokeLater(this::iniciarVideoIntro);
                 
-                Thread.sleep(tiempoSplashMS);
-                ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
             } catch(InterruptedException e){
                 Thread.currentThread().interrupt();
             }
         }).start();
+    }
+
+    private void iniciarVideoIntro(){
+        ventana.mostrarTarjeta(Ventana.CARD_VIDEO);
+        ventana.getPanelVideo().cargarYReproducir(
+            "src/assets/intro.mp4",
+            Ventana.ANCHO_PANTALLA, 
+            Ventana.ALTO_PANTALLA, 
+            this::finalizarVideoYMostrarMenu, 
+            this::finalizarVideoYMostrarMenu
+        );
+    }
+
+    private void finalizarVideoYMostrarMenu() {
+        if (videoTerminado.compareAndSet(false, true)){
+            ventana.getPanelVideo().detenerYLiberar();
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
+        });
     }
 }
