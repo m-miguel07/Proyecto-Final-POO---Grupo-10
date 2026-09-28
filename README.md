@@ -24,7 +24,7 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
     - El jugador empieza con 0 monedas iniciales, las cuales tendra que ir recolectando entre niveles, debiendo recolectar una cantidad de monedas determinada para poder avanzar al siguiente nivel.
 
     - Para recolectar una moneda, el jugador deberá meter una pelota en el aro, lo cual se verá obstaculizado por la aparición de enemigos, si lo logra, avanza al siguiente escenario hasta llegar al final del nivel.
-    ![alt text](src/assets/image.png)
+    ![alt text](src/assets/prototipo/image.png)
 
     - El puntaje del jugador se calculará en función del tiempo en el que completa el nivel y enemigos derrotados.
 
@@ -47,9 +47,19 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
  ![Diagrama UML](src/assets/image2.png)
 
+
+#### **Prototipo Visual**
+
+ ![Diagrama UML](src/assets/prototipo/diseño-juego.png)
+ - **Primer escenario:** Para el primer escenario de cada nivel, el jugador debe encestar en el aro para que el pilar que contiene la moneda descienda y esta sea recolectada, pasando al siguiente escenario. 
+ - Dicho aro es estatico en el primer nivel, en los niveles posteriores se moverá en un patron determinado, dificultando encestar.
+ - **Plataformas especiales:** Las plataformas de color negro, son plataformas las cuales no colisionan con la pelota, es decir, puede pasar a través de ellas.
+ - Las plataformas de madera (color marron) pueden ser destruidas por la pelota de fuego (color rojo).
+
+
 ## 4. Stack Tecnológico
 - **Lenguaje:** Java 25
 - **IDE:** Visual Studio Code
 - **Base de Datos:** ---
-- **Framework de IGU:** ---
+- **Framework de IGU:** Java Swing y JavaFX
 - **Control de Versiones:** Git y GitHub Classroom
