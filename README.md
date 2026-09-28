@@ -49,8 +49,9 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
 
 #### **Prototipo Visual**
-
+ #### Prototipo y descripción de escenario:
  ![Diagrama UML](src/assets/prototipo/diseño-juego.png)
+
  - **Primer escenario:** Para el primer escenario de cada nivel, el jugador debe encestar en el aro para que el pilar que contiene la moneda descienda y esta sea recolectada, pasando al siguiente escenario. 
  - Dicho aro es estatico en el primer nivel, en los niveles posteriores se moverá en un patron determinado, dificultando encestar.
  - **Plataformas especiales:** Las plataformas de color **negro**, son plataformas las cuales no colisionan con la pelota, es decir, puede pasar a través de ellas.
