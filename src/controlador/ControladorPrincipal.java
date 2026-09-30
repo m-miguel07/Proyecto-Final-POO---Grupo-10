@@ -35,9 +35,9 @@ public class ControladorPrincipal {
     private void iniciarVideoIntro(){
         ventana.mostrarTarjeta(Ventana.CARD_VIDEO);
         ventana.getPanelVideo().cargarYReproducir(
-            "src/assets/intro.mp4",
-            Ventana.ANCHO_PANTALLA - 300, //Corrige problema de video recortado
-            Ventana.ALTO_PANTALLA - 200, 
+            "src/assets/intro-v1.mp4",
+            Ventana.ANCHO_PANTALLA, //Corrige problema de video recortado
+            Ventana.ALTO_PANTALLA, 
             this::finalizarVideoYMostrarMenu, 
             this::finalizarVideoYMostrarMenu
         );

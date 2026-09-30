@@ -29,6 +29,7 @@ public class Ventana extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setResizable(false);
+        this.setUndecorated(true);
 
         //Establecer icono de la app
         try {
@@ -47,6 +48,7 @@ public class Ventana extends JFrame {
         contenedor.add(new Splash("src/assets/splash.png"), CARD_SPLASH_MATERIA);
 
         this.panelVideo = new PanelVideoIntro(() -> mostrarTarjeta(CARD_MENU_PRINCIPAL));
+        panelVideo.setPreferredSize(new Dimension(ANCHO_PANTALLA,ALTO_PANTALLA));
         contenedor.add(panelVideo, CARD_VIDEO);
 
         contenedor.add(new PanelMenuPrincipal("src/assets/menu-bg.jpeg"), CARD_MENU_PRINCIPAL);

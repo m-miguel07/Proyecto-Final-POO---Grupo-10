@@ -42,7 +42,7 @@ public class PanelMenuPrincipal extends JPanel {
 
         //Contenedores y paneles
         JPanel contenedorTitulo = new JPanel (new FlowLayout(FlowLayout.CENTER));
-        contenedorTitulo.setBorder(BorderFactory.createEmptyBorder(25,0,0,0));
+        contenedorTitulo.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         contenedorTitulo.add(imagenTitulo);
         contenedorTitulo.setOpaque(false);
 
@@ -55,7 +55,7 @@ public class PanelMenuPrincipal extends JPanel {
         escalarBotones();
 
         JPanel contenedorBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        contenedorBotones.setBorder(BorderFactory.createEmptyBorder(0,0,100,0));
+        contenedorBotones.setBorder(BorderFactory.createEmptyBorder(0,0,110,0));
         contenedorBotones.add(panelBotones);
         contenedorBotones.setOpaque(false);
 
