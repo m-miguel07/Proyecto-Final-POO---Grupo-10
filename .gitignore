@@ -9,7 +9,6 @@ target/
 *.war
 
 # Configuración del IDE
-.vscode/
 .idea/
 *.iml
 

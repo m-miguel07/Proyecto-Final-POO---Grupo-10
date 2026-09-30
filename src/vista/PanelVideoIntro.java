@@ -46,8 +46,8 @@ public class PanelVideoIntro extends JPanel {
             MediaView mediaView = new MediaView(mediaPlayer);
 
             mediaView.setFitWidth(ancho-310);
-            mediaView.setFitHeight(alto-220);
-            mediaView.setPreserveRatio(false);
+            mediaView.setFitHeight(alto-210);
+            mediaView.setPreserveRatio(true);
 
             Group root = new Group(mediaView); 
             Scene scene = new Scene(root, ancho, alto, javafx.scene.paint.Color.BLACK);
