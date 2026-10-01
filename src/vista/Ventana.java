@@ -22,7 +22,9 @@ public class Ventana extends JFrame {
 
     private final CardLayout cardLayout;
     private final JPanel contenedor;
-    private PanelVideoIntro panelVideo;
+    private final PanelVideoIntro panelVideo;
+    private final PanelMenuPrincipal panelMenu;
+
 
     public Ventana(){
         this.setTitle("Basketball Fever");
@@ -30,6 +32,8 @@ public class Ventana extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setResizable(false);
         this.setUndecorated(true);
+
+        this.panelMenu = new PanelMenuPrincipal("src/assets/menu-bg.jpeg");
 
         //Establecer icono de la app
         try {
@@ -51,9 +55,17 @@ public class Ventana extends JFrame {
         panelVideo.setPreferredSize(new Dimension(ANCHO_PANTALLA,ALTO_PANTALLA));
         contenedor.add(panelVideo, CARD_VIDEO);
 
-        contenedor.add(new PanelMenuPrincipal("src/assets/menu-bg.jpeg"), CARD_MENU_PRINCIPAL);
+        contenedor.add(panelMenu, CARD_MENU_PRINCIPAL);
 
         this.add(contenedor);
+    }
+
+    public PanelVideoIntro getPanelVideo(){
+        return this.panelVideo;
+    }
+
+    public PanelMenuPrincipal getPanelMenu(){
+        return this.panelMenu;
     }
 
     public void mostrarTarjeta(String nombre){
@@ -62,7 +74,5 @@ public class Ventana extends JFrame {
         contenedor.repaint();
     }
 
-    public PanelVideoIntro getPanelVideo(){
-        return this.panelVideo;
-    }
+    
 }

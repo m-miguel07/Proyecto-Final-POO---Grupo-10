@@ -1,6 +1,7 @@
 package vista;
 
 import java.awt.Component;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
@@ -13,14 +14,24 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
+
 
 public class PanelMenuPrincipal extends JPanel {
+
+    public static final String ENTER = "ENTER";
+    public static final String BOTONES = "BOTONES";
+
+    private CardLayout layoutInferior;
     private Image imagenOrigen;
     private JButton botonNuevoJuego;
     private JButton botonContinuar;
     private JButton botonOpciones;
     private JButton botonSalir;
-    private JPanel  panelBotones;
+    private JPanel panelBotones;
+    private JPanel panelEnter;
+    private JPanel panelInferior;
+    private JLabel etiquetaEnter;
 
     public PanelMenuPrincipal(String rutaImagen){
         super(new BorderLayout());
@@ -28,6 +39,10 @@ public class PanelMenuPrincipal extends JPanel {
 
         ImageIcon imagen = new ImageIcon(rutaImagen);
         this.imagenOrigen = imagen.getImage();
+
+        //Etiqueta 
+        this.etiquetaEnter = new JLabel("Presione ENTER");
+        etiquetaEnter.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 50));
 
         //Botones
         this.botonNuevoJuego = new JButton("Nuevo juego");
@@ -37,12 +52,11 @@ public class PanelMenuPrincipal extends JPanel {
 
         //Titulo
         Splash imagenTitulo = new Splash("src/assets/title.png");
-        imagenTitulo.setPreferredSize(new Dimension(670,450));
+        imagenTitulo.setPreferredSize(new Dimension(610,409));
         imagenTitulo.setOpaque(false);
 
         //Contenedores y paneles
-        JPanel contenedorTitulo = new JPanel (new FlowLayout(FlowLayout.CENTER));
-        contenedorTitulo.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        JPanel contenedorTitulo = new JPanel (new FlowLayout(FlowLayout.CENTER));;
         contenedorTitulo.add(imagenTitulo);
         contenedorTitulo.setOpaque(false);
 
@@ -59,12 +73,21 @@ public class PanelMenuPrincipal extends JPanel {
         contenedorBotones.add(panelBotones);
         contenedorBotones.setOpaque(false);
 
-        //Listeners
-        botonSalir.addActionListener(e -> System.exit(0));
+        this.panelEnter = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelEnter.setBorder(BorderFactory.createEmptyBorder(150,0,0,0));
+        panelEnter.add(etiquetaEnter);
+        panelEnter.setOpaque(false);
 
+
+        //CardLayout que gestiona la transición de "Presione enter" a los botones del menu.
+        this.layoutInferior = new CardLayout();
+        this.panelInferior = new JPanel(layoutInferior);
+        panelInferior.setOpaque(false);
+        panelInferior.add(panelEnter, ENTER);
+        panelInferior.add(contenedorBotones, BOTONES);
 
         this.add(contenedorTitulo,BorderLayout.CENTER);
-        this.add(contenedorBotones,BorderLayout.SOUTH);
+        this.add(panelInferior, BorderLayout.SOUTH);
     }
 
     //Getters
@@ -73,15 +96,19 @@ public class PanelMenuPrincipal extends JPanel {
     }
 
     public JButton getBotonContinuar(){
-        return this.getBotonNuevoJuego();
+        return this.botonContinuar;
     }
 
     public JButton getBotonOpciones(){
-        return this.getBotonOpciones();
+        return this.botonOpciones;
     }
 
     public JButton getBotonSalir(){
-        return this.getBotonSalir();
+        return this.botonSalir;
+    }
+
+    public JPanel getPanelEnter(){
+        return this.panelEnter;
     }
 
     //Metodos
@@ -92,6 +119,12 @@ public class PanelMenuPrincipal extends JPanel {
                 c.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
             }
         }
+    }
+
+    public void mostrarPanel(String panel){
+        layoutInferior.show(panelInferior,panel);
+        panelInferior.revalidate();
+        panelInferior.repaint();
     }
 
     @Override 

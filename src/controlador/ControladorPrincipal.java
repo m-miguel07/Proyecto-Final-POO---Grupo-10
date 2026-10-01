@@ -4,6 +4,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingUtilities;
 
+import java.awt.event.KeyEvent;
+
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+
+import vista.PanelMenuPrincipal;
 import vista.Ventana;
 
 public class ControladorPrincipal {
@@ -14,6 +21,31 @@ public class ControladorPrincipal {
     public ControladorPrincipal(){
         this.ventana =  new Ventana();
         this.videoTerminado = new AtomicBoolean(false);
+
+        //Listeners del menu principal
+        this.ventana.getPanelMenu()
+                    .getBotonSalir()
+                    .addActionListener(e -> System.exit(0));
+
+        this.ventana.getPanelMenu().setFocusable(true);
+        this.ventana.getPanelMenu().addKeyListener(new KeyAdapter() {
+            @Override 
+            public void keyPressed(KeyEvent e){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                    if (ventana.getPanelMenu().getPanelEnter().isVisible()){
+                       ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);;
+                    }
+                }
+            }
+        });
+
+        this.ventana.getPanelMenu().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                SwingUtilities.invokeLater(() -> ventana.getPanelMenu().requestFocusInWindow());
+            }
+        });
+
         this.iniciarSecuencia();
     }
 
@@ -35,7 +67,7 @@ public class ControladorPrincipal {
     private void iniciarVideoIntro(){
         ventana.mostrarTarjeta(Ventana.CARD_VIDEO);
         ventana.getPanelVideo().cargarYReproducir(
-            "src/assets/intro-v1.mp4",
+            "src/assets/intro.mp4",
             Ventana.ANCHO_PANTALLA, //Corrige problema de video recortado
             Ventana.ALTO_PANTALLA, 
             this::finalizarVideoYMostrarMenu, 
