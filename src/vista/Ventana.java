@@ -19,6 +19,7 @@ public class Ventana extends JFrame {
     public static final String CARD_SPLASH_MATERIA = "SPLASH_MATERIA";
     public static final String CARD_VIDEO = "SPLASH_VIDEO";
     public static final String CARD_MENU_PRINCIPAL = "MENU_PRINCIPAL";
+    
 
     private final CardLayout cardLayout;
     private final JPanel contenedor;
@@ -47,7 +48,6 @@ public class Ventana extends JFrame {
         contenedor = new JPanel(cardLayout);
 
         contenedor.setPreferredSize(new Dimension(ANCHO_PANTALLA, ALTO_PANTALLA));
-
 
         contenedor.add(new Splash("src/assets/splash.png"), CARD_SPLASH_MATERIA);
 

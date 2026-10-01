@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 
 import java.awt.event.KeyEvent;
-
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
@@ -13,7 +12,7 @@ import java.awt.event.KeyAdapter;
 import vista.PanelMenuPrincipal;
 import vista.Ventana;
 
-public class ControladorPrincipal {
+public class ControladorPrincipal{
     private Ventana ventana;
     private final int tiempoSplashMS = 3000;
     private final AtomicBoolean videoTerminado;
@@ -24,13 +23,8 @@ public class ControladorPrincipal {
 
         //Listeners del menu principal
 
-        //Boton de Salir
-        this.ventana.getPanelMenu()
-                    .getBotonSalir()
-                    .addActionListener(e -> System.exit(0));
-
         //Secuencia de "Presione ENTER" a panel botones
-        this.ventana.getPanelMenu().setFocusable(true);
+        this.ventana.getPanelMenu().setFocusable(true); //El panel requiere focus para leer el input del teclado
         this.ventana.getPanelMenu().addKeyListener(new KeyAdapter() {
             @Override 
             public void keyPressed(KeyEvent e){
@@ -45,10 +39,32 @@ public class ControladorPrincipal {
         this.ventana.getPanelMenu().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
-                SwingUtilities.invokeLater(() -> ventana.getPanelMenu().requestFocusInWindow());
+                SwingUtilities.invokeLater(() -> ventana.getPanelMenu().requestFocusInWindow()); //Solicita dicho focus
             }
         });
 
+        //Boton de nuevo juego
+                this.ventana.getPanelMenu()
+                            .getBotonNuevoJuego()
+                            .addActionListener(e -> {
+                                //PLACEHOLDER
+                                ControladorJuego controladorJuego = new ControladorJuego();
+                                //this.ventana.mostrarTarjeta(CARD_JUEGO); 
+                            });
+
+        //Boton de opciones
+                this.ventana.getPanelMenu()
+                            .getBotonOpciones()
+                            .addActionListener(e -> {
+                                //this.ventana.mostrarTarjeta(CARD_OPCIONES);
+                            });
+
+        //Boton de Salir
+        this.ventana.getPanelMenu()
+                    .getBotonSalir()
+                    .addActionListener(e -> System.exit(0));
+
+       
         //Inicio de secuencia (Splash -> Video -> Menu)
         this.iniciarSecuencia();
     }
