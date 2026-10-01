@@ -23,10 +23,13 @@ public class ControladorPrincipal {
         this.videoTerminado = new AtomicBoolean(false);
 
         //Listeners del menu principal
+
+        //Boton de Salir
         this.ventana.getPanelMenu()
                     .getBotonSalir()
                     .addActionListener(e -> System.exit(0));
 
+        //Secuencia de "Presione ENTER" a panel botones
         this.ventana.getPanelMenu().setFocusable(true);
         this.ventana.getPanelMenu().addKeyListener(new KeyAdapter() {
             @Override 
@@ -46,6 +49,7 @@ public class ControladorPrincipal {
             }
         });
 
+        //Inicio de secuencia (Splash -> Video -> Menu)
         this.iniciarSecuencia();
     }
 
