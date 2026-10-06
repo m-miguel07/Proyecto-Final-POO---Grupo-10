@@ -1,20 +1,17 @@
 package vista;
 
-import java.awt.Component;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Image;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
 
 
 public class PanelMenuPrincipal extends JPanel {
@@ -31,7 +28,6 @@ public class PanelMenuPrincipal extends JPanel {
     private JPanel panelBotones;
     private JPanel panelEnter;
     private JPanel panelInferior;
-    private JLabel etiquetaEnter;
 
     public PanelMenuPrincipal(String rutaImagen){
         super(new BorderLayout());
@@ -40,15 +36,11 @@ public class PanelMenuPrincipal extends JPanel {
         ImageIcon imagen = new ImageIcon(rutaImagen);
         this.imagenOrigen = imagen.getImage();
 
-        //Etiqueta 
-        this.etiquetaEnter = new JLabel("Presione ENTER");
-        etiquetaEnter.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 50));
-
         //Botones
-        this.botonNuevoJuego = new JButton("Nuevo juego");
-        this.botonContinuar = new JButton("Continuar");
-        this.botonOpciones = new JButton ("Opciones");
-        this.botonSalir = new JButton ("Salir");
+        this.botonNuevoJuego = new BotonMenu("src/assets/ui/ng-normal.png", "src/assets/ui/ng-hover.png");
+        this.botonContinuar = new BotonMenu("src/assets/ui/co-normal.png", "src/assets/ui/co-hover.png");
+        this.botonOpciones = new BotonMenu("src/assets/ui/opc-normal.png", "src/assets/ui/opc-hover.png");
+        this.botonSalir = new BotonMenu ("src/assets/ui/exit-normal.png", "src/assets/ui/exit-hover.png");
 
         //Titulo
         Splash imagenTitulo = new Splash("src/assets/title.png");
@@ -66,18 +58,20 @@ public class PanelMenuPrincipal extends JPanel {
         panelBotones.add(botonOpciones);
         panelBotones.add(botonSalir);
         panelBotones.setOpaque(false);
-        escalarBotones();
 
         JPanel contenedorBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
         contenedorBotones.setBorder(BorderFactory.createEmptyBorder(0,0,110,0));
         contenedorBotones.add(panelBotones);
         contenedorBotones.setOpaque(false);
 
-        this.panelEnter = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panelEnter.setBorder(BorderFactory.createEmptyBorder(150,0,0,0));
-        panelEnter.add(etiquetaEnter);
-        panelEnter.setOpaque(false);
+        Splash imagenEnter = new Splash("src/assets/ui/img-enter.png");
+        imagenEnter.setPreferredSize(new Dimension(631,125));
+        imagenEnter.setOpaque(false);
 
+        this.panelEnter = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelEnter.setBorder(BorderFactory.createEmptyBorder(225,0,0,0));
+        panelEnter.add(imagenEnter);
+        panelEnter.setOpaque(false);
 
         //CardLayout que gestiona la transición de "Presione enter" a los botones del menu.
         this.layoutInferior = new CardLayout();
@@ -111,15 +105,6 @@ public class PanelMenuPrincipal extends JPanel {
         return this.panelEnter;
     }
 
-    //Metodos
-    private void escalarBotones(){
-        for (Component c : panelBotones.getComponents()){
-            if (c instanceof JButton){
-                c.setPreferredSize(new Dimension(200,50));
-                c.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
-            }
-        }
-    }
 
     public void mostrarPanel(String panel){
         layoutInferior.show(panelInferior,panel);
