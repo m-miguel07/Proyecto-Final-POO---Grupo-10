@@ -5,7 +5,6 @@ out/
 target/
 
 # Empaquetados
-*.jar
 *.war
 
 # Configuración del IDE
