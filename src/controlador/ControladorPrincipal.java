@@ -9,16 +9,22 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 
+import modelo.GestorAudio;
+
 import vista.PanelMenuPrincipal;
 import vista.Ventana;
 
 public class ControladorPrincipal{
-    private Ventana ventana;
+    private final Ventana ventana;
+    private final GestorAudio gestorAudio;
+
     private final int tiempoSplashMS = 3000;
     private final AtomicBoolean videoTerminado;
 
     public ControladorPrincipal(){
         this.ventana =  new Ventana();
+        this.gestorAudio = GestorAudio.getInstancia();
+
         this.videoTerminado = new AtomicBoolean(false);
 
         //Listeners del menu principal
@@ -31,6 +37,7 @@ public class ControladorPrincipal{
                 if (e.getKeyCode() == KeyEvent.VK_ENTER){
                     if (ventana.getPanelMenu().getPanelEnter().isVisible()){
                        ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);;
+                       gestorAudio.reproducirEfecto("boton-enter");
                     }
                 }
             }
@@ -102,6 +109,7 @@ public class ControladorPrincipal{
 
         SwingUtilities.invokeLater(() -> {
             ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
+            gestorAudio.reproducirMusica("src/assets/bgm/menu.mp3", 1, true);
         });
     }
 }

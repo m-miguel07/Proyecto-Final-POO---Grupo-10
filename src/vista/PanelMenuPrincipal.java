@@ -37,10 +37,10 @@ public class PanelMenuPrincipal extends JPanel {
         this.imagenOrigen = imagen.getImage();
 
         //Botones
-        this.botonNuevoJuego = new BotonMenu("src/assets/ui/ng-normal.png", "src/assets/ui/ng-hover.png");
-        this.botonContinuar = new BotonMenu("src/assets/ui/co-normal.png", "src/assets/ui/co-hover.png");
-        this.botonOpciones = new BotonMenu("src/assets/ui/opc-normal.png", "src/assets/ui/opc-hover.png");
-        this.botonSalir = new BotonMenu ("src/assets/ui/exit-normal.png", "src/assets/ui/exit-hover.png");
+        this.botonNuevoJuego = new BotonMenu("src/assets/ui/ng-normal.png", "src/assets/ui/ng-hover.png", "src/assets/sfx/boton-hover", "src/assets/sfx/boton-click");
+        this.botonContinuar = new BotonMenu("src/assets/ui/co-normal.png", "src/assets/ui/co-hover.png", "src/assets/sfx/boton-hover", "src/assets/sfx/boton-click");
+        this.botonOpciones = new BotonMenu("src/assets/ui/opc-normal.png", "src/assets/ui/opc-hover.png", "src/assets/sfx/boton-hover", "src/assets/sfx/boton-click");
+        this.botonSalir = new BotonMenu ("src/assets/ui/exit-normal.png", "src/assets/ui/exit-hover.png", "src/assets/sfx/boton-hover", "src/assets/sfx/boton-click");
 
         //Titulo
         Splash imagenTitulo = new Splash("src/assets/title.png");

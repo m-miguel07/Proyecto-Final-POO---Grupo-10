@@ -13,6 +13,8 @@ import java.awt.event.MouseListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import modelo.GestorAudio;
+
 public class BotonMenu extends JButton {
     
     private boolean hover;
@@ -20,14 +22,26 @@ public class BotonMenu extends JButton {
     private Image imgNormal; 
     private Image imgHover;
 
+    //Rutas de SFX
+    private String sfxHover; 
+    private String sfxClick;
+
     
-    public BotonMenu(String rutaImagen, String rutaHover){
+    public BotonMenu(String rutaImagen, String rutaHover, String rutaSfxHover, String rutaSfxClick){
         if (rutaImagen != null){
             this.imgNormal = new ImageIcon(rutaImagen).getImage();
         }
 
         if (rutaHover != null){
             this.imgHover = new ImageIcon(rutaHover).getImage();
+        }
+
+        if (rutaSfxHover != null){
+            this.sfxHover = rutaSfxHover;
+        }
+
+        if (rutaSfxClick != null){
+            this.sfxClick = rutaSfxClick;
         }
 
         this.hover = false;
@@ -45,7 +59,13 @@ public class BotonMenu extends JButton {
             @Override
             public void mouseEntered(MouseEvent e) {
                 hover = true;
+                GestorAudio.getInstancia().reproducirEfecto(sfxHover);
                 repaint();
+            }
+
+            @Override 
+            public void mousePressed(MouseEvent e) {
+                GestorAudio.getInstancia().reproducirEfecto(sfxClick);
             }
 
             @Override
