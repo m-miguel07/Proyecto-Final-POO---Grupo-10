@@ -18,12 +18,9 @@ import javafx.scene.media.MediaView;
 
 public class PanelVideoIntro extends JPanel {
 
-    private static final long serialVersionUID = 1L;
-
     private final JFXPanel jfxPanel;
     private transient MediaPlayer mediaPlayer;
 
-    @SuppressWarnings("this-escape")
     public PanelVideoIntro(Runnable alFinalizarVideo){
         
         setLayout(new BorderLayout());
@@ -49,7 +46,7 @@ public class PanelVideoIntro extends JPanel {
             MediaView mediaView = new MediaView(mediaPlayer);
 
             mediaView.setFitWidth(ancho-310);
-            mediaView.setFitHeight(alto-210);
+            mediaView.setFitHeight(alto-200);
             mediaView.setPreserveRatio(true);
 
             Group root = new Group(mediaView); 
