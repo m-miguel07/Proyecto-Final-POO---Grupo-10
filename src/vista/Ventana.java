@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 
 //EN PROGRESO
@@ -19,12 +20,14 @@ public class Ventana extends JFrame {
     public static final String CARD_SPLASH_MATERIA = "SPLASH_MATERIA";
     public static final String CARD_VIDEO = "SPLASH_VIDEO";
     public static final String CARD_MENU_PRINCIPAL = "MENU_PRINCIPAL";
-    
+    public static final String CARD_JUEGO = "JUEGO";
+
 
     private final CardLayout cardLayout;
     private final JPanel contenedor;
     private final PanelVideoIntro panelVideo;
     private final PanelMenuPrincipal panelMenu;
+    private PanelJuego panelJuego;
 
 
     public Ventana(){
@@ -38,9 +41,14 @@ public class Ventana extends JFrame {
 
         //Establecer icono de la app
         try {
-            Image icono = ImageIO.read(getClass().getResource("/assets/icon.png"));
-            this.setIconImage(icono);
-        } catch(IOException | NullPointerException e) {
+            File archivoIcono = new File("src/assets/icon.png");
+            if (archivoIcono.exists()) {
+                Image icono = ImageIO.read(archivoIcono);
+                this.setIconImage(icono);
+            } else {
+                System.err.println("No se encontro el icono: " + archivoIcono.getPath());
+            }
+        } catch(IOException | RuntimeException e) {
             System.err.println("No se pudo cargar icono.");
         }
       
@@ -58,6 +66,24 @@ public class Ventana extends JFrame {
         contenedor.add(panelMenu, CARD_MENU_PRINCIPAL);
 
         this.add(contenedor);
+    }
+
+    public void setPanelJuego(PanelJuego panelJuego) {
+        if (panelJuego == null) {
+            return;
+        }
+
+        if (this.panelJuego != null) {
+            contenedor.remove(this.panelJuego);
+        }
+
+        this.panelJuego = panelJuego;
+        contenedor.add(panelJuego, CARD_JUEGO);
+        contenedor.revalidate();
+    }
+
+    public PanelJuego getPanelJuego() {
+        return this.panelJuego;
     }
 
     public PanelVideoIntro getPanelVideo(){

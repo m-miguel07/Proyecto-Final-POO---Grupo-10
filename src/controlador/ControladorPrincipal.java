@@ -17,6 +17,8 @@ public class ControladorPrincipal{
     private final int tiempoSplashMS = 3000;
     private final AtomicBoolean videoTerminado;
 
+    private ControladorJuego controladorJuego;
+
     public ControladorPrincipal(){
         this.ventana =  new Ventana();
         this.videoTerminado = new AtomicBoolean(false);
@@ -46,11 +48,7 @@ public class ControladorPrincipal{
         //Boton de nuevo juego
                 this.ventana.getPanelMenu()
                             .getBotonNuevoJuego()
-                            .addActionListener(e -> {
-                                //PLACEHOLDER
-                                ControladorJuego controladorJuego = new ControladorJuego();
-                                //this.ventana.mostrarTarjeta(CARD_JUEGO); 
-                            });
+                            .addActionListener(e -> this.iniciarJuego());
 
         //Boton de opciones
                 this.ventana.getPanelMenu()
@@ -102,6 +100,19 @@ public class ControladorPrincipal{
 
         SwingUtilities.invokeLater(() -> {
             ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
+        });
+    }
+
+    public void iniciarJuego(){
+        SwingUtilities.invokeLater(() -> {
+            if (this.controladorJuego == null){
+                this.controladorJuego = new ControladorJuego();
+            }
+
+            this.ventana.setPanelJuego(this.controladorJuego.getPanel());
+            this.ventana.mostrarTarjeta(Ventana.CARD_JUEGO);
+            this.ventana.getPanelJuego().requestFocusInWindow();
+            this.controladorJuego.iniciar();
         });
     }
 }

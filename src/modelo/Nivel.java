@@ -1,8 +1,5 @@
 package modelo;
 
-// Archivo Nivel.java
-// Vendria a contener todo lo que existe en un nivel. (Enemigos, Personaje, Monedas, Plataformas, Aros, etc)
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,9 +12,17 @@ public class Nivel {
     private final List<Enemigo> enemigos;
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
+    private final List<Cofre> cofres;
+    private final List<Recolectable> recolectables;
+    private final List<Pelota> pelotas;
 
     //Constructor
     public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas, List<Plataforma> plataformas) {
+        this(personaje, aro, enemigos, monedas, plataformas, new ArrayList<>(), new ArrayList<>());
+    }
+
+    public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
+                 List<Plataforma> plataformas, List<Cofre> cofres, List<Recolectable> recolectables) {
         if (personaje == null || aro == null) {
             throw new IllegalArgumentException("El personaje y el aro son obligatorios");
         }
@@ -27,6 +32,9 @@ public class Nivel {
         this.enemigos = new ArrayList<>(enemigos);
         this.monedas = new ArrayList<>(monedas);
         this.plataformas = new ArrayList<>(plataformas);
+        this.cofres = new ArrayList<>(cofres);
+        this.recolectables = new ArrayList<>(recolectables);
+        this.pelotas = new ArrayList<>();
     }
 
     //Getters
@@ -50,6 +58,22 @@ public class Nivel {
         return Collections.unmodifiableList(this.plataformas);
     }
 
+    public List<Cofre> getCofres() {
+        return Collections.unmodifiableList(this.cofres);
+    }
+
+    public List<Recolectable> getRecolectables() {
+        return Collections.unmodifiableList(this.recolectables);
+    }
+
+    public List<Pelota> getPelotas() {
+        return Collections.unmodifiableList(this.pelotas);
+    }
+
+    public int getMonedasTotales() {
+        return this.monedas.size() + this.cofres.size();
+    }
+
     //Comportamientos
     public void actualizar() {
         this.chequearMonedas();
@@ -57,13 +81,18 @@ public class Nivel {
     }
 
     public boolean estaCompleto() {
-        return this.aro.isEncestado();
+        return this.contarMonedasRecolectadas() >= this.getMonedasTotales();
     }
 
     public int contarMonedasRecolectadas() {
         int cantidad = 0;
         for (Moneda moneda : this.monedas) {
             if (moneda.isRecolectada()) {
+                cantidad++;
+            }
+        }
+        for (Cofre cofre : this.cofres) {
+            if (cofre.getMoneda().isRecolectada()) {
                 cantidad++;
             }
         }
@@ -99,6 +128,18 @@ public class Nivel {
             if (!moneda.isRecolectada()
                     && this.colisionaConRectangulo(this.personaje.getPosicionX(), this.personaje.getPosicionY(), moneda)) {
                 moneda.recolectar();
+                this.personaje.sumarMoneda();
+                this.personaje.sumarPuntaje(100);
+            }
+        }
+
+        for (Cofre cofre : this.cofres) {
+            if (cofre.contieneMonedaSinRecolectar()
+                    && this.colisionaConRectangulo(this.personaje.getPosicionX(), this.personaje.getPosicionY(), cofre)) {
+                cofre.abrir();
+                cofre.getMoneda().recolectar();
+                this.personaje.sumarMoneda();
+                this.personaje.sumarPuntaje(250);
             }
         }
     }
@@ -107,6 +148,78 @@ public class Nivel {
         for (Enemigo enemigo : this.enemigos) {
             if (enemigo.puedeAtacar(this.personaje)) {
                 enemigo.atacar(this.personaje);
+            }
+        }
+    }
+
+    public void agregarPelota(Pelota pelota) {
+        if (pelota != null) {
+            this.pelotas.add(pelota);
+        }
+    }
+
+    public void actualizarPelotas(List<Plataforma> plataformasIgnoradas, int anchoPantalla, int altoPantalla) {
+        for (int i = this.pelotas.size() - 1; i >= 0; i--) {
+            Pelota pelota = this.pelotas.get(i);
+            pelota.mover();
+
+            boolean chocaConPlataforma = false;
+            for (Plataforma plataforma : plataformasIgnoradas) {
+                if (pelota.interseca(plataforma)) {
+                    if (pelota.esDeFuego() && plataforma.esDestructible()) {
+                        plataforma.destruir();
+                    }
+                    chocaConPlataforma = true;
+                    break;
+                }
+            }
+
+            for (Enemigo enemigo : this.enemigos) {
+                if (!pelota.interseca(enemigo)) {
+                    continue;
+                }
+
+                Arma arma = pelota.getArma();
+                arma.aplicarDanio(enemigo);
+
+                if (pelota.esDeHielo() && arma instanceof ArmaHielo) {
+                    ((ArmaHielo) arma).congelar(enemigo);
+                }
+
+                if (pelota.esDeFuego() && arma instanceof ArmaFuego) {
+                    ((ArmaFuego) arma).quemar(enemigo);
+                }
+
+                chocaConPlataforma = true;
+                break;
+            }
+
+            if (chocaConPlataforma || pelota.estaFueraDePantalla(anchoPantalla, altoPantalla)) {
+                pelota.desactivar();
+                this.pelotas.remove(i);
+            }
+        }
+    }
+
+    public void eliminarEnemigosDerrotados() {
+        this.enemigos.removeIf(enemigo -> {
+            if (enemigo.getPuntosVida() <= 0) {
+                this.personaje.sumarPuntaje(150);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public void eliminarRecolectados() {
+        for (Recolectable recolectable : this.recolectables) {
+            if (!recolectable.isRecolectado()) {
+                continue;
+            }
+
+            if (this.colisionaConRectangulo(this.personaje.getPosicionX(), this.personaje.getPosicionY(), recolectable)) {
+                recolectable.recolectar();
+                this.personaje.setArmaEquipada(recolectable.getArma());
             }
         }
     }
