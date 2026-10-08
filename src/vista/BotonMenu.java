@@ -16,17 +16,20 @@ import javax.swing.JButton;
 import modelo.GestorAudio;
 
 public class BotonMenu extends JButton {
+
+    private static final long serialVersionUID = 1L;
     
     private boolean hover;
 
-    private Image imgNormal; 
-    private Image imgHover;
+    private transient Image imgNormal; 
+    private transient Image imgHover;
 
     //Rutas de SFX
     private String sfxHover; 
     private String sfxClick;
 
     
+    @SuppressWarnings("this-escape")
     public BotonMenu(String rutaImagen, String rutaHover, String rutaSfxHover, String rutaSfxClick){
         if (rutaImagen != null){
             this.imgNormal = new ImageIcon(rutaImagen).getImage();

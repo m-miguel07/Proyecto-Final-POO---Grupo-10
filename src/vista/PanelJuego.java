@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import modelo.ArmaFuego;
 import modelo.ArmaHielo;
-import modelo.Cofre;
+import modelo.Aro;
 import modelo.Enemigo;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
@@ -28,6 +28,8 @@ import modelo.Plataforma;
 import modelo.Recolectable;
 
 public class PanelJuego extends JPanel {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Color COLOR_FONDO = new Color(24, 26, 38);
     private static final Color COLOR_PLATAFORMA = new Color(226, 228, 234);
@@ -41,10 +43,11 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_FUEGO = new Color(239, 68, 68);
     private static final Color COLOR_PERSONAJE = new Color(37, 99, 235);
 
-    private Nivel nivel;
+    private transient Nivel nivel;
     private String mensaje;
     private long tiempoTranscurrido;
 
+    @SuppressWarnings("this-escape")
     public PanelJuego(Nivel nivel) {
         super();
         this.nivel = nivel;
@@ -83,8 +86,8 @@ public class PanelJuego extends JPanel {
 
         this.dibujarPlataformas(g2);
         this.dibujarMonedas(g2);
-        this.dibujarCofres(g2);
         this.dibujarRecolectables(g2);
+        this.dibujarAro(g2);
         this.dibujarEnemigos(g2);
         this.dibujarPersonaje(g2);
         this.dibujarPelotas(g2);
@@ -142,34 +145,6 @@ public class PanelJuego extends JPanel {
         }
     }
 
-    private void dibujarCofres(Graphics2D g2) {
-        for (Cofre cofre : this.nivel.getCofres()) {
-            if (cofre.isAbierto()) {
-                continue;
-            }
-
-            g2.setColor(new Color(139, 90, 43));
-            g2.fill(new RoundRectangle2D.Double(
-                    cofre.getPosicionX(), cofre.getPosicionY(),
-                    cofre.getAncho(), cofre.getAlto(), 8, 8));
-
-            g2.setColor(new Color(90, 56, 22));
-            g2.setStroke(new BasicStroke(3f));
-            g2.draw(new RoundRectangle2D.Double(
-                    cofre.getPosicionX(), cofre.getPosicionY(),
-                    cofre.getAncho(), cofre.getAlto(), 8, 8));
-
-            double centroX = cofre.getPosicionX() + cofre.getAncho() / 2.0;
-            double centroY = cofre.getPosicionY() + cofre.getAlto() / 2.0;
-
-            g2.setColor(COLOR_MONEDA);
-            g2.fill(new Ellipse2D.Double(centroX - 12, centroY - 12, 24, 24));
-            g2.setColor(new Color(120, 85, 5));
-            g2.setStroke(new BasicStroke(3f));
-            g2.draw(new Ellipse2D.Double(centroX - 12, centroY - 12, 24, 24));
-        }
-    }
-
     private void dibujarRecolectables(Graphics2D g2) {
         for (Recolectable recolectable : this.nivel.getRecolectables()) {
             if (recolectable.isRecolectado()) {
@@ -204,6 +179,34 @@ public class PanelJuego extends JPanel {
                 g2.fill(new Ellipse2D.Double(centroX + 3, y + 2, 5, 5));
             }
         }
+    }
+
+    private void dibujarAro(Graphics2D g2) {
+        Aro aro = this.nivel.getAro();
+
+        double x = aro.getPosicionX();
+        double y = aro.getPosicionY();
+        double w = aro.getAncho();
+        double h = aro.getAlto();
+
+        double centroX = x + w * 0.5;
+        double centroY = y + h * 0.55;
+
+        g2.setColor(new Color(235, 240, 245));
+        g2.fill(new RoundRectangle2D.Double(x + w - 20, y + 8, 20, h * 0.62, 6, 6));
+        g2.setColor(new Color(120, 130, 145));
+        g2.setStroke(new BasicStroke(3f));
+        g2.draw(new RoundRectangle2D.Double(x + w - 20, y + 8, 20, h * 0.62, 6, 6));
+
+        g2.setColor(aro.isEncestado() ? new Color(250, 204, 21) : new Color(230, 80, 40));
+        g2.setStroke(new BasicStroke(6f));
+        g2.draw(new Ellipse2D.Double(centroX - 24, centroY - 8, 48, 16));
+
+        g2.setStroke(new BasicStroke(3f));
+        g2.setColor(new Color(235, 240, 245));
+        g2.draw(new java.awt.geom.Line2D.Double(centroX - 20, centroY + 8, centroX - 12, y + h));
+        g2.draw(new java.awt.geom.Line2D.Double(centroX, centroY + 8, centroX, y + h));
+        g2.draw(new java.awt.geom.Line2D.Double(centroX + 20, centroY + 8, centroX + 12, y + h));
     }
 
     private void dibujarEnemigos(Graphics2D g2) {
@@ -292,6 +295,14 @@ public class PanelJuego extends JPanel {
     private void dibujarPersonaje(Graphics2D g2) {
         Personaje p = this.nivel.getPersonaje();
 
+        if (!p.estaVivo()) {
+            return;
+        }
+
+        if (p.estaInvulnerable() && (System.currentTimeMillis() / 120) % 2 == 0) {
+            return;
+        }
+
         double x = p.getPosicionX();
         double y = p.getPosicionY();
         double w = p.getAncho();
@@ -310,7 +321,11 @@ public class PanelJuego extends JPanel {
         g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 + 12, y + h + pieIzq));
 
         g2.setColor(COLOR_MONEDA);
-        g2.fill(new Ellipse2D.Double(x + w / 2.0 + 10, y + h * 0.55, 18, 18));
+        if (p.getDireccion() < 0) {
+            g2.fill(new Ellipse2D.Double(x + w / 2.0 - 28, y + h * 0.55, 18, 18));
+        } else {
+            g2.fill(new Ellipse2D.Double(x + w / 2.0 + 10, y + h * 0.55, 18, 18));
+        }
     }
 
     private void dibujarPelotas(Graphics2D g2) {
@@ -340,8 +355,16 @@ public class PanelJuego extends JPanel {
         g2.fillRoundRect(18, 16, 700, 62, 16, 16);
 
         g2.setColor(new Color(226, 232, 240));
-        g2.drawString("Vidas: " + p.getPuntosVida(), 36, 44);
-        g2.drawString("Puntaje: " + p.getPuntaje(), 170, 44);
+
+        int vidas = p.getPuntosVida();
+        for (int i = 0; i < 3; i++) {
+            g2.setColor(i < vidas ? new Color(225, 29, 72) : new Color(80, 86, 100));
+            this.dibujarCorazon(g2, 40 + i * 34, 24, 12);
+        }
+
+        g2.setColor(new Color(226, 232, 240));
+
+        g2.drawString("Puntaje: " + p.getPuntaje(), 175, 44);
         g2.drawString("Monedas: " + recogidas + " / " + totales, 340, 44);
         g2.drawString("Tiempo: " + (this.tiempoTranscurrido / 1000) + "s", 540, 44);
 
@@ -355,5 +378,17 @@ public class PanelJuego extends JPanel {
             int anchoTexto = g2.getFontMetrics().stringWidth(this.mensaje);
             g2.drawString(this.mensaje, (getWidth() - anchoTexto) / 2, getHeight() / 2);
         }
+    }
+
+    private void dibujarCorazon(Graphics2D g2, double x, double y, double r) {
+        g2.fill(new Ellipse2D.Double(x - r, y - r, r * 2, r * 2));
+        g2.fill(new Ellipse2D.Double(x, y - r, r * 2, r * 2));
+
+        Path2D punta = new Path2D.Double();
+        punta.moveTo(x - r, y);
+        punta.lineTo(x + r, y);
+        punta.lineTo(x, y + r * 1.6);
+        punta.closePath();
+        g2.fill(punta);
     }
 }

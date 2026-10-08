@@ -12,17 +12,16 @@ public class Nivel {
     private final List<Enemigo> enemigos;
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
-    private final List<Cofre> cofres;
     private final List<Recolectable> recolectables;
     private final List<Pelota> pelotas;
 
     //Constructor
     public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas, List<Plataforma> plataformas) {
-        this(personaje, aro, enemigos, monedas, plataformas, new ArrayList<>(), new ArrayList<>());
+        this(personaje, aro, enemigos, monedas, plataformas, new ArrayList<>());
     }
 
     public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
-                 List<Plataforma> plataformas, List<Cofre> cofres, List<Recolectable> recolectables) {
+                 List<Plataforma> plataformas, List<Recolectable> recolectables) {
         if (personaje == null || aro == null) {
             throw new IllegalArgumentException("El personaje y el aro son obligatorios");
         }
@@ -32,7 +31,6 @@ public class Nivel {
         this.enemigos = new ArrayList<>(enemigos);
         this.monedas = new ArrayList<>(monedas);
         this.plataformas = new ArrayList<>(plataformas);
-        this.cofres = new ArrayList<>(cofres);
         this.recolectables = new ArrayList<>(recolectables);
         this.pelotas = new ArrayList<>();
     }
@@ -58,20 +56,12 @@ public class Nivel {
         return Collections.unmodifiableList(this.plataformas);
     }
 
-    public List<Cofre> getCofres() {
-        return Collections.unmodifiableList(this.cofres);
-    }
-
     public List<Recolectable> getRecolectables() {
         return Collections.unmodifiableList(this.recolectables);
     }
 
     public List<Pelota> getPelotas() {
         return Collections.unmodifiableList(this.pelotas);
-    }
-
-    public int getMonedasTotales() {
-        return this.monedas.size() + this.cofres.size();
     }
 
     //Comportamientos
@@ -81,7 +71,7 @@ public class Nivel {
     }
 
     public boolean estaCompleto() {
-        return this.contarMonedasRecolectadas() >= this.getMonedasTotales();
+        return this.aro.isEncestado();
     }
 
     public int contarMonedasRecolectadas() {
@@ -91,12 +81,11 @@ public class Nivel {
                 cantidad++;
             }
         }
-        for (Cofre cofre : this.cofres) {
-            if (cofre.getMoneda().isRecolectada()) {
-                cantidad++;
-            }
-        }
         return cantidad;
+    }
+
+    public int getMonedasTotales() {
+        return this.monedas.size();
     }
 
     public boolean hayInterseccionConPlataforma(double posicionX, double posicionY) {
@@ -132,22 +121,17 @@ public class Nivel {
                 this.personaje.sumarPuntaje(100);
             }
         }
-
-        for (Cofre cofre : this.cofres) {
-            if (cofre.contieneMonedaSinRecolectar()
-                    && this.colisionaConRectangulo(this.personaje.getPosicionX(), this.personaje.getPosicionY(), cofre)) {
-                cofre.abrir();
-                cofre.getMoneda().recolectar();
-                this.personaje.sumarMoneda();
-                this.personaje.sumarPuntaje(250);
-            }
-        }
     }
 
     private void chequearEnemigos() {
+        if (this.personaje.estaInvulnerable()) {
+            return;
+        }
+
         for (Enemigo enemigo : this.enemigos) {
             if (enemigo.puedeAtacar(this.personaje)) {
-                enemigo.atacar(this.personaje);
+                this.personaje.perderVida();
+                break;
             }
         }
     }
@@ -158,10 +142,28 @@ public class Nivel {
         }
     }
 
+    public boolean hayPelotaActiva() {
+        for (Pelota pelota : this.pelotas) {
+            if (pelota.isActiva()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void actualizarPelotas(List<Plataforma> plataformasIgnoradas, int anchoPantalla, int altoPantalla) {
         for (int i = this.pelotas.size() - 1; i >= 0; i--) {
             Pelota pelota = this.pelotas.get(i);
             pelota.mover();
+
+            if (pelota.interseca(this.aro)) {
+                if (!this.aro.isEncestado()) {
+                    this.aro.encestar();
+                    this.personaje.sumarPuntaje(500);
+                }
+                this.pelotas.remove(i);
+                continue;
+            }
 
             boolean chocaConPlataforma = false;
             for (Plataforma plataforma : plataformasIgnoradas) {

@@ -23,6 +23,7 @@ public class ControladorPrincipal{
 
     private ControladorJuego controladorJuego;
 
+    @SuppressWarnings("this-escape")
     public ControladorPrincipal(){
         this.ventana =  new Ventana();
         this.gestorAudio = GestorAudio.getInstancia();
@@ -94,7 +95,7 @@ public class ControladorPrincipal{
         ventana.getPanelVideo().cargarYReproducir(
             "src/assets/intro.mp4",
             Ventana.ANCHO_PANTALLA, //Corrige problema de video recortado
-            Ventana.ALTO_PANTALLA, 
+            Ventana.ALTO_PANTALLA,
             this::finalizarVideoYMostrarMenu, 
             this::finalizarVideoYMostrarMenu
         );

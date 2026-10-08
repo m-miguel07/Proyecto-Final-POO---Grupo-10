@@ -18,9 +18,12 @@ import javafx.scene.media.MediaView;
 
 public class PanelVideoIntro extends JPanel {
 
-    private final JFXPanel jfxPanel;
-    private MediaPlayer mediaPlayer;
+    private static final long serialVersionUID = 1L;
 
+    private final JFXPanel jfxPanel;
+    private transient MediaPlayer mediaPlayer;
+
+    @SuppressWarnings("this-escape")
     public PanelVideoIntro(Runnable alFinalizarVideo){
         
         setLayout(new BorderLayout());

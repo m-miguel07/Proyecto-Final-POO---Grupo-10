@@ -11,6 +11,7 @@ public enum MaterialPlataforma {
         this.destructible = destructible;
     }
 
+    //Comportamientos
     public boolean esDestructible() {
         return this.destructible;
     }

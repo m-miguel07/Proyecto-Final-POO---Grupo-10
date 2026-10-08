@@ -83,7 +83,6 @@ public class EnemigoVolador extends Enemigo {
     }
 
     public void actualizar(double tiempoEnSegundos) {
-        this.volar(tiempoEnSegundos);
         this.moverHorizontal();
     }
 }

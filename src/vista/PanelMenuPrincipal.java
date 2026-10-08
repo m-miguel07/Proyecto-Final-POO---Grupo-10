@@ -16,11 +16,13 @@ import javax.swing.JPanel;
 
 public class PanelMenuPrincipal extends JPanel {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String ENTER = "ENTER";
     public static final String BOTONES = "BOTONES";
 
     private CardLayout layoutInferior;
-    private Image imagenOrigen;
+    private transient Image imagenOrigen;
     private JButton botonNuevoJuego;
     private JButton botonContinuar;
     private JButton botonOpciones;
@@ -29,6 +31,7 @@ public class PanelMenuPrincipal extends JPanel {
     private JPanel panelEnter;
     private JPanel panelInferior;
 
+    @SuppressWarnings("this-escape")
     public PanelMenuPrincipal(String rutaImagen){
         super(new BorderLayout());
         this.setOpaque(false); //setOpaque() hace que los paneles no tengan fondo, permitiendo que paintComponent() dibuje el fondo sin que lo tape el fondo de los paneles.

@@ -2,13 +2,13 @@
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "src/javafx-sdk-21.0.12/lib/javafx-base.jar",
-        "src/javafx-sdk-21.0.12/lib/javafx-controls.jar",
-        "src/javafx-sdk-21.0.12/lib/javafx-fxml.jar",
-        "src/javafx-sdk-21.0.12/lib/javafx-graphics.jar",
-        "src/javafx-sdk-21.0.12/lib/javafx-media.jar",
-        "src/javafx-sdk-21.0.12/lib/javafx-swing.jar",
-        "src/javafx-sdk-21.0.12/lib/javafx-web.jar"
+        "src/javafx-sdk-21.0.12/lib/javafx.base.jar",
+        "src/javafx-sdk-21.0.12/lib/javafx.controls.jar",
+        "src/javafx-sdk-21.0.12/lib/javafx.fxml.jar",
+        "src/javafx-sdk-21.0.12/lib/javafx.graphics.jar",
+        "src/javafx-sdk-21.0.12/lib/javafx.media.jar",
+        "src/javafx-sdk-21.0.12/lib/javafx.swing.jar",
+        "src/javafx-sdk-21.0.12/lib/javafx.web.jar"
     ],
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
 }

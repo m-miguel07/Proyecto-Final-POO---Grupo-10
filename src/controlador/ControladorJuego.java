@@ -3,9 +3,7 @@ package controlador;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
-
 import javax.swing.Timer;
-
 import modelo.Arma;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
@@ -18,6 +16,7 @@ import vista.PanelJuego;
 
 public class ControladorJuego {
 
+    //Constantes
     private static final int MS_POR_FRAME = 16;
 
     //Atributos
@@ -25,7 +24,14 @@ public class ControladorJuego {
     private final Timer timer;
     private long inicio;
 
+    private boolean teclaIzquierda;
+    private boolean teclaDerecha;
+    private boolean teclaSaltar;
+    private boolean saltoPendiente;
+    private boolean teclaDisparo;
+
     //Constructor
+    @SuppressWarnings("this-escape")
     public ControladorJuego() {
         this.panel = new PanelJuego(FabricaNivel1.crear());
         this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
@@ -46,6 +52,11 @@ public class ControladorJuego {
 
     //Comportamientos
     public void iniciar() {
+        this.teclaIzquierda = false;
+        this.teclaDerecha = false;
+        this.teclaSaltar = false;
+        this.saltoPendiente = false;
+        this.teclaDisparo = false;
         this.panel.requestFocusInWindow();
         this.timer.start();
     }
@@ -60,28 +71,46 @@ public class ControladorJuego {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                Personaje personaje = getNivel().getPersonaje();
                 int codigo = e.getKeyCode();
 
-                if (codigo == KeyEvent.VK_LEFT || codigo == KeyEvent.VK_A) {
-                    personaje.moverHorizontal(-1, FabricaNivel1.ANCHO);
-                } else if (codigo == KeyEvent.VK_RIGHT || codigo == KeyEvent.VK_D) {
-                    personaje.moverHorizontal(1, FabricaNivel1.ANCHO);
-                } else if (codigo == KeyEvent.VK_SPACE || codigo == KeyEvent.VK_W || codigo == KeyEvent.VK_UP) {
-                    personaje.saltar();
-                } else if (codigo == KeyEvent.VK_J) {
-                    ControladorJuego.this.disparar();
-                } else if (codigo == KeyEvent.VK_R) {
+                if (codigo == KeyEvent.VK_R) {
                     ControladorJuego.this.reiniciar();
+                    return;
+                }
+
+                if (!getNivel().getPersonaje().estaVivo() || getNivel().estaCompleto()) {
+                    return;
+                }
+
+                if (codigo == KeyEvent.VK_LEFT || codigo == KeyEvent.VK_A) {
+                    teclaIzquierda = true;
+                } else if (codigo == KeyEvent.VK_RIGHT || codigo == KeyEvent.VK_D) {
+                    teclaDerecha = true;
+                } else if (codigo == KeyEvent.VK_SPACE || codigo == KeyEvent.VK_W || codigo == KeyEvent.VK_UP) {
+                    if (!teclaSaltar) {
+                        saltoPendiente = true;
+                    }
+                    teclaSaltar = true;
+                } else if (codigo == KeyEvent.VK_J) {
+                    if (!teclaDisparo) {
+                        teclaDisparo = true;
+                        ControladorJuego.this.disparar();
+                    }
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 int codigo = e.getKeyCode();
-                if (codigo == KeyEvent.VK_LEFT || codigo == KeyEvent.VK_A
-                        || codigo == KeyEvent.VK_RIGHT || codigo == KeyEvent.VK_D) {
-                    getNivel().getPersonaje().moverHorizontal(0, FabricaNivel1.ANCHO);
+
+                if (codigo == KeyEvent.VK_LEFT || codigo == KeyEvent.VK_A) {
+                    teclaIzquierda = false;
+                } else if (codigo == KeyEvent.VK_RIGHT || codigo == KeyEvent.VK_D) {
+                    teclaDerecha = false;
+                } else if (codigo == KeyEvent.VK_SPACE || codigo == KeyEvent.VK_W || codigo == KeyEvent.VK_UP) {
+                    teclaSaltar = false;
+                } else if (codigo == KeyEvent.VK_J) {
+                    teclaDisparo = false;
                 }
             }
         });
@@ -91,6 +120,10 @@ public class ControladorJuego {
         Personaje personaje = this.getNivel().getPersonaje();
 
         if (!personaje.estaVivo()) {
+            return;
+        }
+
+        if (this.getNivel().hayPelotaActiva()) {
             return;
         }
 
@@ -108,7 +141,7 @@ public class ControladorJuego {
                 centroX - 8,
                 centroY - 8,
                 16, 16,
-                arma.getVelocidad(),
+                arma.getVelocidad() * personaje.getDireccion(),
                 0);
 
         this.getNivel().agregarPelota(pelota);
@@ -118,7 +151,37 @@ public class ControladorJuego {
         Nivel nivel = this.getNivel();
         Personaje personaje = nivel.getPersonaje();
 
+        long transcurrido = System.currentTimeMillis() - this.inicio;
+
+        if (!personaje.estaVivo()) {
+            this.panel.setMensaje("PERDISTE - R para reiniciar");
+            this.panel.setTiempoTranscurrido(transcurrido);
+            this.panel.repaint();
+            return;
+        }
+
+        if (nivel.estaCompleto()) {
+            this.panel.setMensaje("NIVEL COMPLETO");
+            this.panel.setTiempoTranscurrido(transcurrido);
+            this.panel.repaint();
+            return;
+        }
+
         List<Plataforma> plataformas = nivel.getPlataformas();
+
+        int direccion = 0;
+        if (this.teclaIzquierda && !this.teclaDerecha) {
+            direccion = -1;
+        } else if (this.teclaDerecha && !this.teclaIzquierda) {
+            direccion = 1;
+        }
+
+        personaje.actualizarHorizontal(direccion, FabricaNivel1.ANCHO);
+
+        if (this.saltoPendiente) {
+            personaje.saltar();
+            this.saltoPendiente = false;
+        }
 
         personaje.aplicarGravedad();
         personaje.actualizarVertical(plataformas, FabricaNivel1.ALTO);
@@ -136,22 +199,18 @@ public class ControladorJuego {
         nivel.eliminarEnemigosDerrotados();
         nivel.actualizarPelotas(plataformas, FabricaNivel1.ANCHO, FabricaNivel1.ALTO);
 
-        long transcurrido = System.currentTimeMillis() - this.inicio;
-
-        if (!personaje.estaVivo()) {
-            this.panel.setMensaje("PERDISTE - R para reiniciar");
-        } else if (nivel.estaCompleto()) {
-            this.panel.setMensaje("NIVEL COMPLETO");
-        } else {
-            this.panel.setMensaje("");
-        }
-
+        this.panel.setMensaje("");
         this.panel.setTiempoTranscurrido(transcurrido);
         this.panel.repaint();
     }
 
     public void reiniciar() {
         this.detener();
+        this.teclaIzquierda = false;
+        this.teclaDerecha = false;
+        this.teclaSaltar = false;
+        this.saltoPendiente = false;
+        this.teclaDisparo = false;
         this.panel.setNivel(FabricaNivel1.crear());
         this.inicio = System.currentTimeMillis();
         this.panel.setMensaje("NIVEL 1");
