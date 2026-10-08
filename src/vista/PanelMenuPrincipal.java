@@ -20,9 +20,10 @@ public class PanelMenuPrincipal extends JPanel {
 
     public static final String ENTER = "ENTER";
     public static final String BOTONES = "BOTONES";
+    public static final String OPCIONES = "OPCIONES";
 
     private CardLayout layoutInferior;
-    private transient Image imagenOrigen;
+    private Image imagenOrigen;
     private JButton botonNuevoJuego;
     private JButton botonContinuar;
     private JButton botonOpciones;
@@ -30,6 +31,7 @@ public class PanelMenuPrincipal extends JPanel {
     private JPanel panelBotones;
     private JPanel panelEnter;
     private JPanel panelInferior;
+    private PanelOpciones panelOpciones;
 
     @SuppressWarnings("this-escape")
     public PanelMenuPrincipal(String rutaImagen){
@@ -63,7 +65,7 @@ public class PanelMenuPrincipal extends JPanel {
         panelBotones.setOpaque(false);
 
         JPanel contenedorBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        contenedorBotones.setBorder(BorderFactory.createEmptyBorder(0,0,110,0));
+        contenedorBotones.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
         contenedorBotones.add(panelBotones);
         contenedorBotones.setOpaque(false);
 
@@ -76,12 +78,19 @@ public class PanelMenuPrincipal extends JPanel {
         panelEnter.add(imagenEnter);
         panelEnter.setOpaque(false);
 
-        //CardLayout que gestiona la transición de "Presione enter" a los botones del menu.
+        //CardLayout que gestiona la transición de "Presione enter" a los botones del menu y la aparición del panel emergente de opciones.
         this.layoutInferior = new CardLayout();
         this.panelInferior = new JPanel(layoutInferior);
+
+        this.panelOpciones = new PanelOpciones("src/assets/ui/bg-opc.png");
+        JPanel contenedorOpciones = new JPanel(new FlowLayout());
+        contenedorOpciones.add(panelOpciones);
+        contenedorOpciones.setOpaque(false);
+        
         panelInferior.setOpaque(false);
         panelInferior.add(panelEnter, ENTER);
         panelInferior.add(contenedorBotones, BOTONES);
+        panelInferior.add(contenedorOpciones, OPCIONES);
 
         this.add(contenedorTitulo,BorderLayout.CENTER);
         this.add(panelInferior, BorderLayout.SOUTH);
@@ -108,6 +117,9 @@ public class PanelMenuPrincipal extends JPanel {
         return this.panelEnter;
     }
 
+    public PanelOpciones getPanelOpciones() {
+        return panelOpciones;
+    }
 
     public void mostrarPanel(String panel){
         layoutInferior.show(panelInferior,panel);

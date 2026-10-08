@@ -62,10 +62,17 @@ public class ControladorPrincipal{
                 this.ventana.getPanelMenu()
                             .getBotonOpciones()
                             .addActionListener(e -> {
-                                //this.ventana.mostrarTarjeta(CARD_OPCIONES);
+                               this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.OPCIONES);
+                            });
+        //Boton de salir (Opciones)
+                this.ventana.getPanelMenu()
+                            .getPanelOpciones()
+                            .getBotonSalir()
+                            .addActionListener(e -> {
+                                this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);
                             });
 
-        //Boton de Salir
+        //Boton de Salir (Menu principal)
         this.ventana.getPanelMenu()
                     .getBotonSalir()
                     .addActionListener(e -> System.exit(0));
