@@ -126,6 +126,14 @@ public class PanelOpciones extends JPanel {
         return botonSalir;
     }
 
+    public JSlider getSliderMusica(){
+        return this.sliderMusica;
+    }
+
+    public JSlider getSliderSFX(){
+        return this.sliderSFX;
+    }
+
     @Override 
     protected void paintComponent(Graphics g){
         super.paintComponent(g);

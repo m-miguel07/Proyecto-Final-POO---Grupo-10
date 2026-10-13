@@ -2,6 +2,7 @@ package controlador;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 
 import java.awt.event.KeyEvent;
@@ -72,6 +73,16 @@ public class ControladorPrincipal{
                                 this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);
                             });
 
+        //Sliders (Opciones)
+
+        //Musica 
+            JSlider sliderMusica = this.ventana.getPanelMenu().getPanelOpciones().getSliderMusica();
+
+            sliderMusica.addChangeListener(e -> {
+                double valor = sliderMusica.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
+                gestorAudio.setVolumen(valor);
+            });
+                           
         //Boton de Salir (Menu principal)
         this.ventana.getPanelMenu()
                     .getBotonSalir()
@@ -115,7 +126,7 @@ public class ControladorPrincipal{
 
         SwingUtilities.invokeLater(() -> {
             ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
-            gestorAudio.reproducirMusica("src/assets/bgm/menu.mp3", 1, true);
+            gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
         });
     }
 

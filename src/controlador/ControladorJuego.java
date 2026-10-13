@@ -8,6 +8,7 @@ import modelo.Arma;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
 import modelo.FabricaNivel1;
+import modelo.GestorAudio;
 import modelo.Nivel;
 import modelo.Pelota;
 import modelo.Personaje;
@@ -22,6 +23,7 @@ public class ControladorJuego {
     //Atributos
     private final PanelJuego panel;
     private final Timer timer;
+    private final GestorAudio gestorAudio;
     private long inicio;
 
     private boolean teclaIzquierda;
@@ -35,10 +37,13 @@ public class ControladorJuego {
     public ControladorJuego() {
         this.panel = new PanelJuego(FabricaNivel1.crear());
         this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
+        this.gestorAudio = GestorAudio.getInstancia();
         this.inicio = System.currentTimeMillis();
 
         this.registrarTeclado();
         this.panel.setMensaje("NIVEL 1");
+
+        gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
 
     //Getters
