@@ -97,6 +97,10 @@ public class Ventana extends JFrame {
         return this.panelMenu;
     }
 
+    public int getVolumenMusica(){
+        return panelMenu.getPanelOpciones().getSliderMusica().getValue();
+    }
+
     public void mostrarTarjeta(String nombre){
         cardLayout.show(contenedor,nombre);
         contenedor.revalidate();

@@ -4,27 +4,25 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 
 import javafx.application.Platform;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class GestorAudio { //Aplica patron Singleton
 	
+    private double volumenMusica = 0.5;
 	private MediaPlayer musicaFondo;
     private static GestorAudio instancia;
 
-    private final Map<String, Clip> sonidos = new HashMap<>();
-    private final Map<String, Long> duraciones = new HashMap<>();
+    private final Map<String, AudioClip> sonidos = new HashMap<>();
 	
     private GestorAudio(){
         //FALTA PONER LOS SONIDOS
-        this.cargar("boton-enter"); 
-        this.cargar("boton-hover");
-        this.cargar("boton-click");
+        //this.cargar("boton-enter", "src/assets/"); 
+        //this.cargar("boton-hover");
+        //this.cargar("boton-click");
     }
 
     public static GestorAudio getInstancia(){
@@ -34,31 +32,21 @@ public class GestorAudio { //Aplica patron Singleton
         return instancia;
     }
 
-    private void cargar(String nombre) { //El SFX debe ser .wav, .mp3 no es compatible
-        File archivo = new File("src/assets/sfx/", nombre + ".wav");
-        try (AudioInputStream flujo = AudioSystem.getAudioInputStream(archivo)) {
-            long milisegundos = (long) (1000 * flujo.getFrameLength() / flujo.getFormat().getFrameRate());
-            Clip clip = AudioSystem.getClip();
-            clip.open(flujo);
-            this.sonidos.put(nombre, clip);
-            this.duraciones.put(nombre, milisegundos);
-        } catch (Exception e) {
-            System.err.println("Fallo al cargar: " + archivo.getAbsolutePath());
-            e.printStackTrace();
-        }
+    private void cargar(String nombre, String rutaArchivo) { 
+        AudioClip clip = new AudioClip(new File(rutaArchivo).toURI().toString());
+        sonidos.put(nombre, clip);
     }
 
     public void reproducirEfecto(String nombre) {
-        Clip clip = sonidos.get(nombre);
+        AudioClip clip = sonidos.get(nombre);
         if (clip != null) {
-            clip.setFramePosition(0); // Lo rebobina al inicio
-            clip.start();             // Le da play
+            clip.play();
         } else {
             System.out.println("El efecto '" + nombre + "' no está cargado.");
         }
     }
 
-	public void reproducirMusica(String rutaArchivo, double volumen, boolean enBucle) {
+	public void reproducirMusica(String rutaArchivo,boolean enBucle) {
         Platform.runLater(() -> {
             try {
                 detenerMusica();
@@ -71,7 +59,7 @@ public class GestorAudio { //Aplica patron Singleton
 
                 Media media = new Media(archivo.toURI().toString());
                 musicaFondo = new MediaPlayer(media);
-                musicaFondo.setVolume(volumen); // Rango de 0.0 (mudo) a 1.0 (máximo)
+                musicaFondo.setVolume(this.volumenMusica); // Rango de 0.0 (mudo) a 1.0 (máximo)
 
                 if (enBucle) {
                     musicaFondo.setCycleCount(MediaPlayer.INDEFINITE);
@@ -109,9 +97,14 @@ public class GestorAudio { //Aplica patron Singleton
     }
 
     public void setVolumen(double volumen) {
+        this.volumenMusica = volumen;
         if (musicaFondo != null) {
             Platform.runLater(() -> musicaFondo.setVolume(volumen));
         }
+    }
+
+    public double getVolumen(){
+        return this.volumenMusica;
     }
 
 }
