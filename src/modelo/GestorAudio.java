@@ -12,6 +12,10 @@ import javafx.scene.media.MediaPlayer;
 
 public class GestorAudio { //Aplica patron Singleton
 	
+    public static final String BOTON_INICIO = "BOTON_INICIO";
+    public static final String BOTON_HOVER = "BOTON_HOVER";
+    public static final String BOTON_CLICK = "BOTON_CLICK";
+
     private double volumenMusica = 0.5;
 	private MediaPlayer musicaFondo;
     private static GestorAudio instancia;
@@ -20,9 +24,9 @@ public class GestorAudio { //Aplica patron Singleton
 	
     private GestorAudio(){
         //FALTA PONER LOS SONIDOS
-        //this.cargar("boton-enter", "src/assets/"); 
-        //this.cargar("boton-hover");
-        //this.cargar("boton-click");
+        cargar(BOTON_INICIO, "src/assets/Sonidos/inicio_juego.mp3"); 
+        cargar(BOTON_HOVER, "src/assets/Sonidos/menu_hover_boton.mp3");
+        cargar(BOTON_CLICK, "src/assets/Sonidos/menu_presionar_boton_2.mp3");
     }
 
     public static GestorAudio getInstancia(){

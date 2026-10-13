@@ -41,7 +41,7 @@ public class ControladorPrincipal{
                 if (e.getKeyCode() == KeyEvent.VK_ENTER){
                     if (ventana.getPanelMenu().getPanelEnter().isVisible()){
                        ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);;
-                       gestorAudio.reproducirEfecto("boton-enter");
+                       gestorAudio.reproducirEfecto(GestorAudio.BOTON_INICIO);
                     }
                 }
             }
@@ -65,6 +65,7 @@ public class ControladorPrincipal{
                             .addActionListener(e -> {
                                this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.OPCIONES);
                             });
+
         //Boton de salir (Opciones)
                 this.ventana.getPanelMenu()
                             .getPanelOpciones()
@@ -81,6 +82,7 @@ public class ControladorPrincipal{
             sliderMusica.addChangeListener(e -> {
                 double valor = sliderMusica.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
                 gestorAudio.setVolumen(valor);
+                gestorAudio.reproducirEfecto(GestorAudio.BOTON_CLICK);
             });
                            
         //Boton de Salir (Menu principal)
@@ -112,7 +114,7 @@ public class ControladorPrincipal{
         ventana.mostrarTarjeta(Ventana.CARD_VIDEO);
         ventana.getPanelVideo().cargarYReproducir(
             "src/assets/intro.mp4",
-            Ventana.ANCHO_PANTALLA, //Corrige problema de video recortado
+            Ventana.ANCHO_PANTALLA, 
             Ventana.ALTO_PANTALLA,
             this::finalizarVideoYMostrarMenu, 
             this::finalizarVideoYMostrarMenu
