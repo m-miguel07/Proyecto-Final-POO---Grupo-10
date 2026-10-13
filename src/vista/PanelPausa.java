@@ -13,6 +13,7 @@ public class PanelPausa extends PanelBase {
     
     private BotonMenu botonBGM;
     private BotonMenu botonSFX;
+    private BotonMenu botonSalida;
     
     public PanelPausa(){
         super("src/assets/ui/exit-normal-pause.png", 
@@ -24,9 +25,11 @@ public class PanelPausa extends PanelBase {
 
         this.botonBGM = new BotonMenu("src/assets/ui/btn-pause.png", "src/assets/ui/btn-pause.png");
         botonBGM.setPreferredSize(dimBotones);
+        botonBGM.setFocusable(false);
 
         this.botonSFX = new BotonMenu("src/assets/ui/btn-pause.png", "src/assets/ui/btn-pause.png");
         botonSFX.setPreferredSize(dimBotones);
+        botonSFX.setFocusable(false);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER,30,0));
         panelBotones.add(botonBGM);
@@ -38,15 +41,20 @@ public class PanelPausa extends PanelBase {
         contenedorBotones.add(panelBotones);
         contenedorBotones.setOpaque(false);
 
-        BotonMenu botonSalir = new BotonMenu("src/assets/ui/btn-exit-pause-normal.png", "src/assets/ui/btn-exit-pause-hover.png");
+        this.botonSalida = new BotonMenu("src/assets/ui/btn-exit-pause-normal.png", "src/assets/ui/btn-exit-pause-hover.png");
+        botonSalida.setFocusable(false);
 
-        JPanel panelSalir = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panelSalir.setBorder(BorderFactory.createEmptyBorder(0,0,35,0));
-        panelSalir.add(botonSalir);
-        panelSalir.setOpaque(false);
+        JPanel panelSalida = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelSalida.setBorder(BorderFactory.createEmptyBorder(0,0,35,0));
+        panelSalida.add(botonSalida);
+        panelSalida.setOpaque(false);
 
         this.add(contenedorBotones, BorderLayout.CENTER);
-        this.add(panelSalir, BorderLayout.SOUTH);
+        this.add(panelSalida, BorderLayout.SOUTH);
 
+    }
+
+    public BotonMenu getBotonSalida(){
+        return this.botonSalida;
     }
 }

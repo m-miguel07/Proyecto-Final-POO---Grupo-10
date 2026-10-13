@@ -27,7 +27,8 @@ public class PanelBase extends JPanel{ //Panel base con encabezado y fondo, lo h
         //Boton salir (X)
         this.botonSalir = new BotonMenu(rutaSalirNormal, rutaSalirHover);
         botonSalir.setPreferredSize(new Dimension(59,59));
-
+        botonSalir.setFocusable(false);
+        
         //Contenedores
 
         //Boton salir

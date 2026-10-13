@@ -41,7 +41,6 @@ public class Ventana extends JFrame {
         this.setUndecorated(true);
 
         this.panelMenu = new PanelMenuPrincipal("src/assets/menu-bg.jpeg");
-
         //Establecer icono de la app
         try {
             File archivoIcono = new File("src/assets/icon.png");

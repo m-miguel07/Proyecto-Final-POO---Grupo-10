@@ -66,6 +66,17 @@ public class BotonMenu extends JButton {
         });
     }
 
+    public void actualizarImagenes(String rutaNormal, String rutaHover) {
+        if (rutaNormal != null) {
+            this.imgNormal = new ImageIcon(rutaNormal).getImage();
+        }
+        if (rutaHover != null) {
+            this.imgHover = new ImageIcon(rutaHover).getImage();
+        }
+        
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
 

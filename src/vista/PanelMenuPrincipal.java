@@ -62,18 +62,6 @@ public class PanelMenuPrincipal extends JPanel {
         panelBotones.add(botonContinuar);
         panelBotones.add(botonOpciones);
         panelBotones.add(botonSalir);
-
-        JButton botonPrueba = new JButton("PRUEBA PAUSA");
-        panelBotones.add(botonPrueba);
-
-        botonPrueba.addActionListener(e -> {
-           JFrame ventanaPrueba = new JFrame("Preview");
-            ventanaPrueba.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            ventanaPrueba.add(new PanelPausa());
-            ventanaPrueba.pack(); // o setSize(...), según el tamaño que necesites ver
-            ventanaPrueba.setVisible(true);
-        });
-
         panelBotones.setOpaque(false);
 
         JPanel contenedorBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -133,6 +121,7 @@ public class PanelMenuPrincipal extends JPanel {
         return panelOpciones;
     }
 
+    
     public void mostrarPanel(String panel){
         layoutInferior.show(panelInferior,panel);
         panelInferior.revalidate();

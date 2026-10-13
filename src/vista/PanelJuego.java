@@ -3,10 +3,12 @@ package vista;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
@@ -46,16 +48,23 @@ public class PanelJuego extends JPanel {
     private transient Nivel nivel;
     private String mensaje;
     private long tiempoTranscurrido;
+    private PanelPausa panelPausa;
 
     @SuppressWarnings("this-escape")
     public PanelJuego(Nivel nivel) {
-        super();
+        super(new GridBagLayout());
         this.nivel = nivel;
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
-        this.setPreferredSize(new Dimension(1600, 900));
+        this.setPreferredSize(new Dimension(1920, 1080));
         this.setFocusable(true);
         this.setOpaque(true);
+
+        panelPausa = new PanelPausa();
+        panelPausa.setVisible(false);
+
+        this.add(panelPausa);
+        
     }
 
     public Nivel getNivel() {
@@ -72,6 +81,14 @@ public class PanelJuego extends JPanel {
 
     public void setTiempoTranscurrido(long tiempoTranscurrido) {
         this.tiempoTranscurrido = tiempoTranscurrido;
+    }
+
+    public void togglePausa(){
+        panelPausa.setVisible(!panelPausa.isVisible());
+    }
+
+    public PanelPausa getPanelPausa(){
+        return this.panelPausa;
     }
 
     @Override
