@@ -26,24 +26,39 @@ public class ControladorJuego {
     private final GestorAudio gestorAudio;
     private long inicio;
 
+    private final ListenerNavegacion listener;
+
     private boolean teclaIzquierda;
     private boolean teclaDerecha;
     private boolean teclaSaltar;
     private boolean saltoPendiente;
     private boolean teclaDisparo;
+    private boolean enPausa;
 
     //Constructor
     @SuppressWarnings("this-escape")
-    public ControladorJuego() {
+    public ControladorJuego(ListenerNavegacion listener) {
         this.panel = new PanelJuego(FabricaNivel1.crear());
         this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
+        this.listener = listener;
         this.gestorAudio = GestorAudio.getInstancia();
         this.inicio = System.currentTimeMillis();
 
+        panel.getPanelPausa().getBotonSalir().addActionListener(e -> {
+            pausar();
+        });
+
+        panel.getPanelPausa().getBotonSalida().addActionListener(e ->{
+            detener();
+            gestorAudio.detenerMusica();
+            reiniciarEstado();
+            panel.togglePausa();
+
+            this.listener.volverAlMenu(); //notifica que se solicito la salida
+        });
+
         this.registrarTeclado();
         this.panel.setMensaje("NIVEL 1");
-
-        gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
 
     //Getters
@@ -56,20 +71,69 @@ public class ControladorJuego {
     }
 
     //Comportamientos
+
+    private void iniciarMusica(){
+        gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
+    }
+
+    //Gameloop
     public void iniciar() {
         this.teclaIzquierda = false;
         this.teclaDerecha = false;
         this.teclaSaltar = false;
         this.saltoPendiente = false;
         this.teclaDisparo = false;
+        this.enPausa = false;
+
         this.panel.requestFocusInWindow();
         this.timer.start();
     }
 
     public void detener() {
         this.timer.stop();
+        gestorAudio.pausarMusica();
     }
 
+    public void pausar(){
+        if (!enPausa){
+            enPausa = true;
+            detener();
+        } else {
+            enPausa = false;
+            gestorAudio.reanudarMusica();
+            iniciar();
+        }
+
+         panel.togglePausa();
+                
+    }
+
+    public void reiniciar() {
+
+        this.detener();
+        gestorAudio.detenerMusica();
+
+        reiniciarEstado();
+
+        iniciarMusica();
+        
+        this.panel.requestFocusInWindow();
+        this.timer.start();
+    }
+
+    private void reiniciarEstado() {
+        this.teclaIzquierda = false;
+        this.teclaDerecha = false;
+        this.teclaSaltar = false;
+        this.saltoPendiente = false;
+        this.teclaDisparo = false;
+        this.enPausa = false;
+        this.panel.setNivel(FabricaNivel1.crear());
+        this.inicio = System.currentTimeMillis();
+        this.panel.setMensaje("NIVEL 1");
+    }
+
+    //Desplazamiento
     private void registrarTeclado() {
         this.panel.setFocusTraversalKeysEnabled(false);
         this.panel.addKeyListener(new KeyAdapter() {
@@ -102,6 +166,10 @@ public class ControladorJuego {
                         ControladorJuego.this.disparar();
                     }
                 }
+
+                if (codigo == KeyEvent.VK_ESCAPE){
+                    pausar();
+                }
             }
 
             @Override
@@ -121,6 +189,7 @@ public class ControladorJuego {
         });
     }
 
+    //Mecanicas de juego
     private void disparar() {
         Personaje personaje = this.getNivel().getPersonaje();
 
@@ -209,17 +278,4 @@ public class ControladorJuego {
         this.panel.repaint();
     }
 
-    public void reiniciar() {
-        this.detener();
-        this.teclaIzquierda = false;
-        this.teclaDerecha = false;
-        this.teclaSaltar = false;
-        this.saltoPendiente = false;
-        this.teclaDisparo = false;
-        this.panel.setNivel(FabricaNivel1.crear());
-        this.inicio = System.currentTimeMillis();
-        this.panel.setMensaje("NIVEL 1");
-        this.panel.requestFocusInWindow();
-        this.timer.start();
-    }
 }

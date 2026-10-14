@@ -24,27 +24,14 @@ public class BotonMenu extends JButton {
     private transient Image imgNormal; 
     private transient Image imgHover;
 
-    //Rutas de SFX
-    private String sfxHover; 
-    private String sfxClick;
-
-    
     @SuppressWarnings("this-escape")
-    public BotonMenu(String rutaImagen, String rutaHover, String rutaSfxHover, String rutaSfxClick){
+    public BotonMenu(String rutaImagen, String rutaHover){
         if (rutaImagen != null){
             this.imgNormal = new ImageIcon(rutaImagen).getImage();
         }
 
         if (rutaHover != null){
             this.imgHover = new ImageIcon(rutaHover).getImage();
-        }
-
-        if (rutaSfxHover != null){
-            this.sfxHover = rutaSfxHover;
-        }
-
-        if (rutaSfxClick != null){
-            this.sfxClick = rutaSfxClick;
         }
 
         this.hover = false;
@@ -62,13 +49,13 @@ public class BotonMenu extends JButton {
             @Override
             public void mouseEntered(MouseEvent e) {
                 hover = true;
-                GestorAudio.getInstancia().reproducirEfecto(sfxHover);
+                GestorAudio.getInstancia().reproducirEfecto(GestorAudio.BOTON_HOVER);
                 repaint();
             }
 
             @Override 
             public void mousePressed(MouseEvent e) {
-                GestorAudio.getInstancia().reproducirEfecto(sfxClick);
+                GestorAudio.getInstancia().reproducirEfecto(GestorAudio.BOTON_CLICK);
             }
 
             @Override
@@ -77,6 +64,17 @@ public class BotonMenu extends JButton {
                 repaint();
             }
         });
+    }
+
+    public void actualizarImagenes(String rutaNormal, String rutaHover) {
+        if (rutaNormal != null) {
+            this.imgNormal = new ImageIcon(rutaNormal).getImage();
+        }
+        if (rutaHover != null) {
+            this.imgHover = new ImageIcon(rutaHover).getImage();
+        }
+        
+        repaint();
     }
 
     @Override

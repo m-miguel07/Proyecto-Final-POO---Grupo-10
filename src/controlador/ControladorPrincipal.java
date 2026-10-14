@@ -15,7 +15,7 @@ import modelo.GestorAudio;
 import vista.PanelMenuPrincipal;
 import vista.Ventana;
 
-public class ControladorPrincipal{
+public class ControladorPrincipal implements ListenerNavegacion{
     private final Ventana ventana;
     private final GestorAudio gestorAudio;
 
@@ -41,7 +41,7 @@ public class ControladorPrincipal{
                 if (e.getKeyCode() == KeyEvent.VK_ENTER){
                     if (ventana.getPanelMenu().getPanelEnter().isVisible()){
                        ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);;
-                       gestorAudio.reproducirEfecto("boton-enter");
+                       gestorAudio.reproducirEfecto(GestorAudio.BOTON_INICIO);
                     }
                 }
             }
@@ -65,22 +65,31 @@ public class ControladorPrincipal{
                             .addActionListener(e -> {
                                this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.OPCIONES);
                             });
+
         //Boton de salir (Opciones)
                 this.ventana.getPanelMenu()
                             .getPanelOpciones()
                             .getBotonSalir()
-                            .addActionListener(e -> {
+                            .addActionListener(e -> { 
                                 this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);
                             });
 
         //Sliders (Opciones)
 
         //Musica 
-            JSlider sliderMusica = this.ventana.getPanelMenu().getPanelOpciones().getSliderMusica();
+            JSlider sliderBGM = this.ventana.getPanelMenu().getPanelOpciones().getSliderMusica();
+            JSlider sliderSFX = this.ventana.getPanelMenu().getPanelOpciones().getSliderSFX();
 
-            sliderMusica.addChangeListener(e -> {
-                double valor = sliderMusica.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
-                gestorAudio.setVolumen(valor);
+            sliderBGM.addChangeListener(e -> {
+                double valor = sliderBGM.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
+                gestorAudio.setVolumenBGM(valor);
+                gestorAudio.reproducirEfecto(GestorAudio.BOTON_CLICK);
+            });
+
+            sliderSFX.addChangeListener(e -> {
+                double valor = sliderSFX.getValue() / 100.0;
+                gestorAudio.setVolumenSFX(valor);
+                gestorAudio.reproducirEfecto(GestorAudio.BOTON_CLICK);
             });
                            
         //Boton de Salir (Menu principal)
@@ -112,7 +121,7 @@ public class ControladorPrincipal{
         ventana.mostrarTarjeta(Ventana.CARD_VIDEO);
         ventana.getPanelVideo().cargarYReproducir(
             "src/assets/intro.mp4",
-            Ventana.ANCHO_PANTALLA, //Corrige problema de video recortado
+            Ventana.ANCHO_PANTALLA, 
             Ventana.ALTO_PANTALLA,
             this::finalizarVideoYMostrarMenu, 
             this::finalizarVideoYMostrarMenu
@@ -133,13 +142,20 @@ public class ControladorPrincipal{
     public void iniciarJuego(){
         SwingUtilities.invokeLater(() -> {
             if (this.controladorJuego == null){
-                this.controladorJuego = new ControladorJuego();
+                this.controladorJuego = new ControladorJuego(this);
             }
 
+            gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
             this.ventana.setPanelJuego(this.controladorJuego.getPanel());
             this.ventana.mostrarTarjeta(Ventana.CARD_JUEGO);
             this.ventana.getPanelJuego().requestFocusInWindow();
             this.controladorJuego.iniciar();
         });
+    }
+
+    @Override 
+    public void volverAlMenu(){
+        ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
+        gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
 }
