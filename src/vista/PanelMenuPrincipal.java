@@ -11,12 +11,9 @@ import java.awt.Image;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class PanelMenuPrincipal extends JPanel {
-
-    private static final long serialVersionUID = 1L;
 
     public static final String ENTER = "ENTER";
     public static final String BOTONES = "BOTONES";

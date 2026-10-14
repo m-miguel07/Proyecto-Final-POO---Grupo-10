@@ -48,9 +48,29 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
  ![Diagrama UML](src/assets/image2.png)
 
 
+
+
+#### Patrón de diseño adicional: Observer
+-**Nombre del patrón:** **Observer (Observador)** 
+- **Justificación:** Se utiliza este patrón para gestionar el traspaso de una vista a otra, las cuales pertenecen a controladores que no se conocen completamente entre sí (ControladorPrincipal conoce a ControladorJuego pero no al revés) <br>
+ Existía el problema inicial de desconocimiento entre **controladorJuego** y **controladorPrincipal** al momento de tener que pasar del menu de pausa y la vista del juego  (**PanelPausa** + **PanelJuego**) a la vista del menu principal (**PanelMenuPrincipal**) a través del boton de "Salir del juego". 
+ ![PanelPausa](src/assets/Capturas_justificacion/captura_observer_003.png)
+ <br>
+Por eso mismo aplicando **Observer** se hizo que:
+- **ControladorJuego** fuera el observado, recibiendo el listener por constructor 
+![Constructor](src/assets/Capturas_justificacion/captura_observer_002.png)
+- **ControladorPrincipal** el observador implementando la interfaz **ListenerNavegacion** con el metodo abstracto **volverAlmenu()**
+![Interfaz ListenerNavegacion](src/assets/Capturas_justificacion/captura_observer_000.png)<br> 
+El cual es llamado cuando el usuario presiona el boton de salida desde el menu de pausa
+ **ControladorPrincipal** haciendo override de dicho metodo, ejecuta el cambio de vista a CARD_MENU_PRINCIPAL y cambia la musica.
+ ![alt text](image-1.png)
+<br>
+En **ControladorPrincipal:**
+ ![alt text](src/assets/Capturas_justificacion/captura_observer_001.png)
+
 #### **Prototipo Visual**
  #### Prototipo y descripción de escenario:
- ![Diagrama UML](\src\assets\Prototipo\Diseño_juego2.png)
+ ![Diagrama](/src/assets/Prototipo/Diseño_juego2.png)
 
  - **Primer escenario:** Para el primer escenario de cada nivel, el jugador debe encestar en el aro para que el pilar que contiene la moneda descienda y esta sea recolectada, pasando al siguiente escenario. 
  - Dicho aro es estatico en el primer nivel, en los niveles posteriores se moverá en un patron determinado, dificultando encestar.

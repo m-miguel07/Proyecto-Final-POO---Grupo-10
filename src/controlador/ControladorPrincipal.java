@@ -135,7 +135,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
 
         SwingUtilities.invokeLater(() -> {
             ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
-            gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
+            gestorAudio.reproducirMusica("src/assets/Musica/musica_menu.mp3", true);
         });
     }
 
@@ -156,6 +156,6 @@ public class ControladorPrincipal implements ListenerNavegacion{
     @Override 
     public void volverAlMenu(){
         ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
-        gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
+        gestorAudio.reproducirMusica("src/assets/Musica/musica_menu.mp3", true);
     }
 }

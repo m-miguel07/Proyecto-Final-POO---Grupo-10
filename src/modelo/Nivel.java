@@ -184,6 +184,7 @@ public class Nivel {
                 Arma arma = pelota.getArma();
                 arma.aplicarDanio(enemigo);
 
+                //REFACTORIZAR 
                 if (pelota.esDeHielo() && arma instanceof ArmaHielo) {
                     ((ArmaHielo) arma).congelar(enemigo);
                 }

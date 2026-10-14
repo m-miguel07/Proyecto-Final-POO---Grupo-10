@@ -9,8 +9,7 @@ import java.awt.Image;
 
 //Se modificó la implementación usando awt.Graphics, reemplazando la solución anterior con imagenEscalada.
 public class Splash extends JPanel {
-
-    private static final long serialVersionUID = 1L;
+    
     private transient Image imagenOrigen;
 
     public Splash(String rutaImagen){

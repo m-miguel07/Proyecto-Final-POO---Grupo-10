@@ -3,7 +3,6 @@ package vista;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -30,8 +29,6 @@ import modelo.Plataforma;
 import modelo.Recolectable;
 
 public class PanelJuego extends JPanel {
-
-    private static final long serialVersionUID = 1L;
 
     private static final Color COLOR_FONDO = new Color(24, 26, 38);
     private static final Color COLOR_PLATAFORMA = new Color(226, 228, 234);

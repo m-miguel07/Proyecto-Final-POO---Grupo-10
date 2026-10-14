@@ -13,8 +13,6 @@ import java.io.IOException;
 //EN PROGRESO
 
 public class Ventana extends JFrame {
-
-    private static final long serialVersionUID = 1L;
     
     public static final int ANCHO_PANTALLA = 1920;
     public static final int ALTO_PANTALLA = 1080;

@@ -17,8 +17,6 @@ import modelo.GestorAudio;
 
 public class BotonMenu extends JButton {
 
-    private static final long serialVersionUID = 1L;
-    
     private boolean hover;
 
     private transient Image imgNormal; 

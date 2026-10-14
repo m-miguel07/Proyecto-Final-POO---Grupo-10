@@ -16,7 +16,6 @@ import modelo.Plataforma;
 import vista.PanelJuego;
 
 public class ControladorJuego {
-
     //Constantes
     private static final int MS_POR_FRAME = 16;
 
@@ -36,7 +35,6 @@ public class ControladorJuego {
     private boolean enPausa;
 
     //Constructor
-    @SuppressWarnings("this-escape")
     public ControladorJuego(ListenerNavegacion listener) {
         this.panel = new PanelJuego(FabricaNivel1.crear());
         this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
