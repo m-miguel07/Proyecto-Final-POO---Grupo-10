@@ -46,18 +46,27 @@ public class PanelJuego extends JPanel {
     private String mensaje;
     private long tiempoTranscurrido;
     private PanelPausa panelPausa;
+    private HUD hud;
 
-    @SuppressWarnings("this-escape")
     public PanelJuego(Nivel nivel) {
         super(new GridBagLayout());
         this.nivel = nivel;
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
-        this.setPreferredSize(new Dimension(1920, 1080));
+        this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
         this.setOpaque(true);
 
-        panelPausa = new PanelPausa();
+        this.panelPausa = new PanelPausa();
+        this.hud = new HUD(
+                           "src/assets/hud/icon-ps-00.png",
+                           "src/assets/hud/icon-ps-01.png", 
+                           "src/assets/hud/bg-ps.png", 
+                           "src/assets/hud/bg-coins.png",
+                           "src/assets/hud/bg-time.png",
+                           "src/assets/hud/bg-score.png"
+                        );
+
         panelPausa.setVisible(false);
 
         this.add(panelPausa);
@@ -361,30 +370,17 @@ public class PanelJuego extends JPanel {
     private void dibujarHud(Graphics2D g2) {
         Personaje p = this.nivel.getPersonaje();
 
+        //Monedas
         int recogidas = this.nivel.contarMonedasRecolectadas();
         int totales = this.nivel.getMonedasTotales();
 
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 26));
-        g2.setColor(new Color(15, 18, 28));
-        g2.fillRoundRect(18, 16, 700, 62, 16, 16);
-
-        g2.setColor(new Color(226, 232, 240));
-
+        //PS
         int vidas = p.getPuntosVida();
-        for (int i = 0; i < 3; i++) {
-            g2.setColor(i < vidas ? new Color(225, 29, 72) : new Color(80, 86, 100));
-            this.dibujarCorazon(g2, 40 + i * 34, 24, 12);
-        }
 
-        g2.setColor(new Color(226, 232, 240));
+        //Tiempo
+        long tiempoSegundos = this.tiempoTranscurrido/100;
 
-        g2.drawString("Puntaje: " + p.getPuntaje(), 175, 44);
-        g2.drawString("Monedas: " + recogidas + " / " + totales, 340, 44);
-        g2.drawString("Tiempo: " + (this.tiempoTranscurrido / 1000) + "s", 540, 44);
-
-        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-        g2.setColor(new Color(148, 163, 184));
-        g2.drawString("A/D mover  -  ESPACIO saltar  -  J disparar", 36, 68);
+        hud.dibujar(g2, vidas,p.getPuntaje(), tiempoSegundos, recogidas, totales);
 
         if (!this.mensaje.isEmpty()) {
             g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 48));
@@ -392,17 +388,5 @@ public class PanelJuego extends JPanel {
             int anchoTexto = g2.getFontMetrics().stringWidth(this.mensaje);
             g2.drawString(this.mensaje, (getWidth() - anchoTexto) / 2, getHeight() / 2);
         }
-    }
-
-    private void dibujarCorazon(Graphics2D g2, double x, double y, double r) {
-        g2.fill(new Ellipse2D.Double(x - r, y - r, r * 2, r * 2));
-        g2.fill(new Ellipse2D.Double(x, y - r, r * 2, r * 2));
-
-        Path2D punta = new Path2D.Double();
-        punta.moveTo(x - r, y);
-        punta.lineTo(x + r, y);
-        punta.lineTo(x, y + r * 1.6);
-        punta.closePath();
-        g2.fill(punta);
     }
 }
