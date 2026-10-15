@@ -1,5 +1,6 @@
 package vista;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -15,35 +16,56 @@ public class HUD {
 
     //Monedas
     private Image imgFondoCoins;
+    private Image imgIconCoins;
 
     //Contador de tiempo
     private Image imgFondoTimer;
+    private Image imgTextoTimer;
 
     //Puntaje
     private Image imgFondoScore;
+    private Image imgTextoScore;
  
-    public HUD(String rutaPSLleno, String rutaPSVacio, String rutaFondoPS, String rutaFondoCoins, String rutaFondoTimer, String rutaFondoScore){
+    public HUD(String rutaPSLleno, String rutaPSVacio, String rutaFondoPS, String rutaFondoCoins, String rutaIconCoins, String rutaFondoTimer, String rutaTextoTimer, String rutaFondoScore, String rutaTextoScore){
 
         this.imgPSLleno = new ImageIcon(rutaPSLleno).getImage();
         this.imgPSVacio = new ImageIcon(rutaPSVacio).getImage();
         this.imgFondoPS = new ImageIcon(rutaFondoPS).getImage();
 
         this.imgFondoCoins = new ImageIcon(rutaFondoCoins).getImage();
+        this.imgIconCoins  = new ImageIcon(rutaIconCoins).getImage();
+
         this.imgFondoTimer = new ImageIcon(rutaFondoTimer).getImage();
+        this.imgTextoTimer = new ImageIcon(rutaTextoTimer).getImage();
+
         this.imgFondoScore = new ImageIcon(rutaFondoScore).getImage();
+        this.imgTextoScore = new ImageIcon(rutaTextoScore).getImage();
 
     }
 
     public void dibujar(Graphics2D g2, int vidasPersonaje, int puntaje, long tiempoTranscurrido, int monedasRecogidas, int monedasTotales ){
-        g2.drawImage(imgFondoPS, 30, 15, null);
+       
+        Graphics2D g2copia = (Graphics2D) g2.create();
+        float opacidad = 0.5f;
+
+        g2copia.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opacidad));
+
+        g2copia.drawImage(imgFondoPS, 30, 15, null);
         for (int i = 0; i < 3; i++) {
             Image imgActual = (i < vidasPersonaje ? imgPSLleno : imgPSVacio);
             g2.drawImage(imgActual, 55+i*65, 35,null);
         }
 
-        g2.drawImage(imgFondoCoins,300,15,null);
-        g2.drawImage(imgFondoTimer, 650, 15,null);
-        g2.drawImage(imgFondoScore, 1270,15,null);
+        g2copia.drawImage(imgFondoCoins,300,15,null);
+        g2.drawImage(imgIconCoins,315,33,null);
+
+        g2copia.drawImage(imgFondoTimer, 650, 15,null);
+        g2.drawImage(imgTextoTimer, 685,30,null);
+
+        g2copia.drawImage(imgFondoScore, 1270,15,null);
+        g2.drawImage(imgTextoScore,1315,30,null);
+
+        g2copia.dispose();
 
         g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 40));
         g2.setColor(new Color(0, 0, 0));

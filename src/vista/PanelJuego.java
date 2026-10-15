@@ -8,11 +8,13 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import modelo.ArmaFuego;
@@ -45,14 +47,18 @@ public class PanelJuego extends JPanel {
     private transient Nivel nivel;
     private String mensaje;
     private long tiempoTranscurrido;
+
+    private Image imgFondoEscenario;
     private PanelPausa panelPausa;
     private HUD hud;
 
-    public PanelJuego(Nivel nivel) {
+    public PanelJuego(Nivel nivel, String rutaFondoEscenario) {
         super(new GridBagLayout());
         this.nivel = nivel;
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
+        this.imgFondoEscenario = new ImageIcon(rutaFondoEscenario).getImage();
+
         this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
         this.setOpaque(true);
@@ -63,8 +69,11 @@ public class PanelJuego extends JPanel {
                            "src/assets/hud/icon-ps-01.png", 
                            "src/assets/hud/bg-ps.png", 
                            "src/assets/hud/bg-coins.png",
+                           "src/assets/hud/icon-coins.png",
                            "src/assets/hud/bg-time.png",
-                           "src/assets/hud/bg-score.png"
+                           "src/assets/hud/text-time.png",
+                           "src/assets/hud/bg-score.png",
+                           "src/assets/hud/text-score.png"
                         );
 
         panelPausa.setVisible(false);
@@ -101,11 +110,11 @@ public class PanelJuego extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        //g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        g2.setPaint(new GradientPaint(0, 0, new Color(38, 42, 64), 0, getHeight(), COLOR_FONDO));
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        //g2.setPaint(new GradientPaint(0, 0, new Color(38, 42, 64), 0, getHeight(), COLOR_FONDO));
+        g2.drawImage(imgFondoEscenario, 0,0, getWidth(), getHeight(), null);
 
         this.dibujarPlataformas(g2);
         this.dibujarMonedas(g2);

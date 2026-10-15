@@ -36,7 +36,7 @@ public class ControladorJuego {
 
     //Constructor
     public ControladorJuego(ListenerNavegacion listener) {
-        this.panel = new PanelJuego(FabricaNivel1.crear());
+        this.panel = new PanelJuego(FabricaNivel1.crear(), "src/assets/lvl-bg/Nivel1_1.png");
         this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
         this.listener = listener;
         this.gestorAudio = GestorAudio.getInstancia();
