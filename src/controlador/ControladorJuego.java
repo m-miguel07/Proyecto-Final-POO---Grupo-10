@@ -46,6 +46,11 @@ public class ControladorJuego {
             pausar();
         });
 
+        panel.getPanelPausa().getBotonReiniciar().addActionListener(e ->{
+            panel.togglePausa();
+            ControladorJuego.this.reiniciar();
+        });
+
         panel.getPanelPausa().getBotonSalida().addActionListener(e ->{
             detener();
             gestorAudio.detenerMusica();
