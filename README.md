@@ -68,6 +68,9 @@ El cual es llamado cuando el usuario presiona el boton de salida desde el menu d
 <br>
 En **ControladorPrincipal:**
  ![alt text](src/assets/Capturas_justificacion/captura_observer_001.png)
+<br> 
+**Diagrama de clases:**
+![Observer](src/assets/Capturas_justificacion/captura_observer_004.png)
 
 #### **Prototipo Visual**
  #### Prototipo y descripción de escenario:
