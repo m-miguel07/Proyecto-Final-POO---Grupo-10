@@ -52,7 +52,8 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
 #### Patrón de diseño adicional: Observer
 -**Nombre del patrón:** **Observer (Observador)** 
-- **Justificación:** Se utiliza este patrón para gestionar el traspaso de una vista a otra, las cuales pertenecen a controladores que no se conocen completamente entre sí (ControladorPrincipal conoce a ControladorJuego pero no al revés) <br>
+- **Justificación:** Se utiliza este patrón para gestionar el traspaso de una vista a otra, las cuales pertenecen a controladores que no se conocen completamente entre sí (ControladorPrincipal conoce a ControladorJuego pero no al revés) 
+<br>**//No es la implementación ideal de este patron, como la jugabilidad aun esta en proceso no se lograron aplicar otros patrones.**  <br>
  Existía el problema inicial de desconocimiento entre **controladorJuego** y **controladorPrincipal** al momento de tener que pasar del menu de pausa y la vista del juego  (**PanelPausa** + **PanelJuego**) a la vista del menu principal (**PanelMenuPrincipal**) a través del boton de "Salir del juego". 
  ![PanelPausa](src/assets/Capturas_justificacion/captura_observer_003.png)
  <br>
