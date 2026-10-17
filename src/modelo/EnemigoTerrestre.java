@@ -14,18 +14,12 @@ public class EnemigoTerrestre extends Enemigo {
         this.direccion = 1;
     }
 
-    //Getters
-    public int getDireccion() {
-        return this.direccion;
-    }
-
-    //Setters
-    public void invertirDireccion() {
-        this.direccion *= -1;
-    }
-
     //Comportamientos
     public void actualizar(List<Plataforma> plataformas, int anchoPantalla) {
+        if (this.estaCongelado()) {
+            return;
+        }
+
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
 
         if (nuevaX < 0 || nuevaX + this.ancho > anchoPantalla) {

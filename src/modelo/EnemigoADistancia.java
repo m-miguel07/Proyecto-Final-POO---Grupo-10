@@ -34,6 +34,14 @@ public class EnemigoADistancia extends Enemigo {
     //Comportamientos
     @Override
     public boolean puedeAtacar(ObjetoDelJuego objetivo) {
-        return this.distanciaA(objetivo) <= this.getAlcance();
+        return this.distanciaA(objetivo) <= this.alcance;
+    }
+
+    private double distanciaA(ObjetoDelJuego objetivo) {
+        double centroX = this.getPosicionX() + this.getAncho() / 2.0;
+        double centroY = this.getPosicionY() + this.getAlto() / 2.0;
+        double centroXObjetivo = objetivo.getPosicionX() + objetivo.getAncho() / 2.0;
+        double centroYObjetivo = objetivo.getPosicionY() + objetivo.getAlto() / 2.0;
+        return Math.hypot(centroX - centroXObjetivo, centroY - centroYObjetivo);
     }
 }

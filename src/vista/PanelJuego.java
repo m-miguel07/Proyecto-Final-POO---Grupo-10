@@ -17,6 +17,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import modelo.Arma;
 import modelo.ArmaFuego;
 import modelo.ArmaHielo;
 import modelo.Aro;
@@ -110,11 +111,8 @@ public class PanelJuego extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
-        //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        //g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        //g2.setPaint(new GradientPaint(0, 0, new Color(38, 42, 64), 0, getHeight(), COLOR_FONDO));
-        g2.drawImage(imgFondoEscenario, 0,0, getWidth(), getHeight(), null);
+        g2.drawImage(imgFondoEscenario, 0, 0, getWidth(), getHeight(), null);
 
         this.dibujarPlataformas(g2);
         this.dibujarMonedas(g2);
@@ -160,7 +158,7 @@ public class PanelJuego extends JPanel {
 
     private void dibujarMonedas(Graphics2D g2) {
         for (Moneda moneda : this.nivel.getMonedas()) {
-            if (moneda.isRecolectada()) {
+            if (moneda.isRecolectado()) {
                 continue;
             }
 
@@ -185,31 +183,29 @@ public class PanelJuego extends JPanel {
 
             double x = recolectable.getPosicionX();
             double y = recolectable.getPosicionY();
+            double w = recolectable.getAncho();
+            double h = recolectable.getAlto();
+
+            Color relleno;
+            Color borde;
 
             if (recolectable.getArma() instanceof ArmaHielo) {
-                g2.setColor(COLOR_HIELO);
-                g2.fill(new Ellipse2D.Double(x, y, recolectable.getAncho(), recolectable.getAlto()));
-                g2.setColor(new Color(56, 140, 190));
-                g2.setStroke(new BasicStroke(3f));
-                g2.draw(new Ellipse2D.Double(x, y, recolectable.getAncho(), recolectable.getAlto()));
-
-                g2.setStroke(new BasicStroke(3f));
-                g2.draw(new java.awt.geom.Line2D.Double(x + 15, y, x + 15, y + recolectable.getAlto()));
-                g2.draw(new java.awt.geom.Line2D.Double(x, y + 15, x + recolectable.getAncho(), y + 15));
+                relleno = COLOR_HIELO;
+                borde = new Color(56, 140, 190);
             } else if (recolectable.getArma() instanceof ArmaFuego) {
-                double centroX = x + recolectable.getAncho() / 2.0;
-
-                g2.setColor(COLOR_FUEGO);
-                g2.fill(new RoundRectangle2D.Double(
-                        centroX - 14, y + 8, 28, 20, 6, 6));
-
-                g2.setColor(new Color(253, 224, 71));
-                g2.fill(new Ellipse2D.Double(centroX - 11, y - 4, 22, 22));
-
-                g2.setColor(new Color(30, 30, 30));
-                g2.fill(new Ellipse2D.Double(centroX - 8, y + 2, 5, 5));
-                g2.fill(new Ellipse2D.Double(centroX + 3, y + 2, 5, 5));
+                relleno = COLOR_FUEGO;
+                borde = new Color(160, 30, 30);
+            } else {
+                relleno = COLOR_MONEDA;
+                borde = new Color(180, 130, 10);
             }
+
+            Ellipse2D circulo = new Ellipse2D.Double(x, y, w, h);
+            g2.setColor(relleno);
+            g2.fill(circulo);
+            g2.setColor(borde);
+            g2.setStroke(new BasicStroke(3f));
+            g2.draw(circulo);
         }
     }
 
@@ -250,16 +246,22 @@ public class PanelJuego extends JPanel {
             } else {
                 this.dibujarEnemigoGenerico(g2, enemigo);
             }
+
+            if (enemigo.estaQuemado()) {
+                this.dibujarFuego(g2, enemigo);
+            }
         }
     }
 
     private void dibujarTerrestre(Graphics2D g2, EnemigoTerrestre enemigo) {
-        g2.setColor(COLOR_ENEMIGO);
+        boolean congelado = enemigo.estaCongelado();
+
+        g2.setColor(congelado ? COLOR_HIELO : COLOR_ENEMIGO);
         g2.fill(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
                 enemigo.getAncho(), enemigo.getAlto()));
 
-        g2.setColor(new Color(140, 20, 20));
+        g2.setColor(congelado ? new Color(37, 99, 180) : new Color(140, 20, 20));
         g2.setStroke(new BasicStroke(3f));
         g2.draw(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
@@ -273,11 +275,13 @@ public class PanelJuego extends JPanel {
     }
 
     private void dibujarEnemigoGenerico(Graphics2D g2, Enemigo enemigo) {
-        g2.setColor(COLOR_ENEMIGO);
+        boolean congelado = enemigo.estaCongelado();
+
+        g2.setColor(congelado ? COLOR_HIELO : COLOR_ENEMIGO);
         g2.fill(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
                 enemigo.getAncho(), enemigo.getAlto()));
-        g2.setColor(new Color(140, 20, 20));
+        g2.setColor(congelado ? new Color(37, 99, 180) : new Color(140, 20, 20));
         g2.setStroke(new BasicStroke(3f));
         g2.draw(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
@@ -291,6 +295,12 @@ public class PanelJuego extends JPanel {
         double h = volador.getAlto();
         double cx = x + w / 2.0;
         double cy = y + h / 2.0;
+        boolean congelado = volador.estaCongelado();
+
+        Color colorCuerpo = congelado ? COLOR_HIELO : COLOR_ENEMIGO;
+        Color colorBorde = congelado ? new Color(37, 99, 180) : new Color(140, 20, 20);
+        Color colorAla = congelado ? new Color(147, 197, 253) : COLOR_VOLADOR;
+        Color colorAlaBorde = congelado ? new Color(96, 165, 250) : new Color(194, 106, 20);
 
         Path2D alaIzq = new Path2D.Double();
         alaIzq.moveTo(cx, cy);
@@ -308,20 +318,51 @@ public class PanelJuego extends JPanel {
         alaDer.lineTo(cx, cy);
         alaDer.closePath();
 
-        g2.setColor(COLOR_VOLADOR);
+        g2.setColor(colorAla);
         g2.fill(alaIzq);
         g2.fill(alaDer);
 
-        g2.setColor(new Color(194, 106, 20));
+        g2.setColor(colorAlaBorde);
         g2.setStroke(new BasicStroke(2f));
         g2.draw(alaIzq);
         g2.draw(alaDer);
 
-        g2.setColor(COLOR_ENEMIGO);
+        g2.setColor(colorCuerpo);
         g2.fill(new Ellipse2D.Double(x + w * 0.25, y + h * 0.25, w * 0.5, h * 0.5));
-        g2.setColor(new Color(140, 20, 20));
+        g2.setColor(colorBorde);
         g2.setStroke(new BasicStroke(2f));
         g2.draw(new Ellipse2D.Double(x + w * 0.25, y + h * 0.25, w * 0.5, h * 0.5));
+    }
+
+    private void dibujarFuego(Graphics2D g2, Enemigo enemigo) {
+        double x = enemigo.getPosicionX();
+        double y = enemigo.getPosicionY();
+        double w = enemigo.getAncho();
+        int llamas = 3;
+
+        for (int i = 0; i < llamas; i++) {
+            double cx = x + w * (i + 1) / (llamas + 1.0);
+            double base = y + 6;
+            double alto = 18 + (i % 2) * 8;
+
+            Path2D llama = new Path2D.Double();
+            llama.moveTo(cx - 7, base);
+            llama.quadTo(cx - 3, base - alto * 0.6, cx, base - alto);
+            llama.quadTo(cx + 3, base - alto * 0.6, cx + 7, base);
+            llama.closePath();
+
+            g2.setColor(new Color(249, 115, 22));
+            g2.fill(llama);
+
+            Path2D nucleo = new Path2D.Double();
+            nucleo.moveTo(cx - 3, base);
+            nucleo.quadTo(cx - 1.5, base - alto * 0.5, cx, base - alto * 0.6);
+            nucleo.quadTo(cx + 1.5, base - alto * 0.5, cx + 3, base);
+            nucleo.closePath();
+
+            g2.setColor(new Color(253, 224, 71));
+            g2.fill(nucleo);
+        }
     }
 
     private void dibujarPersonaje(Graphics2D g2) {
@@ -352,7 +393,15 @@ public class PanelJuego extends JPanel {
         g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 - 12, y + h + pieIzq));
         g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 + 12, y + h + pieIzq));
 
-        g2.setColor(COLOR_MONEDA);
+        Arma armaEquipada = p.getArmaEquipada();
+        if (armaEquipada instanceof ArmaFuego) {
+            g2.setColor(COLOR_FUEGO);
+        } else if (armaEquipada instanceof ArmaHielo) {
+            g2.setColor(COLOR_HIELO);
+        } else {
+            g2.setColor(COLOR_MONEDA);
+        }
+
         if (p.getDireccion() < 0) {
             g2.fill(new Ellipse2D.Double(x + w / 2.0 - 28, y + h * 0.55, 18, 18));
         } else {
@@ -387,7 +436,7 @@ public class PanelJuego extends JPanel {
         int vidas = p.getPuntosVida();
 
         //Tiempo
-        long tiempoSegundos = this.tiempoTranscurrido/100;
+        long tiempoSegundos = this.tiempoTranscurrido / 1000;
 
         hud.dibujar(g2, vidas,p.getPuntaje(), tiempoSegundos, recogidas, totales);
 

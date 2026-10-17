@@ -18,9 +18,12 @@ public class Personaje extends Entidad {
 
     public static final int VIDAS_INICIALES = 3;
     public static final long INVULNERABILIDAD_MS = 2000;
+    public static final int DURACION_ARMA_TEMPORAL_MS = 15000;
 
     //Atributos
     private Arma armaEquipada;
+    private Arma armaBase;
+    private int tiempoArmaTemporalMS;
     private int monedasRecolectadas;
     private int puntaje;
 
@@ -48,20 +51,8 @@ public class Personaje extends Entidad {
         return this.armaEquipada;
     }
 
-    public int getMonedasRecolectadas() {
-        return this.monedasRecolectadas;
-    }
-
     public int getPuntaje() {
         return this.puntaje;
-    }
-
-    public double getVelocidadX() {
-        return this.velocidadX;
-    }
-
-    public double getVelocidadY() {
-        return this.velocidadY;
     }
 
     public boolean isEnElSuelo() {
@@ -72,19 +63,16 @@ public class Personaje extends Entidad {
         return this.direccion;
     }
 
+    public void setDireccion(int direccion) {
+        if (direccion != 0) {
+            this.direccion = (direccion > 0) ? 1 : -1;
+        }
+    }
+
     //Setters
     public boolean setArmaEquipada(Arma arma) {
         this.armaEquipada = arma;
         return true;
-    }
-
-    public boolean setMonedasRecolectadas(int monedasRecolectadas) {
-        // puse mayor a cero por que no se puede recolectar algo que no se tiene(osea cero) ni tampoco cantidades negativas.
-        if (monedasRecolectadas > 0) {
-            this.monedasRecolectadas = monedasRecolectadas;
-            return true;
-        }
-        return false;
     }
 
     public void sumarMoneda() {
@@ -97,40 +85,40 @@ public class Personaje extends Entidad {
         }
     }
 
-    public void setVelocidadY(double velocidadY) {
-        this.velocidadY = velocidadY;
-    }
-
-    public void setEnElSuelo(boolean enElSuelo) {
-        this.enElSuelo = enElSuelo;
-    }
-
     //comportamientos
     public boolean estaInvulnerable() {
         return System.currentTimeMillis() < this.invulnerableHasta;
     }
 
+    public void equiparArmaTemporal(Arma arma) {
+        if (arma == null) {
+            return;
+        }
+
+        if (this.armaBase == null) {
+            this.armaBase = this.armaEquipada;
+        }
+
+        this.armaEquipada = arma;
+        this.tiempoArmaTemporalMS = DURACION_ARMA_TEMPORAL_MS;
+    }
+
+    public void actualizarArmaTemporal(int deltaMS) {
+        if (this.tiempoArmaTemporalMS <= 0) {
+            return;
+        }
+
+        this.tiempoArmaTemporalMS -= deltaMS;
+
+        if (this.tiempoArmaTemporalMS <= 0) {
+            this.tiempoArmaTemporalMS = 0;
+            this.armaEquipada = this.armaBase;
+        }
+    }
+
     public void perderVida() {
         this.setPuntosVida(Math.max(0, this.getPuntosVida() - 1));
         this.invulnerableHasta = System.currentTimeMillis() + INVULNERABILIDAD_MS;
-    }
-
-    @Override
-    public void recibirDanio(int danio) {
-        if (danio < 0) {
-            throw new IllegalArgumentException("El danio recibido no puede ser negativo");
-        }
-
-        this.perderVida();
-    }
-
-    @Override
-    public void atacar(Entidad objetivo) {
-        if (this.armaEquipada == null) {
-            throw new IllegalStateException("El personaje no tiene un arma equipada");
-        }
-
-        this.armaEquipada.aplicarDanio(objetivo);
     }
 
     public void actualizarHorizontal(int direccion, int anchoPantalla) {
@@ -198,7 +186,7 @@ public class Personaje extends Entidad {
         }
     }
 
-    public void actualizarVertical(List<Plataforma> plataformas, int altoPantalla) {
+    public void actualizarVertical(List<Plataforma> plataformas, List<Enemigo> enemigos, int altoPantalla) {
         double pieAnterior = this.posicionY + this.alto;
         this.posicionY += this.velocidadY;
 
@@ -216,6 +204,19 @@ public class Personaje extends Entidad {
             }
         }
 
+        // Los enemigos congelados actuan como plataforma solida: se puede saltar encima de ellos.
+        for (Enemigo enemigo : enemigos) {
+            if (!enemigo.estaCongelado()) {
+                continue;
+            }
+
+            if (this.aterrizaSobre(enemigo, pieAnterior)) {
+                this.posicionY = enemigo.getPosicionY() - this.alto;
+                this.velocidadY = 0.0;
+                this.enElSuelo = true;
+            }
+        }
+
         if (this.posicionY + this.alto >= altoPantalla) {
             this.posicionY = altoPantalla - this.alto;
             this.velocidadY = 0.0;
@@ -223,20 +224,13 @@ public class Personaje extends Entidad {
         }
     }
 
-    public boolean haySolapamiento(Plataforma plataforma) {
-        return Colisiones.hayInterseccion(
-                this.posicionX, this.posicionY, this.ancho, this.alto,
-                plataforma.getPosicionX(), plataforma.getPosicionY(),
-                plataforma.getAncho(), plataforma.getAlto());
-    }
-
-    public boolean aterrizaSobre(Plataforma plataforma, double pieAnterior) {
+    public boolean aterrizaSobre(ObjetoDelJuego objeto, double pieAnterior) {
         double pie = this.posicionY + this.alto;
-        double superficie = plataforma.getPosicionY();
+        double superficie = objeto.getPosicionY();
         boolean cayendo = this.velocidadY >= 0;
 
-        boolean haySolapeHorizontal = this.posicionX + this.ancho > plataforma.getPosicionX()
-                && this.posicionX < plataforma.getPosicionX() + plataforma.getAncho();
+        boolean haySolapeHorizontal = this.posicionX + this.ancho > objeto.getPosicionX()
+                && this.posicionX < objeto.getPosicionX() + objeto.getAncho();
 
         return cayendo
                 && haySolapeHorizontal

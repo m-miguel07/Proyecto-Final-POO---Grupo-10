@@ -6,6 +6,10 @@ public abstract class Enemigo extends Entidad {
     private static final double RANGO_CUERPO_A_CUERPO = 5.0;
 
     private int danioBase;
+    private int tiempoCongeladoMS;
+    private int tiempoQuemadoMS;
+    private int danioPorQuemaduraTick;
+    private int tiempoSiguienteTickQuemaduraMS;
 
     //Constructor
     public Enemigo(int danioBase, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
@@ -16,21 +20,10 @@ public abstract class Enemigo extends Entidad {
         }
 
         this.danioBase = danioBase;
-    }
-
-    //Getters
-    public int getDanioBase() {
-        return this.danioBase;
-    }
-
-    //Setters
-    public boolean setDanioBase(int danioBase) {
-        if (danioBase <= 0) {
-            return false;
-        }
-
-        this.danioBase = danioBase;
-        return true;
+        this.tiempoCongeladoMS = 0;
+        this.tiempoQuemadoMS = 0;
+        this.danioPorQuemaduraTick = 0;
+        this.tiempoSiguienteTickQuemaduraMS = 0;
     }
 
     //Comportamientos
@@ -43,20 +36,36 @@ public abstract class Enemigo extends Entidad {
                 objetivo.getPosicionX(), objetivo.getPosicionY(), objetivo.getAncho(), objetivo.getAlto());
     }
 
-    protected double distanciaA(ObjetoDelJuego objetivo) {
-        double centroX = this.getPosicionX() + this.getAncho() / 2.0;
-        double centroY = this.getPosicionY() + this.getAlto() / 2.0;
-        double centroXObjetivo = objetivo.getPosicionX() + objetivo.getAncho() / 2.0;
-        double centroYObjetivo = objetivo.getPosicionY() + objetivo.getAlto() / 2.0;
-        return Math.hypot(centroX - centroXObjetivo, centroY - centroYObjetivo);
+    public void congelar(int duracionMS) {
+        this.tiempoCongeladoMS = Math.min(5000, Math.max(this.tiempoCongeladoMS, duracionMS));
     }
 
-    @Override
-    public void atacar(Entidad objetivo) {
-        if (objetivo == null) {
-            throw new IllegalArgumentException("El objetivo no puede ser nulo");
+    public boolean estaCongelado() {
+        return this.tiempoCongeladoMS > 0;
+    }
+
+    public void quemar(int duracionMS, int danioPorTick) {
+        this.tiempoQuemadoMS = duracionMS;
+        this.danioPorQuemaduraTick = danioPorTick;
+        this.tiempoSiguienteTickQuemaduraMS = 500;
+    }
+
+    public boolean estaQuemado() {
+        return this.tiempoQuemadoMS > 0;
+    }
+
+    public void actualizarEstados(int deltaMS) {
+        if (this.tiempoCongeladoMS > 0) {
+            this.tiempoCongeladoMS = Math.max(0, this.tiempoCongeladoMS - deltaMS);
         }
 
-        objetivo.recibirDanio(this.getDanioBase());
+        if (this.tiempoQuemadoMS > 0) {
+            this.tiempoQuemadoMS = Math.max(0, this.tiempoQuemadoMS - deltaMS);
+            this.tiempoSiguienteTickQuemaduraMS -= deltaMS;
+            if (this.tiempoSiguienteTickQuemaduraMS <= 0) {
+                this.recibirDanio(this.danioPorQuemaduraTick);
+                this.tiempoSiguienteTickQuemaduraMS = 500;
+            }
+        }
     }
 }

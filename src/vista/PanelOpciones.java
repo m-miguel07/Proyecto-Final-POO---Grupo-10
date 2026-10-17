@@ -19,6 +19,7 @@ public class PanelOpciones extends PanelBase {
 
         //SFX
         this.sliderSFX = new JSlider();
+        sliderSFX.setValue(10);
         sliderSFX.setUI(new UXSlider(sliderSFX,"src/assets/ui/barra-opc.png","src/assets/icon.png",50,20));
 
         sliderSFX.setOpaque(false);
@@ -27,11 +28,12 @@ public class PanelOpciones extends PanelBase {
 
         //BGM
         this.sliderMusica = new JSlider();
+        sliderMusica.setValue(10);
         sliderMusica.setUI(new UXSlider(sliderMusica,"src/assets/ui/barra-opc.png","src/assets/icon.png",50,20));
 
         sliderMusica.setOpaque(false);
         sliderMusica.setMaximumSize(new Dimension(400,250));
-        sliderSFX.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sliderMusica.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         //Sliders (SFX y BGM)
         JPanel contenedorSliders = new JPanel ();

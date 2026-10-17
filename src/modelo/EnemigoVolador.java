@@ -26,37 +26,7 @@ public class EnemigoVolador extends Enemigo {
         this.direccion = 1;
     }
 
-    //Getters
-    public double getAltura() {
-        return this.altura;
-    }
-
-    public double getPosicionYBase() {
-        return this.posicionYBase;
-    }
-
-    public double getLimiteIzquierdo() {
-        return this.limiteIzquierdo;
-    }
-
-    public double getLimiteDerecho() {
-        return this.limiteDerecho;
-    }
-
     //Setters
-    public boolean setAltura(double altura) {
-        if (altura <= 0) {
-            return false;
-        }
-
-        this.altura = altura;
-        return true;
-    }
-
-    public void setPosicionYBase(double posicionYBase) {
-        this.posicionYBase = posicionYBase;
-    }
-
     public void setLimites(double limiteIzquierdo, double limiteDerecho) {
         if (limiteIzquierdo > limiteDerecho) {
             throw new IllegalArgumentException("El limite izquierdo no puede ser mayor al derecho");
@@ -83,6 +53,11 @@ public class EnemigoVolador extends Enemigo {
     }
 
     public void actualizar(double tiempoEnSegundos) {
+        if (this.estaCongelado()) {
+            return;
+        }
+
         this.moverHorizontal();
+        this.volar(tiempoEnSegundos);
     }
 }

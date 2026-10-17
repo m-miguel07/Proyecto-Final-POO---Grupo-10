@@ -6,8 +6,8 @@ public class ArmaFuego extends Arma {
     private int danioPorQuemadura;
 
     //Constructor
-    public ArmaFuego(int danioBase, int alcance, double velocidad, int danioPorQuemadura, double posicionX, double posicionY, int ancho, int alto) {
-        super(danioBase, alcance, velocidad, posicionX, posicionY, ancho, alto);
+    public ArmaFuego(int danioBase, double velocidad, int danioPorQuemadura, double posicionX, double posicionY, int ancho, int alto) {
+        super(danioBase, velocidad, posicionX, posicionY, ancho, alto);
 
         if (danioPorQuemadura <= 0) {
             throw new IllegalArgumentException("El danio por quemadura debe ser positivo");
@@ -16,28 +16,18 @@ public class ArmaFuego extends Arma {
         this.danioPorQuemadura = danioPorQuemadura;
     }
 
-    //Getters
-    public int getDanioPorQuemadura() {
-        return this.danioPorQuemadura;
-    }
-
-    //Setters
-    public boolean setDanioPorQuemadura(int danioPorQuemadura) {
-        if (danioPorQuemadura <= 0) {
-            return false;
-        }
-
-        this.danioPorQuemadura = danioPorQuemadura;
-        return true;
-    }
-
     //Comportamientos
     public void quemar(Entidad objetivo) {
-        objetivo.recibirDanio(this.danioPorQuemadura);
+        if (objetivo instanceof Enemigo) {
+            ((Enemigo) objetivo).quemar(2000, this.danioPorQuemadura);
+        } else {
+            objetivo.recibirDanio(this.danioPorQuemadura);
+        }
     }
 
     @Override
     public void aplicarDanio(Entidad objetivo) {
         objetivo.recibirDanio(this.getDanioBase());
+        this.quemar(objetivo);
     }
 }

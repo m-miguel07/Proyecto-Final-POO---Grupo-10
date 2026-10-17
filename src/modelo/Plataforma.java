@@ -23,31 +23,13 @@ public class Plataforma extends ObjetoDelJuego {
     }
 
     //Getters
-    public MaterialPlataforma getMaterial() {
-        return this.material;
-    }
-
     public boolean isDestruida() {
         return this.destruida;
-    }
-
-    //Setters
-    public boolean setMaterial(MaterialPlataforma material) {
-        if (material == null) {
-            return false;
-        }
-
-        this.material = material;
-        return true;
     }
 
     //Comportamientos
     public boolean esDestructible() {
         return this.material.esDestructible();
-    }
-
-    public boolean puedeSerDestruidaPor(MaterialPlataforma materialAtaque) {
-        return !this.destruida && this.esDestructible() && materialAtaque == MaterialPlataforma.MADERA;
     }
 
     public void destruir() {

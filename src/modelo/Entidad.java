@@ -41,18 +41,7 @@ public abstract class Entidad extends ObjetoDelJuego {
         return true;
     }
 
-    public boolean setVelocidad(double velocidad) {
-        if (velocidad < 0) {
-            return false;
-        }
-
-        this.velocidad = velocidad;
-        return true;
-    }
-
     //Comportamientos
-    public abstract void atacar(Entidad objetivo);
-
     public void recibirDanio(int danio) {
         if (danio < 0) {
             throw new IllegalArgumentException("El danio recibido no puede ser negativo");

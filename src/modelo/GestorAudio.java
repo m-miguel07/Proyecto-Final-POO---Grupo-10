@@ -16,9 +16,15 @@ public class GestorAudio { //Aplica patron Singleton
     public static final String BOTON_INICIO = "BOTON_INICIO";
     public static final String BOTON_HOVER = "BOTON_HOVER";
     public static final String BOTON_CLICK = "BOTON_CLICK";
+    public static final String BOTE_PELOTA = "BOTE_PELOTA";
+    public static final String PELOTA_LANZAMIENTO = "PELOTA_LANZAMIENTO";
+    public static final String ENCESTADO = "ENCESTADO";
+    public static final String GOLPE_PELOTA = "GOLPE_PELOTA";
+    public static final String MONEDA = "MONEDA";
+    public static final String AGARRE_PELOTA = "AGARRE_PELOTA";
 
-    private volatile double volumenBGM = 0.5;
-    private double volumenSFX = 0.5;
+    private volatile double volumenBGM = 0.10;
+    private double volumenSFX = 0.10;
 
 	private MediaPlayer musicaFondo;
     private static GestorAudio instancia;
@@ -26,10 +32,15 @@ public class GestorAudio { //Aplica patron Singleton
     private final Map<String, AudioClip> sonidos = new HashMap<>();
 	
     private GestorAudio(){
-        //FALTA PONER LOS SONIDOS
         cargar(BOTON_INICIO, "src/assets/Sonidos/inicio_juego.mp3"); 
         cargar(BOTON_HOVER, "src/assets/Sonidos/menu_hover_boton.mp3");
         cargar(BOTON_CLICK, "src/assets/Sonidos/menu_presionar_boton_2.mp3");
+        cargar(BOTE_PELOTA, "src/assets/Sonidos/bote_pelota.mp3");
+        cargar(PELOTA_LANZAMIENTO, "src/assets/Sonidos/pelota_lanzamiento.mp3");
+        cargar(ENCESTADO, "src/assets/Sonidos/encestado.mp3");
+        cargar(GOLPE_PELOTA, "src/assets/Sonidos/golpe_pelota.mp3");
+        cargar(MONEDA, "src/assets/Sonidos/moneda.mp3");
+        cargar(AGARRE_PELOTA, "src/assets/Sonidos/agarre_pelota.mp3");
     }
 
     public static GestorAudio getInstancia(){
@@ -40,8 +51,13 @@ public class GestorAudio { //Aplica patron Singleton
     }
 
     private void cargar(String nombre, String rutaArchivo) { 
-        AudioClip clip = new AudioClip(new File(rutaArchivo).toURI().toString());
-        sonidos.put(nombre, clip);
+        File archivo = new File(rutaArchivo);
+        if (archivo.exists()) {
+            AudioClip clip = new AudioClip(archivo.toURI().toString());
+            sonidos.put(nombre, clip);
+        } else {
+            System.err.println("AudioClip no encontrado: " + rutaArchivo);
+        }
     }
 
     public void reproducirEfecto(String nombre) {

@@ -43,6 +43,7 @@ public class PanelVideoIntro extends JPanel {
 
             Media media = new Media(archivo.toURI().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setVolume(modelo.GestorAudio.getInstancia().getVolumenBGM());
             MediaView mediaView = new MediaView(mediaPlayer);
 
             mediaView.setFitWidth(ancho-310);

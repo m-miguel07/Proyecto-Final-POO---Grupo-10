@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 public class Nivel {
 
     private final Personaje personaje;
@@ -13,13 +12,12 @@ public class Nivel {
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
     private final List<Recolectable> recolectables;
-    private final List<Pelota> pelotas;
+
+    private final GestorPelotas gestorPelotas;
+    private final SistemaColisiones sistemaColisiones;
+    private final Marcador marcador;
 
     //Constructor
-    public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas, List<Plataforma> plataformas) {
-        this(personaje, aro, enemigos, monedas, plataformas, new ArrayList<>());
-    }
-
     public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
                  List<Plataforma> plataformas, List<Recolectable> recolectables) {
         if (personaje == null || aro == null) {
@@ -32,7 +30,10 @@ public class Nivel {
         this.monedas = new ArrayList<>(monedas);
         this.plataformas = new ArrayList<>(plataformas);
         this.recolectables = new ArrayList<>(recolectables);
-        this.pelotas = new ArrayList<>();
+
+        this.gestorPelotas = new GestorPelotas();
+        this.sistemaColisiones = new SistemaColisiones();
+        this.marcador = new Marcador();
     }
 
     //Getters
@@ -61,13 +62,13 @@ public class Nivel {
     }
 
     public List<Pelota> getPelotas() {
-        return Collections.unmodifiableList(this.pelotas);
+        return this.gestorPelotas.getPelotas();
     }
 
     //Comportamientos
     public void actualizar() {
-        this.chequearMonedas();
-        this.chequearEnemigos();
+        this.sistemaColisiones.verificarMonedas(this.personaje, this.monedas);
+        this.sistemaColisiones.verificarEnemigos(this.personaje, this.enemigos);
     }
 
     public boolean estaCompleto() {
@@ -75,155 +76,27 @@ public class Nivel {
     }
 
     public int contarMonedasRecolectadas() {
-        int cantidad = 0;
-        for (Moneda moneda : this.monedas) {
-            if (moneda.isRecolectada()) {
-                cantidad++;
-            }
-        }
-        return cantidad;
+        return this.marcador.contarMonedasRecolectadas(this.monedas);
     }
 
     public int getMonedasTotales() {
-        return this.monedas.size();
-    }
-
-    public boolean hayInterseccionConPlataforma(double posicionX, double posicionY) {
-        for (Plataforma plataforma : this.plataformas) {
-            if (this.colisionaConRectangulo(posicionX, posicionY, plataforma)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hayInterseccionConEnemigo(double posicionX, double posicionY) {
-        for (Enemigo enemigo : this.enemigos) {
-            if (this.colisionaConRectangulo(posicionX, posicionY, enemigo)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean colisionaConRectangulo(double posicionX, double posicionY, ObjetoDelJuego objeto) {
-        return Colisiones.hayInterseccion(
-                posicionX, posicionY, this.personaje.getAncho(), this.personaje.getAlto(),
-                objeto.getPosicionX(), objeto.getPosicionY(), objeto.getAncho(), objeto.getAlto());
-    }
-
-    private void chequearMonedas() {
-        for (Moneda moneda : this.monedas) {
-            if (!moneda.isRecolectada()
-                    && this.colisionaConRectangulo(this.personaje.getPosicionX(), this.personaje.getPosicionY(), moneda)) {
-                moneda.recolectar();
-                this.personaje.sumarMoneda();
-                this.personaje.sumarPuntaje(100);
-            }
-        }
-    }
-
-    private void chequearEnemigos() {
-        if (this.personaje.estaInvulnerable()) {
-            return;
-        }
-
-        for (Enemigo enemigo : this.enemigos) {
-            if (enemigo.puedeAtacar(this.personaje)) {
-                this.personaje.perderVida();
-                break;
-            }
-        }
+        return this.marcador.contarMonedasTotales(this.monedas);
     }
 
     public void agregarPelota(Pelota pelota) {
-        if (pelota != null) {
-            this.pelotas.add(pelota);
-        }
+        this.gestorPelotas.agregar(pelota);
     }
 
-    public boolean hayPelotaActiva() {
-        for (Pelota pelota : this.pelotas) {
-            if (pelota.isActiva()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void actualizarPelotas(List<Plataforma> plataformasIgnoradas, int anchoPantalla, int altoPantalla) {
-        for (int i = this.pelotas.size() - 1; i >= 0; i--) {
-            Pelota pelota = this.pelotas.get(i);
-            pelota.mover();
-
-            if (pelota.interseca(this.aro)) {
-                if (!this.aro.isEncestado()) {
-                    this.aro.encestar();
-                    this.personaje.sumarPuntaje(500);
-                }
-                this.pelotas.remove(i);
-                continue;
-            }
-
-            boolean chocaConPlataforma = false;
-            for (Plataforma plataforma : plataformasIgnoradas) {
-                if (pelota.interseca(plataforma)) {
-                    if (pelota.esDeFuego() && plataforma.esDestructible()) {
-                        plataforma.destruir();
-                    }
-                    chocaConPlataforma = true;
-                    break;
-                }
-            }
-
-            for (Enemigo enemigo : this.enemigos) {
-                if (!pelota.interseca(enemigo)) {
-                    continue;
-                }
-
-                Arma arma = pelota.getArma();
-                arma.aplicarDanio(enemigo);
-
-                //REFACTORIZAR 
-                if (pelota.esDeHielo() && arma instanceof ArmaHielo) {
-                    ((ArmaHielo) arma).congelar(enemigo);
-                }
-
-                if (pelota.esDeFuego() && arma instanceof ArmaFuego) {
-                    ((ArmaFuego) arma).quemar(enemigo);
-                }
-
-                chocaConPlataforma = true;
-                break;
-            }
-
-            if (chocaConPlataforma || pelota.estaFueraDePantalla(anchoPantalla, altoPantalla)) {
-                pelota.desactivar();
-                this.pelotas.remove(i);
-            }
-        }
+    public void actualizarPelotas(int anchoPantalla, int altoPantalla) {
+        this.gestorPelotas.actualizar(this.aro, this.personaje, this.enemigos, this.plataformas,
+                anchoPantalla, altoPantalla);
     }
 
     public void eliminarEnemigosDerrotados() {
-        this.enemigos.removeIf(enemigo -> {
-            if (enemigo.getPuntosVida() <= 0) {
-                this.personaje.sumarPuntaje(150);
-                return true;
-            }
-            return false;
-        });
+        this.sistemaColisiones.eliminarEnemigosDerrotados(this.personaje, this.enemigos);
     }
 
     public void eliminarRecolectados() {
-        for (Recolectable recolectable : this.recolectables) {
-            if (!recolectable.isRecolectado()) {
-                continue;
-            }
-
-            if (this.colisionaConRectangulo(this.personaje.getPosicionX(), this.personaje.getPosicionY(), recolectable)) {
-                recolectable.recolectar();
-                this.personaje.setArmaEquipada(recolectable.getArma());
-            }
-        }
+        this.sistemaColisiones.eliminarRecolectados(this.personaje, this.recolectables);
     }
 }

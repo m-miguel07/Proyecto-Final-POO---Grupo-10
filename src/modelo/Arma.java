@@ -4,19 +4,14 @@ public abstract class Arma extends ObjetoDelJuego{
 
     //Atributos
     private int danioBase;
-    private int alcance;
     private double velocidad;
 
     //Constructor
-    public Arma(int danioBase, int alcance, double velocidad, double posicionX, double posicionY, int ancho, int alto) {
+    public Arma(int danioBase, double velocidad, double posicionX, double posicionY, int ancho, int alto) {
         super(ancho,alto,posicionX,posicionY);
 
         if (danioBase <= 0) {
             throw new IllegalArgumentException("El danio base debe ser positivo");
-        }
-
-        if (alcance <= 0) {
-            throw new IllegalArgumentException("El alcance debe ser positivo");
         }
 
         if (velocidad <= 0) {
@@ -24,17 +19,12 @@ public abstract class Arma extends ObjetoDelJuego{
         }
 
         this.danioBase = danioBase;
-        this.alcance = alcance;
         this.velocidad = velocidad;
     }
 
     //Getters
     public int getDanioBase() {
         return this.danioBase;
-    }
-
-    public int getAlcance() {
-        return this.alcance;
     }
 
     public double getVelocidad() {

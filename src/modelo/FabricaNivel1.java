@@ -22,10 +22,21 @@ public class FabricaNivel1 {
         plataformas.add(new Plataforma(0, 820, ANCHO, 30));
 
         Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
-        personaje.setArmaEquipada(new ArmaEstandar(10, 40, 12.0, 0, 0, 16, 16));
+        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
 
         // Fila inferior: moneda suelta
         monedas.add(new Moneda(300, 770, 30, 30));
+
+        // Recolectables al inicio del nivel, flanqueando al personaje:
+        // hielo unos pixeles a la izquierda del spawn (x=120) y fuego a la derecha.
+        // Ambos hacen el mismo dano base que la pelota inicial (10) y duran 15 s en manos del personaje.
+        recolectables.add(new Recolectable(
+                new ArmaHielo(10, 12.0, 5000, 0, 0, 16, 16),
+                50, 780, 40, 40));
+
+        recolectables.add(new Recolectable(
+                new ArmaFuego(10, 12.0, 5, 0, 0, 16, 16),
+                190, 780, 40, 40));
 
         // Fila inferior: plataforma blanca corta
         plataformas.add(new Plataforma(880, 700, 520, 26));

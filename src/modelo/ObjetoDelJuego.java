@@ -37,15 +37,6 @@ public abstract class ObjetoDelJuego {
         return this.posicionY;
     }
 
-    //Setters
-    public void setPosicionX(double posicionX) {
-        this.posicionX = posicionX;
-    }
-
-    public void setPosicionY(double posicionY) {
-        this.posicionY = posicionY;
-    }
-
     //Comportamientos
     public boolean interseca(ObjetoDelJuego otro) {
         return Colisiones.hayInterseccion(

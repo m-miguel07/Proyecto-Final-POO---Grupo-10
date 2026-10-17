@@ -87,7 +87,7 @@ public class HUD {
         }
         
         g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 25));
-        g2.drawString("A/D mover  -  ESPACIO saltar  -  J disparar", 36, 135);
+        g2.drawString("A/D mover  -  ESPACIO saltar  -  CLICK / J disparar", 36, 135);
 
     }
 }
