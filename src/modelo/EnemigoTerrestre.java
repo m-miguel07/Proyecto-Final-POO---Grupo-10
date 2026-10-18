@@ -8,8 +8,8 @@ public class EnemigoTerrestre extends Enemigo {
     private int direccion;
 
     //Constructor
-    public EnemigoTerrestre(int danioBase, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
-        super(danioBase, puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+    public EnemigoTerrestre(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
 
         this.direccion = 1;
     }

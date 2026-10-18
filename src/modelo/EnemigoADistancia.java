@@ -6,8 +6,8 @@ public class EnemigoADistancia extends Enemigo {
     private int alcance;
 
     //Constructor
-    public EnemigoADistancia(int alcance, int danioBase, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
-        super(danioBase, puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+    public EnemigoADistancia(int alcance, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
 
         if (alcance <= 0) {
             throw new IllegalArgumentException("El alcance debe ser positivo");

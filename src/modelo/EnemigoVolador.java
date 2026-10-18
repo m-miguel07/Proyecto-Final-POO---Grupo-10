@@ -11,15 +11,15 @@ public class EnemigoVolador extends Enemigo {
     private int direccion;
 
     //Constructor
-    public EnemigoVolador(double altura, int danioBase, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
-        super(danioBase, puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+    public EnemigoVolador(double altura, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
 
         if (altura <= 0) {
             throw new IllegalArgumentException("La altura debe ser positiva");
         }
 
         this.altura = altura;
-        this.amplitud = altura / 2.0;
+        this.amplitud = this.altura / 2.0;
         this.posicionYBase = posicionY;
         this.limiteIzquierdo = posicionX;
         this.limiteDerecho = posicionX;

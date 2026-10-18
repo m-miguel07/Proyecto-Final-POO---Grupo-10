@@ -4,12 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
@@ -33,7 +31,6 @@ import modelo.Recolectable;
 
 public class PanelJuego extends JPanel {
 
-    private static final Color COLOR_FONDO = new Color(24, 26, 38);
     private static final Color COLOR_PLATAFORMA = new Color(226, 228, 234);
     private static final Color COLOR_PLATAFORMA_BORDE = new Color(150, 154, 166);
     private static final Color COLOR_MADERA = new Color(150, 96, 48);

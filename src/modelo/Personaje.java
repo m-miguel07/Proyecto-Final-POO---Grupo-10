@@ -63,12 +63,10 @@ public class Personaje extends Entidad {
         return this.direccion;
     }
 
-    public void setDireccion(int direccion) {
-        if (direccion != 0) {
-            this.direccion = (direccion > 0) ? 1 : -1;
-        }
+    
+    public int getMonedasRecolectadas(){
+        return this.monedasRecolectadas;
     }
-
     //Setters
     public boolean setArmaEquipada(Arma arma) {
         this.armaEquipada = arma;
@@ -82,6 +80,12 @@ public class Personaje extends Entidad {
     public void sumarPuntaje(int puntos) {
         if (puntos > 0) {
             this.puntaje += puntos;
+        }
+    }
+
+    public void setDireccion(int direccion) {
+        if (direccion != 0) {
+            this.direccion = (direccion > 0) ? 1 : -1;
         }
     }
 

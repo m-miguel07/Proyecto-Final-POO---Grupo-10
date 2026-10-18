@@ -5,21 +5,15 @@ public abstract class Enemigo extends Entidad {
     //Atributos
     private static final double RANGO_CUERPO_A_CUERPO = 5.0;
 
-    private int danioBase;
     private int tiempoCongeladoMS;
     private int tiempoQuemadoMS;
     private int danioPorQuemaduraTick;
     private int tiempoSiguienteTickQuemaduraMS;
 
     //Constructor
-    public Enemigo(int danioBase, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+    public Enemigo(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
         super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
 
-        if (danioBase <= 0) {
-            throw new IllegalArgumentException("El danio base debe ser positivo.");
-        }
-
-        this.danioBase = danioBase;
         this.tiempoCongeladoMS = 0;
         this.tiempoQuemadoMS = 0;
         this.danioPorQuemaduraTick = 0;

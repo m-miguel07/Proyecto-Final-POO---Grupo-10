@@ -44,21 +44,21 @@ public class FabricaNivel1 {
         /* Tres enemigos voladores, se mueven de izquierda a derecha 
         (la idea es congelarlos para poder subir a la plataforma de arriba)*/
         
-        EnemigoVolador voladorIzquierdo = new EnemigoVolador(40, 12, 30, 46, 40, 2.6, 320, 640);
+        EnemigoVolador voladorIzquierdo = new EnemigoVolador(12, 30, 46, 40, 2.6, 320, 640);
         voladorIzquierdo.setLimites(250, 470);
         enemigos.add(voladorIzquierdo);
 
-        EnemigoVolador voladorCentral = new EnemigoVolador(40, 12, 30, 46, 40, 2.4, 780, 640);
+        EnemigoVolador voladorCentral = new EnemigoVolador(12, 30, 46, 40, 2.4, 780, 640);
         voladorCentral.setLimites(700, 920);
         enemigos.add(voladorCentral);
 
-        EnemigoVolador voladorDerecho = new EnemigoVolador(40, 12, 30, 46, 40, 2.2, 1220, 640);
+        EnemigoVolador voladorDerecho = new EnemigoVolador(12, 30, 46, 40, 2.2, 1220, 640);
         voladorDerecho.setLimites(1150, 1370);
         enemigos.add(voladorDerecho);
 
         // Fila siguiente: plataforma blanca larga con un enemigo terrestre en el medio
         plataformas.add(new Plataforma(180, 560, 1180, 26));
-        enemigos.add(new EnemigoTerrestre(10, 40, 44, 44, 2.0, 700, 516));
+        enemigos.add(new EnemigoTerrestre(40, 44, 44, 2.0, 700, 516));
 
         // Fila siguiente: dos plataformas blancas, cada una con plataformas marrones (que son destructibles)
         plataformas.add(new Plataforma(120, 400, 300, 26));
