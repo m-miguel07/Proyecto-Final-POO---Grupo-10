@@ -86,8 +86,8 @@ public class HUD {
              g2.drawString(tiempoTranscurrido + "s", 710, 100);
         }
         
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 25));
-        g2.drawString("A/D mover  -  ESPACIO saltar  -  CLICK / J disparar", 36, 135);
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
+        g2.drawString("A/D mover  -  ESPACIO saltar  -  CLICK / J disparar", 36, 132);
 
     }
 }
