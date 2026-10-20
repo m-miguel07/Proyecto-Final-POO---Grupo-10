@@ -47,7 +47,11 @@ public class PanelJuego extends JPanel {
     private long tiempoTranscurrido;
 
     private Image imgFondoEscenario;
+
     private PanelPausa panelPausa;
+    private PanelFinNivel panelDerrota;
+    private PanelFinNivel panelVictoria;
+
     private HUD hud;
 
     public PanelJuego(Nivel nivel, String rutaFondoEscenario) {
@@ -62,6 +66,9 @@ public class PanelJuego extends JPanel {
         this.setOpaque(true);
 
         this.panelPausa = new PanelPausa();
+        this.panelDerrota = new PanelFinNivel("src/assets/ui/img-lvl-fail.png",new Dimension(627,37),"src/assets/ui/btn-reset-pause-normal.png", "src/assets/ui/btn-reset-pause-hover.png");
+        this.panelVictoria = new PanelFinNivel("src/assets/ui/img-lvl-victory.png",new Dimension(627,37),"src/assets/ui/btn-next-normal.png", "src/assets/ui/btn-next-hover.png");
+
         this.hud = new HUD(
                            "src/assets/hud/icon-ps-00.png",
                            "src/assets/hud/icon-ps-01.png", 
@@ -75,15 +82,33 @@ public class PanelJuego extends JPanel {
                         );
 
         panelPausa.setVisible(false);
+        panelDerrota.setVisible(false);
+        panelVictoria.setVisible(false);
 
         this.add(panelPausa);
+        this.add(panelDerrota);
+        this.add(panelVictoria);
         
     }
 
+    //Getters
     public Nivel getNivel() {
         return this.nivel;
     }
 
+    public PanelPausa getPanelPausa(){
+        return this.panelPausa;
+    }
+
+    public PanelFinNivel getPanelDerrota() {
+        return panelDerrota;
+    }
+
+    public PanelFinNivel getPanelVictoria() {
+        return panelVictoria;
+    }
+
+    //Setters
     public void setNivel(Nivel nivel) {
         this.nivel = nivel;
     }
@@ -100,8 +125,12 @@ public class PanelJuego extends JPanel {
         panelPausa.setVisible(!panelPausa.isVisible());
     }
 
-    public PanelPausa getPanelPausa(){
-        return this.panelPausa;
+    public void toggleDerrota(){
+        panelDerrota.setVisible(!panelDerrota.isVisible());
+    }
+
+    public void toggleVictoria(){
+        panelVictoria.setVisible(!panelVictoria.isVisible());
     }
 
     @Override

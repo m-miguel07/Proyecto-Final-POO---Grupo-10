@@ -50,22 +50,42 @@ public class ControladorJuego {
         this.gestorAudio = GestorAudio.getInstancia();
         this.tiempoTranscurridoMS = 0;
 
+        //Panel pausa
         panel.getPanelPausa().getBotonSalir().addActionListener(e -> {
             pausar();
         });
 
         panel.getPanelPausa().getBotonReiniciar().addActionListener(e ->{
             panel.togglePausa();
-            ControladorJuego.this.reiniciar();
+            reiniciar();
         });
 
         panel.getPanelPausa().getBotonSalida().addActionListener(e ->{
-            detener();
-            gestorAudio.detenerMusica();
-            reiniciarEstado();
             panel.togglePausa();
+            salirAlMenu();
+        });
 
-            this.listener.volverAlMenu(); //notifica que se solicito la salida
+        //Paneles de fin de nivel (Perdiste | Ganaste)
+        panel.getPanelDerrota().getBoton().addActionListener(e ->{
+            panel.toggleDerrota();
+            reiniciar();
+            
+        });
+
+        panel.getPanelDerrota().getBotonSalir().addActionListener(e -> {
+            panel.toggleDerrota();
+            salirAlMenu();
+        });
+
+        panel.getPanelVictoria().getBoton().addActionListener(e ->{
+            panel.toggleVictoria();
+            //Siguiente nivel - IMPLEMENTAR
+            
+        });
+
+        panel.getPanelVictoria().getBotonSalir().addActionListener(e -> {
+            panel.toggleVictoria();
+            salirAlMenu();
         });
 
         this.registrarTeclado();
@@ -89,6 +109,14 @@ public class ControladorJuego {
     }
 
     //Gameloop
+    public void salirAlMenu(){
+        detener();
+        gestorAudio.detenerMusica();
+        reiniciarEstado();
+
+        this.listener.volverAlMenu(); //notifica que se solicito la salida
+    }
+
     public void iniciar() {
         this.teclaIzquierda = false;
         this.teclaDerecha = false;
@@ -303,14 +331,14 @@ public class ControladorJuego {
         Personaje personaje = nivel.getPersonaje();
 
         if (!personaje.estaVivo()) {
-            this.panel.setMensaje("PERDISTE - R para reiniciar");
+            this.panel.toggleDerrota();
             this.panel.repaint();
             this.timer.stop();
             return;
         }
 
         if (nivel.estaCompleto()) {
-            this.panel.setMensaje("NIVEL COMPLETO");
+            this.panel.toggleVictoria();
             this.panel.repaint();
             this.timer.stop();
             return;
