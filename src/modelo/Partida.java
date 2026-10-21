@@ -8,8 +8,6 @@ public class Partida {
     private double volumenSFX;
     private double volumenBGM;
 
-    
-
     public Partida(int puntaje, int nivel, long tiempo, double volumenSFX, double volumenBGM){
         if (puntaje < 0 || nivel < 1 || tiempo < 0 || volumenSFX < 0 || volumenBGM < 0){
             throw new IllegalArgumentException("El puntaje, nivel, tiempo y valores de volumen son obligatorios.");
@@ -43,6 +41,10 @@ public class Partida {
     }
 
     //Setters
+    public void setNivelActual(int nivelActual){
+        this.nivelActual = nivelActual;
+    } 
+
     public void setVolumenSFX(double volumenSFX) {
         this.volumenSFX = volumenSFX;
     }
@@ -50,5 +52,15 @@ public class Partida {
     public void setVolumenBGM(double volumenBGM) {
         this.volumenBGM = volumenBGM;
     }
+
+    //Metodos
+    public void setPuntaje(int puntaje){
+        this.puntajeAcumulado = puntaje;
+    }
+
+    public void setTiempo(long tiempo){
+        this.tiempoAcumulado = tiempo;
+    }
+
     
 }

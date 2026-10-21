@@ -145,6 +145,10 @@ public class PanelJuego extends JPanel {
         return this.nivel;
     }
 
+    public long getTiempoTranscurrido(){
+        return this.tiempoTranscurrido;
+    }
+
     public Escenario getEscenario() {
         return escenario;
     }
@@ -182,6 +186,7 @@ public class PanelJuego extends JPanel {
         panelVictoria.setVisible(!panelVictoria.isVisible());
     }
 
+    //Metodos
     public void ocultarPaneles(){
         panelPausa.setVisible(false);
         panelDerrota.setVisible(false);

@@ -5,6 +5,8 @@ import java.util.List;
 
 public class FabricaNivel1 {
 
+    private static final int NUMERO_NIVEL = 1;
+
     //Escenarios del nivel, de abajo hacia arriba.
     private static final int ESCENARIO_1 = 1;
     private static final int ESCENARIO_2 = 2;
@@ -123,7 +125,7 @@ public class FabricaNivel1 {
         muro.colocarMonedaEncima(monedaMuro);
         monedas.add(monedaMuro);
 
-        return new Nivel(personaje, aro, enemigos, monedas, plataformas, recolectables, muro);
+        return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, muro);
     }
 
     private static Nivel crearContenidoEscenario2(Personaje personaje) {
@@ -155,7 +157,7 @@ public class FabricaNivel1 {
         enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.1, 920, 336));
 
         // Este escenario no tiene aro: la meta esta en el ultimo escenario del nivel.
-        return new Nivel(personaje, null, enemigos, monedas, plataformas, recolectables, null);
+        return new Nivel(NUMERO_NIVEL, personaje, null, enemigos, monedas, plataformas, recolectables, null);
     }
 
     private static Nivel crearContenidoEscenario3(Personaje personaje) {
@@ -190,7 +192,7 @@ public class FabricaNivel1 {
 
         // Aro del ultimo escenario
         Aro aro = new Aro(755, 160, 90, 70);
-        return new Nivel(personaje, aro, enemigos, monedas, plataformas, recolectables, null);
+        return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, null);
     }
 
     public static Personaje crearPersonajeInicial() {

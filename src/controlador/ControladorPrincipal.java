@@ -25,7 +25,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
     private final GestorAudio gestorAudio;
 
     private final int tiempoSplashMS = 3000;
-    private final AtomicBoolean videoTerminado;
+    private final AtomicBoolean videoTerminado;                                     
 
     private ControladorJuego controladorJuego;
 
@@ -76,6 +76,10 @@ public class ControladorPrincipal implements ListenerNavegacion{
                             .getBotonNuevoJuego()
                             .addActionListener(e -> this.iniciarJuego());
 
+        //Boton de continuar
+                this.ventana.getPanelMenu()
+                            .getBotonContinuar()
+                            .addActionListener(e -> this.iniciarJuego());
         //Boton de opciones
                 this.ventana.getPanelMenu()
                             .getBotonOpciones()
@@ -99,11 +103,8 @@ public class ControladorPrincipal implements ListenerNavegacion{
         
 
         //Musica 
-                            
             JSlider sliderBGM = this.ventana.getPanelMenu().getPanelOpciones().getSliderMusica();
             JSlider sliderSFX = this.ventana.getPanelMenu().getPanelOpciones().getSliderSFX();
-            
-            
 
             sliderBGM.addChangeListener(e -> {
                 double valor = sliderBGM.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
@@ -152,7 +153,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
                 SwingUtilities.invokeLater(this::iniciarVideoIntro);
                 
             } catch(InterruptedException e){
-                Thread.currentThread().interrupt();
+                //Thread.currentThread().interrupt();
             }
         }).start();
     }
@@ -182,7 +183,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
     public void iniciarJuego(){
         SwingUtilities.invokeLater(() -> {
             if (this.controladorJuego == null){
-                this.controladorJuego = new ControladorJuego(this);
+                this.controladorJuego = new ControladorJuego(this.partida, this);
             }
 
             gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);

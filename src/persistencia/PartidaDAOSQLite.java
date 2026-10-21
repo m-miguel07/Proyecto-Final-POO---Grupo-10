@@ -28,7 +28,7 @@ public class PartidaDAOSQLite implements PartidaDAO { //Almacena datos de partid
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, partida.getPuntajeAcumulado());
             ps.setInt(2, partida.getNivelActual());
-            ps.setLong(3, partida.getTiempoAcumulado());
+            ps.setLong(3, partida.getTiempoAcumulado() / 1000);
             ps.setDouble(4, partida.getVolumenSFX());
             ps.setDouble(5, partida.getVolumenBGM());
 

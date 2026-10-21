@@ -1,15 +1,13 @@
 package modelo;
 
-import java.time.LocalDate;
-
 public class Puntaje { //Para tabla de puntajes historicos
 
     private final String jugador;
     private final int puntos;
     private final int tiempo;
-    private final LocalDate fecha;
+    private final String fecha;
 
-    public Puntaje(String jugador, int puntos, int tiempo, LocalDate fecha) {
+    public Puntaje(String jugador, int puntos, int tiempo, String fecha) {
         if (jugador == null || jugador.isBlank() || tiempo < 0 || puntos < 0 || fecha == null) {
             throw new IllegalArgumentException("Jugador, puntos, tiempo y fecha son obligatorios");
         }
@@ -30,7 +28,7 @@ public class Puntaje { //Para tabla de puntajes historicos
     public int getTiempo(){
         return this.tiempo;
     }
-    public LocalDate getFecha() {
+    public String getFecha() {
         return this.fecha;
     }
 }

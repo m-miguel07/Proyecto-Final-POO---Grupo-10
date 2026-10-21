@@ -13,8 +13,10 @@ import modelo.Configuracion;
 import modelo.Enemigo;
 import modelo.Muro;
 import modelo.FabricaNivel1;
+import modelo.FabricaNivel2;
 import modelo.GestorAudio;
 import modelo.Nivel;
+import modelo.Partida;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
@@ -30,19 +32,24 @@ public class ControladorJuego {
     private static final long DELTA_MAXIMO_MS = 50;
     private static final long COOLDOWN_DISPARO_MS = 2000;
 
-    //Atributos
+    //Visual
     private final PanelJuego panel;
     private Escenario escenarioActual;
-    private final Timer timer;
 
+    //Guardado
+    private Partida partida;
+    //Audio
     private final GestorAudio gestorAudio;
 
+    //Gameloop
+    private final Timer timer;
     private long tiempoTranscurridoMS;
     private long ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
     private long ultimoPasoNanos;
 
     private final ListenerNavegacion listener;
 
+    //Desplazamiento y apuntado
     private int mouseX = -1;
     private int mouseY = -1;
 
@@ -54,14 +61,29 @@ public class ControladorJuego {
     private boolean enPausa;
 
     //Constructor
-    public ControladorJuego(ListenerNavegacion listener) {
+    public ControladorJuego(Partida partida, ListenerNavegacion listener) {
 
-        //Escenarios
-        this.escenarioActual = FabricaNivel1.crearEscenario1(FabricaNivel1.crearPersonajeInicial());
-    
-        //Vista
+        //Persistencia
+        this.partida = partida;
+
+        //logica de generación de nivel
+        switch (this.partida.getNivelActual()){
+            case 1: 
+                this.escenarioActual = FabricaNivel1.crearEscenario1(FabricaNivel1.crearPersonajeInicial());
+                break;
+            case 2:
+                this.escenarioActual = FabricaNivel2.crearEscenario1(FabricaNivel2.crearPersonajeInicial());
+                this.escenarioActual.getNivel().getPersonaje().setPuntaje(partida.getPuntajeAcumulado());
+                break;
+            default:
+                throw new IllegalArgumentException("Nivel no soportado: " + this.partida.getNivelActual());
+        }
+
         this.panel = new PanelJuego(escenarioActual);
-   
+        if (this.partida.getNivelActual() == 2) {
+            this.panel.setTiempoTranscurrido(partida.getTiempoAcumulado());
+        }
+
         //Gameloop
         this.timer = new Timer(INTERVALO_TIMER_MS, e -> this.paso());
         this.tiempoTranscurridoMS = 0;
@@ -102,7 +124,7 @@ public class ControladorJuego {
 
         panel.getPanelVictoria().getBoton().addActionListener(e ->{
             panel.toggleVictoria();
-            //Siguiente nivel - IMPLEMENTAR
+            pasarDeNivel();
             
         });
 
@@ -126,6 +148,17 @@ public class ControladorJuego {
     }
 
     //Comportamientos
+
+    //Persistencia
+    public void guardarPartida(){ //Actualiza el objeto partida, para ser guardado posteriormente por el partidaDAO
+        Nivel nivelActual = this.escenarioActual.getNivel();
+
+        partida.setNivelActual(nivelActual.getNumeroNivel());
+        partida.setPuntaje(nivelActual.getPersonaje().getPuntaje());
+        partida.setTiempo(panel.getTiempoTranscurrido());
+    }
+
+    //Audio
     private void iniciarMusica(){
         gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
@@ -134,8 +167,9 @@ public class ControladorJuego {
     public void salirAlMenu(){
         detener();
         gestorAudio.detenerMusica();
+        guardarPartida();
         reiniciarEstado();
-
+        
         this.listener.volverAlMenu(); //notifica que se solicito la salida
     }
 
@@ -195,15 +229,34 @@ public class ControladorJuego {
         this.teclaDisparo = false;
         this.enPausa = false;
 
-        Personaje personaje = FabricaNivel1.crearPersonajeInicial();
-        this.escenarioActual = FabricaNivel1.crearEscenario1(personaje);
+        Personaje personaje;
+
+        switch (partida.getNivelActual()) {
+            case 1:
+                personaje = FabricaNivel1.crearPersonajeInicial();
+                this.escenarioActual = FabricaNivel1.crearEscenario1(personaje);
+                this.panel.setTiempoTranscurrido(0);
+                break;
+            case 2:
+                personaje = FabricaNivel2.crearPersonajeInicial();
+                this.escenarioActual = FabricaNivel2.crearEscenario1(personaje);
+                this.panel.setTiempoTranscurrido(partida.getTiempoAcumulado());
+            default:
+                break;
+        }
+       
         panel.escenarioCambiado(this.escenarioActual);
 
         this.tiempoTranscurridoMS = 0;
         this.ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
         this.ultimoPasoNanos = System.nanoTime();
-        this.panel.setTiempoTranscurrido(0);
+        
         this.panel.setMensaje("NIVEL 1");
+    }
+
+    private void pasarDeNivel(){ 
+        this.partida.setNivelActual(2);
+        reiniciar();
     }
 
     //Desplazamiento
@@ -379,9 +432,15 @@ public class ControladorJuego {
         }
 
         if (nivel.estaCompleto()) {
-            this.panel.toggleVictoria();
-            this.panel.repaint();
-            this.timer.stop();
+            switch (nivel.getNumeroNivel()){
+                case 1:
+                    this.panel.toggleVictoria();
+                    this.panel.repaint();
+                    this.timer.stop();
+                    break;
+                case 2:
+                    //SECUENCIA DEL FINAL
+            }
             return;
         }
 
@@ -435,8 +494,18 @@ public class ControladorJuego {
     private void detectarTransicion(Personaje personaje){
         for (ZonaTransicion zona : escenarioActual.getZonasTransicion()){
             if (zona.contiene(personaje.getPosicionX(),personaje.getPosicionY())){
-                Escenario destino = FabricaNivel1.crearEscenario(zona.getIdEscenarioDestino(), personaje);
-
+                Escenario destino;
+                switch (escenarioActual.getNivel().getNumeroNivel()){
+                    case 1:
+                        destino = FabricaNivel1.crearEscenario(zona.getIdEscenarioDestino(), personaje);
+                        break;
+                    case 2:
+                        destino = FabricaNivel2.crearEscenario(zona.getIdEscenarioDestino(), personaje);
+                        break;
+                    default:
+                        destino = null;
+                }
+               
                 if (destino == null) {
                     return;
                 }
@@ -449,7 +518,6 @@ public class ControladorJuego {
 
     private void cambiarEscenario(Escenario nuevo, int x, int y, Personaje personaje){
         personaje.setPosicion(x, y);
-
         this.escenarioActual = nuevo;
         this.panel.escenarioCambiado(nuevo);
     }

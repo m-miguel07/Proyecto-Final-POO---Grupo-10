@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Nivel {
 
+    private int numeroNivel;
+
     private Personaje personaje;
     private final Aro aro;
     private final Muro muro;
@@ -24,12 +26,13 @@ public class Nivel {
     private final Marcador marcador;
 
     //Constructor
-    public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
+    public Nivel(int numeroNivel, Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
                  List<Plataforma> plataformas, List<Recolectable> recolectables, Muro muro) {
         if (personaje == null) {
             throw new IllegalArgumentException("El personaje es obligatorio");
         }
 
+        this.numeroNivel = numeroNivel;
         this.personaje = personaje;
         this.aro = aro;
         this.muro = muro;
@@ -49,6 +52,9 @@ public class Nivel {
     }
 
     //Getters
+    public int getNumeroNivel(){
+        return this.numeroNivel;
+    }
     public Personaje getPersonaje() {
         return this.personaje;
     }

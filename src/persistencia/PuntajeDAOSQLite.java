@@ -1,6 +1,7 @@
 package persistencia;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +19,17 @@ public class PuntajeDAOSQLite implements PuntajeDAO {
         }
 
         String sql = """
-            INSERT INTO puntajes (jugador, tiempo_acumulado)
-            VALUES (?, ?)
+            INSERT INTO puntajes (jugador, puntaje, tiempo, fecha)
+            VALUES (?, ?, ?, ?)
             """;
 
         try (PreparedStatement ps = Conexion.getInstancia()
                 .get().prepareStatement(sql)) {
 
-            ps.setInt(1, puntaje.getPuntos());
-            ps.setLong(2, puntaje.getTiempo());
+            ps.setString(1, puntaje.getJugador());
+            ps.setInt(2, puntaje.getPuntos());
+            ps.setInt(3, puntaje.getTiempo());
+            ps.setString(4, puntaje.getFecha());
 
             return ps.executeUpdate() > 0;
 
@@ -45,10 +48,9 @@ public class PuntajeDAOSQLite implements PuntajeDAO {
         }
 
         String sql = """
-            SELECT puntos, tiempo_acumulado
+            SELECT jugador, puntaje, tiempo, fecha
             FROM puntajes
             ORDER BY puntos DESC
-            LIMIT ?
             """;
 
         try (PreparedStatement ps = Conexion.getInstancia()
@@ -56,18 +58,19 @@ public class PuntajeDAOSQLite implements PuntajeDAO {
 
             ps.setInt(1, cantidad);
 
-            /* 
+            
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Puntaje puntaje = new Puntaje(
-                        rs.getInt("puntos"),
-                        rs.getLong("tiempo_acumulado")
-                    );
+                    Puntaje puntaje = new Puntaje(rs.getString("jugador"), 
+                                                  rs.getInt("puntaje"), 
+                                                  rs.getInt("tiempo"), 
+                                                  rs.getString("fecha")
+                                                );
 
                     resultados.add(puntaje);
                 }
             }
-            */
+            
 
         } catch (SQLException e) {
             e.printStackTrace();

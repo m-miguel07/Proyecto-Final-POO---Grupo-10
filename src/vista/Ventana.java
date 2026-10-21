@@ -26,7 +26,6 @@ public class Ventana extends JFrame {
     private final PanelMenuPrincipal panelMenu;
     private PanelJuego panelJuego;
 
-
     @SuppressWarnings("this-escape")
     public Ventana(){
         this.setTitle("Basketball Fever");

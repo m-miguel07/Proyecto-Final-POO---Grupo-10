@@ -85,6 +85,12 @@ public class Personaje extends Entidad {
         }
     }
 
+    public void setPuntaje(int puntos){
+        if (puntos > 0){
+            this.puntaje = puntos;
+        }
+    }
+
     public void setDireccion(int direccion) {
         if (direccion != 0) {
             this.direccion = (direccion > 0) ? 1 : -1;
