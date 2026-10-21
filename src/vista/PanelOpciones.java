@@ -19,7 +19,6 @@ public class PanelOpciones extends PanelBase {
 
         //SFX
         this.sliderSFX = new JSlider();
-        sliderSFX.setValue(10);
         sliderSFX.setUI(new UXSlider(sliderSFX,"src/assets/ui/barra-opc.png","src/assets/icon.png",50,20));
 
         sliderSFX.setOpaque(false);
@@ -28,7 +27,6 @@ public class PanelOpciones extends PanelBase {
 
         //BGM
         this.sliderMusica = new JSlider();
-        sliderMusica.setValue(10);
         sliderMusica.setUI(new UXSlider(sliderMusica,"src/assets/ui/barra-opc.png","src/assets/icon.png",50,20));
 
         sliderMusica.setOpaque(false);
@@ -73,6 +71,12 @@ public class PanelOpciones extends PanelBase {
 
         contenedorSliders.setOpaque(false);
         this.add(contenedorSliders, BorderLayout.CENTER);
+    }
+
+
+    public void setVolumenes(double sfx, double bgm){ 
+        sliderSFX.setValue((int) Math.round(sfx * 100));
+        sliderMusica.setValue((int) Math.round(bgm * 100));
     }
 
     public JSlider getSliderMusica(){

@@ -6,14 +6,19 @@ import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 
 import modelo.GestorAudio;
+import modelo.Partida;
+import modelo.PartidaDAO;
 
 import vista.PanelMenuPrincipal;
 import vista.Ventana;
+
+import persistencia.*;
 
 public class ControladorPrincipal implements ListenerNavegacion{
     private final Ventana ventana;
@@ -24,10 +29,22 @@ public class ControladorPrincipal implements ListenerNavegacion{
 
     private ControladorJuego controladorJuego;
 
-    @SuppressWarnings("this-escape")
-    public ControladorPrincipal(){
+    private final PartidaDAO partidaDAO;
+    private  Partida partida;
+
+    public ControladorPrincipal() throws SQLException{
+
+        partidaDAO = new PartidaDAOSQLite();
+        
+        partida = partidaDAO.cargar();
+
+        if (partida == null){
+            this.partida = new Partida(0,1,0,0.5,1.0);
+        }
+
         this.ventana =  new Ventana();
         this.gestorAudio = GestorAudio.getInstancia();
+        cargarConfiguracionAudio();
 
         this.videoTerminado = new AtomicBoolean(false);
 
@@ -71,19 +88,29 @@ public class ControladorPrincipal implements ListenerNavegacion{
                             .getPanelOpciones()
                             .getBotonSalir()
                             .addActionListener(e -> { 
+                                //Guarda la configuración
+                                partida.setVolumenBGM(gestorAudio.getVolumenBGM());
+                                partida.setVolumenSFX(gestorAudio.getVolumenSFX());
+
                                 this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);
                             });
 
         //Sliders (Opciones)
+        
 
         //Musica 
+                            
             JSlider sliderBGM = this.ventana.getPanelMenu().getPanelOpciones().getSliderMusica();
             JSlider sliderSFX = this.ventana.getPanelMenu().getPanelOpciones().getSliderSFX();
+            
+            
 
             sliderBGM.addChangeListener(e -> {
                 double valor = sliderBGM.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
                 gestorAudio.setVolumenBGM(valor);
                 gestorAudio.reproducirEfecto(GestorAudio.BOTON_CLICK);
+
+                
             });
 
             sliderSFX.addChangeListener(e -> {
@@ -95,11 +122,24 @@ public class ControladorPrincipal implements ListenerNavegacion{
         //Boton de Salir (Menu principal)
         this.ventana.getPanelMenu()
                     .getBotonSalir()
-                    .addActionListener(e -> System.exit(0));
+                    .addActionListener(e -> cerrarJuego());
 
-       
         //Inicio de secuencia (Splash -> Video -> Menu)
         this.iniciarSecuencia();
+    }
+
+    private void cargarConfiguracionAudio(){
+        if (this.partida != null){
+            gestorAudio.setVolumenBGM(partida.getVolumenBGM());
+            gestorAudio.setVolumenSFX(partida.getVolumenSFX());
+
+            ventana.getPanelMenu().getPanelOpciones().setVolumenes(partida.getVolumenSFX(), partida.getVolumenBGM()); //Actualiza la visual de los sliders acorde al volumen guardado
+        }
+    }
+
+    private void cerrarJuego(){
+        partidaDAO.guardar(this.partida); 
+        System.exit(0);
     }
 
     public void iniciarSecuencia(){
