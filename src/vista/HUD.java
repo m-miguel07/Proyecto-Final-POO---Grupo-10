@@ -9,6 +9,12 @@ import javax.swing.ImageIcon;
 
 public class HUD {
 
+    private static final float OPACIDAD_FONDO = 0.5f;
+    private static final int VIDAS_MAXIMAS = 3;
+    private static final Font FUENTE_VALORES = new Font(Font.SANS_SERIF, Font.BOLD, 40);
+    private static final Font FUENTE_CONTROLES = new Font(Font.SANS_SERIF, Font.BOLD, 24);
+    private static final Color COLOR_TEXTO = new Color(0, 0, 0);
+
     //Puntos de salud
     private Image imgPSLleno;
     private Image imgPSVacio;
@@ -46,12 +52,12 @@ public class HUD {
     public void dibujar(Graphics2D g2, int vidasPersonaje, int puntaje, long tiempoTranscurrido, int monedasRecogidas, int monedasTotales ){
        
         Graphics2D g2copia = (Graphics2D) g2.create();
-        float opacidad = 0.5f;
+        float opacidad = OPACIDAD_FONDO;
 
         g2copia.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opacidad));
 
         g2copia.drawImage(imgFondoPS, 30, 15, null);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < VIDAS_MAXIMAS; i++) {
             Image imgActual = (i < vidasPersonaje ? imgPSLleno : imgPSVacio);
             g2.drawImage(imgActual, 55+i*65, 35,null);
         }
@@ -67,8 +73,8 @@ public class HUD {
 
         g2copia.dispose();
 
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 40));
-        g2.setColor(new Color(0, 0, 0));
+        g2.setFont(FUENTE_VALORES);
+        g2.setColor(COLOR_TEXTO);
 
         if (puntaje == 0) {
             g2.drawString(String.valueOf(puntaje), 1380, 90);
@@ -86,7 +92,7 @@ public class HUD {
              g2.drawString(tiempoTranscurrido + "s", 710, 100);
         }
         
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
+        g2.setFont(FUENTE_CONTROLES);
         g2.drawString("A/D mover  -  ESPACIO saltar  -  CLICK / J disparar", 36, 132);
 
     }

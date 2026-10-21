@@ -32,13 +32,12 @@ public abstract class Entidad extends ObjetoDelJuego {
     }
 
     //Setters
-    public boolean setPuntosVida(int puntosVida) {
+    public void setPuntosVida(int puntosVida) {
         if (puntosVida < 0) {
-            return false;
+            throw new IllegalArgumentException("Los puntos de vida no pueden ser negativos");
         }
 
         this.puntosVida = puntosVida;
-        return true;
     }
 
     //Comportamientos

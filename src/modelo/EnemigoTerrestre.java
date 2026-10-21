@@ -15,11 +15,22 @@ public class EnemigoTerrestre extends Enemigo {
     }
 
     //Comportamientos
-    public void actualizar(List<Plataforma> plataformas, int anchoPantalla) {
-        if (this.estaCongelado()) {
-            return;
+    //Invierte el sentido de la patrulla (por ejemplo, al chocar con el muro).
+    public void invertirDireccion() {
+        this.direccion *= -1;
+    }
+
+    public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
+        if (!this.estaCongelado()) {
+            this.mover(plataformas, anchoPantalla);
         }
 
+        if (muro != null) {
+            muro.bloquearEnemigo(this);
+        }
+    }
+
+    private void mover(List<Plataforma> plataformas, int anchoPantalla) {
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
 
         if (nuevaX < 0 || nuevaX + this.ancho > anchoPantalla) {

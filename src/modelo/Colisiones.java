@@ -1,7 +1,7 @@
 package modelo;
 
 // Archivo: Colisiones.java
-// Sirve para detectar colisiones. La usan (Entidad) y (Nivel)
+// Sirve para detectar colisiones.
 
 public class Colisiones {
     private Colisiones() {

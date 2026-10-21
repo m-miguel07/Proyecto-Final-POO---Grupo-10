@@ -67,9 +67,12 @@ public class Personaje extends Entidad {
         return this.monedasRecolectadas;
     }
     //Setters
-    public boolean setArmaEquipada(Arma arma) {
+    public void setArmaEquipada(Arma arma) {
+        if (arma == null) {
+            throw new IllegalArgumentException("El arma no puede ser nula");
+        }
+
         this.armaEquipada = arma;
-        return true;
     }
 
     public void sumarMoneda() {
@@ -95,7 +98,7 @@ public class Personaje extends Entidad {
 
     public void equiparArmaTemporal(Arma arma) {
         if (arma == null) {
-            return;
+            throw new IllegalArgumentException("El arma no puede ser nula");
         }
 
         if (this.armaBase == null) {
@@ -120,7 +123,10 @@ public class Personaje extends Entidad {
     }
 
     public void perderVida() {
-        this.setPuntosVida(Math.max(0, this.getPuntosVida() - 1));
+        if (this.estaVivo()) {
+            this.setPuntosVida(this.getPuntosVida() - 1);
+        }
+
         this.invulnerableHasta = System.currentTimeMillis() + INVULNERABILIDAD_MS;
     }
 

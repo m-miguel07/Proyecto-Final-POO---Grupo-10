@@ -9,8 +9,9 @@ import java.util.List;
 import javax.swing.Timer;
 
 import modelo.Arma;
-import modelo.EnemigoTerrestre;
-import modelo.EnemigoVolador;
+import modelo.Configuracion;
+import modelo.Enemigo;
+import modelo.Muro;
 import modelo.FabricaNivel1;
 import modelo.GestorAudio;
 import modelo.Nivel;
@@ -25,7 +26,8 @@ import vista.PanelJuego;
 public class ControladorJuego {
 
     //Constantes
-    private static final int MS_POR_FRAME = 16;
+    private static final int INTERVALO_TIMER_MS = 16;
+    private static final long DELTA_MAXIMO_MS = 50;
     private static final long COOLDOWN_DISPARO_MS = 2000;
 
     //Atributos
@@ -37,6 +39,7 @@ public class ControladorJuego {
 
     private long tiempoTranscurridoMS;
     private long ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
+    private long ultimoPasoNanos;
 
     private final ListenerNavegacion listener;
 
@@ -54,14 +57,15 @@ public class ControladorJuego {
     public ControladorJuego(ListenerNavegacion listener) {
 
         //Escenarios
-        this.escenarioActual = FabricaNivel1.crearEscenario1();
+        this.escenarioActual = FabricaNivel1.crearEscenario1(FabricaNivel1.crearPersonajeInicial());
     
         //Vista
         this.panel = new PanelJuego(escenarioActual);
    
         //Gameloop
-        this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
+        this.timer = new Timer(INTERVALO_TIMER_MS, e -> this.paso());
         this.tiempoTranscurridoMS = 0;
+        this.ultimoPasoNanos = System.nanoTime();
 
         //Navegación 
         this.listener = listener;
@@ -142,6 +146,7 @@ public class ControladorJuego {
         this.saltoPendiente = false;
         this.teclaDisparo = false;
         this.enPausa = false;
+        this.ultimoPasoNanos = System.nanoTime();
 
         this.panel.requestFocusInWindow();
         this.timer.start();
@@ -171,6 +176,9 @@ public class ControladorJuego {
         this.detener();
         gestorAudio.detenerMusica();
 
+        //Cierra cualquier panel abierto (pausa, derrota, victoria) antes de reiniciar
+        this.panel.ocultarPaneles();
+
         reiniciarEstado();
 
         iniciarMusica();
@@ -187,11 +195,13 @@ public class ControladorJuego {
         this.teclaDisparo = false;
         this.enPausa = false;
 
-        this.escenarioActual = FabricaNivel1.crearEscenario1();
+        Personaje personaje = FabricaNivel1.crearPersonajeInicial();
+        this.escenarioActual = FabricaNivel1.crearEscenario1(personaje);
         panel.escenarioCambiado(this.escenarioActual);
 
         this.tiempoTranscurridoMS = 0;
         this.ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
+        this.ultimoPasoNanos = System.nanoTime();
         this.panel.setTiempoTranscurrido(0);
         this.panel.setMensaje("NIVEL 1");
     }
@@ -347,7 +357,17 @@ public class ControladorJuego {
         gestorAudio.reproducirEfecto(GestorAudio.PELOTA_LANZAMIENTO);
     }
 
+    private int calcularDeltaMS() {
+        long ahora = System.nanoTime();
+        long transcurridoMS = (ahora - this.ultimoPasoNanos) / 1_000_000L;
+        this.ultimoPasoNanos = ahora;
+
+        return (int) Math.max(1L, Math.min(transcurridoMS, DELTA_MAXIMO_MS));
+    }
+
     private void paso() {
+        int deltaMS = this.calcularDeltaMS();
+
         Nivel nivel = this.getNivel();
         Personaje personaje = nivel.getPersonaje();
 
@@ -366,7 +386,7 @@ public class ControladorJuego {
         }
 
         // Solo sumamos tiempo si el juego está activo
-        this.tiempoTranscurridoMS += MS_POR_FRAME;
+        this.tiempoTranscurridoMS += deltaMS;
         this.panel.setTiempoTranscurrido(this.tiempoTranscurridoMS);
 
         List<Plataforma> plataformas = nivel.getPlataformas();
@@ -378,7 +398,13 @@ public class ControladorJuego {
             direccion = 1;
         }
 
-        personaje.actualizarHorizontal(direccion, FabricaNivel1.ANCHO);
+        personaje.actualizarHorizontal(direccion, Configuracion.ANCHO);
+
+        //El muro del escenario inicial bloquea el paso hasta encestar en el aro de basquet
+        Muro muro = nivel.getMuro();
+        if (muro != null) {
+            muro.bloquearPersonaje(personaje);
+        }
 
         if (this.saltoPendiente) {
             personaje.saltar();
@@ -386,25 +412,20 @@ public class ControladorJuego {
         }
 
         personaje.aplicarGravedad();
-        personaje.actualizarVertical(plataformas, nivel.getEnemigos(), FabricaNivel1.ALTO);
+        personaje.actualizarVertical(plataformas, nivel.getEnemigos(), Configuracion.ALTO);
         detectarTransicion(personaje);
 
-        personaje.actualizarArmaTemporal(MS_POR_FRAME);
+        personaje.actualizarArmaTemporal(deltaMS);
 
-        for (var enemigo : nivel.getEnemigos()) {
-            enemigo.actualizarEstados(MS_POR_FRAME);
-
-            if (enemigo instanceof EnemigoTerrestre) {
-                ((EnemigoTerrestre) enemigo).actualizar(plataformas, FabricaNivel1.ANCHO);
-            } else if (enemigo instanceof EnemigoVolador) {
-                ((EnemigoVolador) enemigo).actualizar(this.tiempoTranscurridoMS / 1000.0);
-            }
+        for (Enemigo enemigo : nivel.getEnemigos()) {
+            enemigo.actualizarEstados(deltaMS);
+            enemigo.actualizar(plataformas, Configuracion.ANCHO, muro);
         }
 
         nivel.actualizar();
         nivel.eliminarRecolectados();
         nivel.eliminarEnemigosDerrotados();
-        nivel.actualizarPelotas(FabricaNivel1.ANCHO, FabricaNivel1.ALTO);
+        nivel.actualizarPelotas(Configuracion.ANCHO, Configuracion.ALTO, deltaMS);
 
         this.panel.setMensaje("");
         this.panel.repaint();
@@ -414,31 +435,20 @@ public class ControladorJuego {
     private void detectarTransicion(Personaje personaje){
         for (ZonaTransicion zona : escenarioActual.getZonasTransicion()){
             if (zona.contiene(personaje.getPosicionX(),personaje.getPosicionY())){
-                Escenario destino;
+                Escenario destino = FabricaNivel1.crearEscenario(zona.getIdEscenarioDestino(), personaje);
 
-                switch (zona.getIdEscenarioDestino()){
-                    case 1:
-                        destino = FabricaNivel1.crearEscenario1();
-                        break;
-                    case 2: 
-                        destino = FabricaNivel1.crearEscenario2();
-                        break;  
-                    default:
-                        return;
+                if (destino == null) {
+                    return;
                 }
 
-                cambiarEscenario(destino, zona.getSpawnX(), zona.getSpawnY());
+                cambiarEscenario(destino, zona.getSpawnX(), zona.getSpawnY(), personaje);
                 return;
             }
         }
     }
 
-    private void cambiarEscenario(Escenario nuevo, int x, int y){
-        Personaje personaje = this.escenarioActual.getNivel().getPersonaje();
-
+    private void cambiarEscenario(Escenario nuevo, int x, int y, Personaje personaje){
         personaje.setPosicion(x, y);
-
-        nuevo.getNivel().setPersonaje(personaje);
 
         this.escenarioActual = nuevo;
         this.panel.escenarioCambiado(nuevo);

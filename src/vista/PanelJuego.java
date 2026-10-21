@@ -4,13 +4,19 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -19,6 +25,7 @@ import modelo.Arma;
 import modelo.ArmaFuego;
 import modelo.ArmaHielo;
 import modelo.Aro;
+import modelo.Configuracion;
 import modelo.Enemigo;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
@@ -27,6 +34,7 @@ import modelo.Nivel;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
+import modelo.Muro;
 import modelo.Recolectable;
 import modelo.Escenario;
 import modelo.FabricaNivel1;
@@ -35,22 +43,56 @@ public class PanelJuego extends JPanel {
 
     private static final Color COLOR_PLATAFORMA = new Color(226, 228, 234);
     private static final Color COLOR_PLATAFORMA_BORDE = new Color(150, 154, 166);
+    //Tonos calidos translucidos, tomados del fondo del nivel
+    private static final Color COLOR_MURO_ARRIBA = new Color(104, 82, 68, 105);
+    private static final Color COLOR_MURO_ABAJO = new Color(162, 130, 100, 95);
+    private static final Color COLOR_MURO_BORDE = new Color(72, 54, 42, 130);
     private static final Color COLOR_MADERA = new Color(150, 96, 48);
     private static final Color COLOR_MADERA_BORDE = new Color(94, 58, 26);
     private static final Color COLOR_MONEDA = new Color(250, 204, 21);
+    private static final Color COLOR_MONEDA_BORDE = new Color(180, 130, 10);
     private static final Color COLOR_ENEMIGO = new Color(225, 45, 45);
+    private static final Color COLOR_ENEMIGO_BORDE = new Color(140, 20, 20);
+    private static final Color COLOR_CONGELADO_BORDE = new Color(37, 99, 180);
     private static final Color COLOR_VOLADOR = new Color(249, 140, 30);
+    private static final Color COLOR_ALA_BORDE = new Color(194, 106, 20);
     private static final Color COLOR_HIELO = new Color(125, 211, 252);
+    private static final Color COLOR_HIELO_BORDE = new Color(56, 140, 190);
+    private static final Color COLOR_ALA_HIELO = new Color(147, 197, 253);
+    private static final Color COLOR_ALA_HIELO_BORDE = new Color(96, 165, 250);
     private static final Color COLOR_FUEGO = new Color(239, 68, 68);
+    private static final Color COLOR_FUEGO_BORDE = new Color(160, 30, 30);
+    private static final Color COLOR_FUEGO_LLAMA = new Color(249, 115, 22);
+    private static final Color COLOR_FUEGO_NUCLEO = new Color(253, 224, 71);
+    private static final Color COLOR_ARO_BLANCO = new Color(235, 240, 245);
+    private static final Color COLOR_ARO_GRIS = new Color(120, 130, 145);
+    private static final Color COLOR_ARO_ENCESTADO = new Color(250, 204, 21);
+    private static final Color COLOR_ARO_PENDIENTE = new Color(230, 80, 40);
     private static final Color COLOR_PERSONAJE = new Color(37, 99, 235);
+    private static final Color COLOR_PERSONAJE_CABEZA = new Color(253, 224, 71);
+    private static final Color COLOR_PERSONAJE_PIERNAS = new Color(30, 41, 59);
+
+    private static final BasicStroke TRAZO_FINO = new BasicStroke(2f);
+    private static final BasicStroke TRAZO_MEDIO = new BasicStroke(3f);
+    private static final BasicStroke TRAZO_GRUESO = new BasicStroke(6f);
+    private static final BasicStroke TRAZO_PIERNAS =
+            new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+    private static final Font FUENTE_MENSAJE = new Font(Font.SANS_SERIF, Font.BOLD, 48);
+
+    private static final Map<String, Image> CACHE_FONDOS = new HashMap<>();
 
     private Nivel nivel;
     private Escenario escenario;
-    
+
     private Image imgFondoEscenario;
+    private Image fondoEscalado;
+    private int anchoFondo;
+    private int altoFondo;
 
     private String mensaje;
     private long tiempoTranscurrido;
+    private final int monedasTotales;
 
     private PanelPausa panelPausa;
     private PanelFinNivel panelDerrota;
@@ -63,6 +105,7 @@ public class PanelJuego extends JPanel {
 
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
+        this.monedasTotales = FabricaNivel1.getMonedasTotales();
 
         this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
@@ -137,10 +180,19 @@ public class PanelJuego extends JPanel {
         panelVictoria.setVisible(!panelVictoria.isVisible());
     }
 
+    public void ocultarPaneles(){
+        panelPausa.setVisible(false);
+        panelDerrota.setVisible(false);
+        panelVictoria.setVisible(false);
+        repaint();
+    }
+
     public void escenarioCambiado(Escenario escenario){
         this.escenario = escenario;
         this.nivel = escenario.getNivel();
-        this.imgFondoEscenario = new ImageIcon(escenario.getRutaFondo()).getImage();
+        this.imgFondoEscenario = CACHE_FONDOS.computeIfAbsent(
+                escenario.getRutaFondo(), ruta -> new ImageIcon(ruta).getImage());
+        this.fondoEscalado = null;
         repaint();    
     }
 
@@ -149,7 +201,7 @@ public class PanelJuego extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
 
-        g2.drawImage(imgFondoEscenario, 0, 0, getWidth(), getHeight(), null);
+        this.dibujarFondo(g2);
 
         this.dibujarPlataformas(g2);
         this.dibujarMonedas(g2);
@@ -163,9 +215,45 @@ public class PanelJuego extends JPanel {
         g2.dispose();
     }
 
+    private void dibujarFondo(Graphics2D g2) {
+        if (this.imgFondoEscenario == null) {
+            return;
+        }
+
+        int ancho = getWidth();
+        int alto = getHeight();
+
+        if (this.fondoEscalado == null || this.anchoFondo != ancho || this.altoFondo != alto) {
+            this.fondoEscalado = this.escalar(this.imgFondoEscenario, ancho, alto);
+            this.anchoFondo = ancho;
+            this.altoFondo = alto;
+        }
+
+        g2.drawImage(this.fondoEscalado, 0, 0, null);
+    }
+
+    private Image escalar(Image original, int ancho, int alto) {
+        if (ancho <= 0 || alto <= 0) {
+            return null;
+        }
+
+        BufferedImage escalada = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = escalada.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(original, 0, 0, ancho, alto, null);
+        g2.dispose();
+
+        return escalada;
+    }
+
     private void dibujarPlataformas(Graphics2D g2) {
         for (Plataforma plataforma : this.nivel.getPlataformas()) {
             if (plataforma.isDestruida()) {
+                continue;
+            }
+
+            if (plataforma instanceof Muro) {
+                this.dibujarMuro(g2, (Muro) plataforma);
                 continue;
             }
 
@@ -176,13 +264,13 @@ public class PanelJuego extends JPanel {
                     plataforma.getAncho(), plataforma.getAlto(), 10, 10));
 
             g2.setColor(madera ? COLOR_MADERA_BORDE : COLOR_PLATAFORMA_BORDE);
-            g2.setStroke(new BasicStroke(3f));
+            g2.setStroke(TRAZO_MEDIO);
             g2.draw(new RoundRectangle2D.Double(
                     plataforma.getPosicionX(), plataforma.getPosicionY(),
                     plataforma.getAncho(), plataforma.getAlto(), 10, 10));
 
             if (madera) {
-                g2.setStroke(new BasicStroke(2f));
+                g2.setStroke(TRAZO_FINO);
                 for (int i = 1; i < 4; i++) {
                     double x = plataforma.getPosicionX() + (plataforma.getAncho() * i / 4.0);
                     g2.draw(new java.awt.geom.Line2D.Double(
@@ -191,6 +279,31 @@ public class PanelJuego extends JPanel {
                 }
             }
         }
+    }
+
+    //El muro se dibuja translucido, con tonos del fondo, y recortado en la plataforma blanca:
+    //al bajar se apoya en el suelo sin salirse del escenario.
+    private void dibujarMuro(Graphics2D g2, Muro muro) {
+        double x = muro.getPosicionX();
+        double y = muro.getPosicionY();
+        double w = muro.getAncho();
+
+        double altoVisible = Math.min(muro.getAlto(), Configuracion.SUELO_Y - y);
+
+        if (altoVisible <= 0) {
+            return;
+        }
+
+        Rectangle2D forma = new Rectangle2D.Double(x, y, w, altoVisible);
+
+        g2.setPaint(new GradientPaint(
+                (float) x, (float) y, COLOR_MURO_ARRIBA,
+                (float) x, (float) (y + altoVisible), COLOR_MURO_ABAJO));
+        g2.fill(forma);
+
+        g2.setColor(COLOR_MURO_BORDE);
+        g2.setStroke(TRAZO_FINO);
+        g2.draw(forma);
     }
 
     private void dibujarMonedas(Graphics2D g2) {
@@ -204,8 +317,8 @@ public class PanelJuego extends JPanel {
                     moneda.getPosicionX(), moneda.getPosicionY(),
                     moneda.getAncho(), moneda.getAlto()));
 
-            g2.setColor(new Color(180, 130, 10));
-            g2.setStroke(new BasicStroke(3f));
+            g2.setColor(COLOR_MONEDA_BORDE);
+            g2.setStroke(TRAZO_MEDIO);
             g2.draw(new Ellipse2D.Double(
                     moneda.getPosicionX(), moneda.getPosicionY(),
                     moneda.getAncho(), moneda.getAlto()));
@@ -228,26 +341,30 @@ public class PanelJuego extends JPanel {
 
             if (recolectable.getArma() instanceof ArmaHielo) {
                 relleno = COLOR_HIELO;
-                borde = new Color(56, 140, 190);
+                borde = COLOR_HIELO_BORDE;
             } else if (recolectable.getArma() instanceof ArmaFuego) {
                 relleno = COLOR_FUEGO;
-                borde = new Color(160, 30, 30);
+                borde = COLOR_FUEGO_BORDE;
             } else {
                 relleno = COLOR_MONEDA;
-                borde = new Color(180, 130, 10);
+                borde = COLOR_MONEDA_BORDE;
             }
 
             Ellipse2D circulo = new Ellipse2D.Double(x, y, w, h);
             g2.setColor(relleno);
             g2.fill(circulo);
             g2.setColor(borde);
-            g2.setStroke(new BasicStroke(3f));
+            g2.setStroke(TRAZO_MEDIO);
             g2.draw(circulo);
         }
     }
 
     private void dibujarAro(Graphics2D g2) {
         Aro aro = this.nivel.getAro();
+
+        if (aro == null) {
+            return;
+        }
 
         double x = aro.getPosicionX();
         double y = aro.getPosicionY();
@@ -257,18 +374,18 @@ public class PanelJuego extends JPanel {
         double centroX = x + w * 0.5;
         double centroY = y + h * 0.55;
 
-        g2.setColor(new Color(235, 240, 245));
+        g2.setColor(COLOR_ARO_BLANCO);
         g2.fill(new RoundRectangle2D.Double(x + w - 20, y + 8, 20, h * 0.62, 6, 6));
-        g2.setColor(new Color(120, 130, 145));
-        g2.setStroke(new BasicStroke(3f));
+        g2.setColor(COLOR_ARO_GRIS);
+        g2.setStroke(TRAZO_MEDIO);
         g2.draw(new RoundRectangle2D.Double(x + w - 20, y + 8, 20, h * 0.62, 6, 6));
 
-        g2.setColor(aro.isEncestado() ? new Color(250, 204, 21) : new Color(230, 80, 40));
-        g2.setStroke(new BasicStroke(6f));
+        g2.setColor(aro.isEncestado() ? COLOR_ARO_ENCESTADO : COLOR_ARO_PENDIENTE);
+        g2.setStroke(TRAZO_GRUESO);
         g2.draw(new Ellipse2D.Double(centroX - 24, centroY - 8, 48, 16));
 
-        g2.setStroke(new BasicStroke(3f));
-        g2.setColor(new Color(235, 240, 245));
+        g2.setStroke(TRAZO_MEDIO);
+        g2.setColor(COLOR_ARO_BLANCO);
         g2.draw(new java.awt.geom.Line2D.Double(centroX - 20, centroY + 8, centroX - 12, y + h));
         g2.draw(new java.awt.geom.Line2D.Double(centroX, centroY + 8, centroX, y + h));
         g2.draw(new java.awt.geom.Line2D.Double(centroX + 20, centroY + 8, centroX + 12, y + h));
@@ -298,8 +415,8 @@ public class PanelJuego extends JPanel {
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
                 enemigo.getAncho(), enemigo.getAlto()));
 
-        g2.setColor(congelado ? new Color(37, 99, 180) : new Color(140, 20, 20));
-        g2.setStroke(new BasicStroke(3f));
+        g2.setColor(congelado ? COLOR_CONGELADO_BORDE : COLOR_ENEMIGO_BORDE);
+        g2.setStroke(TRAZO_MEDIO);
         g2.draw(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
                 enemigo.getAncho(), enemigo.getAlto()));
@@ -318,8 +435,8 @@ public class PanelJuego extends JPanel {
         g2.fill(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
                 enemigo.getAncho(), enemigo.getAlto()));
-        g2.setColor(congelado ? new Color(37, 99, 180) : new Color(140, 20, 20));
-        g2.setStroke(new BasicStroke(3f));
+        g2.setColor(congelado ? COLOR_CONGELADO_BORDE : COLOR_ENEMIGO_BORDE);
+        g2.setStroke(TRAZO_MEDIO);
         g2.draw(new Ellipse2D.Double(
                 enemigo.getPosicionX(), enemigo.getPosicionY(),
                 enemigo.getAncho(), enemigo.getAlto()));
@@ -335,9 +452,9 @@ public class PanelJuego extends JPanel {
         boolean congelado = volador.estaCongelado();
 
         Color colorCuerpo = congelado ? COLOR_HIELO : COLOR_ENEMIGO;
-        Color colorBorde = congelado ? new Color(37, 99, 180) : new Color(140, 20, 20);
-        Color colorAla = congelado ? new Color(147, 197, 253) : COLOR_VOLADOR;
-        Color colorAlaBorde = congelado ? new Color(96, 165, 250) : new Color(194, 106, 20);
+        Color colorBorde = congelado ? COLOR_CONGELADO_BORDE : COLOR_ENEMIGO_BORDE;
+        Color colorAla = congelado ? COLOR_ALA_HIELO : COLOR_VOLADOR;
+        Color colorAlaBorde = congelado ? COLOR_ALA_HIELO_BORDE : COLOR_ALA_BORDE;
 
         Path2D alaIzq = new Path2D.Double();
         alaIzq.moveTo(cx, cy);
@@ -360,14 +477,14 @@ public class PanelJuego extends JPanel {
         g2.fill(alaDer);
 
         g2.setColor(colorAlaBorde);
-        g2.setStroke(new BasicStroke(2f));
+        g2.setStroke(TRAZO_FINO);
         g2.draw(alaIzq);
         g2.draw(alaDer);
 
         g2.setColor(colorCuerpo);
         g2.fill(new Ellipse2D.Double(x + w * 0.25, y + h * 0.25, w * 0.5, h * 0.5));
         g2.setColor(colorBorde);
-        g2.setStroke(new BasicStroke(2f));
+        g2.setStroke(TRAZO_FINO);
         g2.draw(new Ellipse2D.Double(x + w * 0.25, y + h * 0.25, w * 0.5, h * 0.5));
     }
 
@@ -388,7 +505,7 @@ public class PanelJuego extends JPanel {
             llama.quadTo(cx + 3, base - alto * 0.6, cx + 7, base);
             llama.closePath();
 
-            g2.setColor(new Color(249, 115, 22));
+            g2.setColor(COLOR_FUEGO_LLAMA);
             g2.fill(llama);
 
             Path2D nucleo = new Path2D.Double();
@@ -397,7 +514,7 @@ public class PanelJuego extends JPanel {
             nucleo.quadTo(cx + 1.5, base - alto * 0.5, cx + 3, base);
             nucleo.closePath();
 
-            g2.setColor(new Color(253, 224, 71));
+            g2.setColor(COLOR_FUEGO_NUCLEO);
             g2.fill(nucleo);
         }
     }
@@ -421,12 +538,12 @@ public class PanelJuego extends JPanel {
         g2.setColor(COLOR_PERSONAJE);
         g2.fill(new RoundRectangle2D.Double(x + 4, y + h * 0.42, w - 8, h * 0.58, 10, 10));
 
-        g2.setColor(new Color(253, 224, 71));
+        g2.setColor(COLOR_PERSONAJE_CABEZA);
         g2.fill(new Ellipse2D.Double(x + w / 4.0, y + h * 0.08, w / 2.0, h * 0.36));
 
         double pieIzq = p.isEnElSuelo() ? 0 : 10;
-        g2.setColor(new Color(30, 41, 59));
-        g2.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.setColor(COLOR_PERSONAJE_PIERNAS);
+        g2.setStroke(TRAZO_PIERNAS);
         g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 - 12, y + h + pieIzq));
         g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 + 12, y + h + pieIzq));
 
@@ -467,7 +584,7 @@ public class PanelJuego extends JPanel {
 
         //Monedas
         int recogidas = p.getMonedasRecolectadas();
-        int totales = FabricaNivel1.MONEDAS_TOTALES;
+        int totales = this.monedasTotales;
 
         //PS
         int vidas = p.getPuntosVida();
@@ -478,8 +595,8 @@ public class PanelJuego extends JPanel {
         hud.dibujar(g2, vidas,p.getPuntaje(), tiempoSegundos, recogidas, totales);
 
         if (!this.mensaje.isEmpty()) {
-            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 48));
-            g2.setColor(new Color(250, 204, 21));
+            g2.setFont(FUENTE_MENSAJE);
+            g2.setColor(COLOR_MONEDA);
             int anchoTexto = g2.getFontMetrics().stringWidth(this.mensaje);
             g2.drawString(this.mensaje, (getWidth() - anchoTexto) / 2, getHeight() / 2);
         }

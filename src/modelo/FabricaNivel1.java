@@ -5,109 +5,199 @@ import java.util.List;
 
 public class FabricaNivel1 {
 
-    //Constantes
-    public static final int ANCHO = 1600;
-    public static final int ALTO = 900;
+    //Escenarios del nivel, de abajo hacia arriba.
+    private static final int ESCENARIO_1 = 1;
+    private static final int ESCENARIO_2 = 2;
+    private static final int ESCENARIO_3 = 3;
 
-    public static final int MONEDAS_TOTALES = 1;
+    //Zona de transicion superior.
+    private static final int ZONA_X = 0;
+    private static final int ZONA_Y = 0;
+    private static final int ZONA_ANCHO = 400;
+    private static final int ZONA_ALTO = 100;
+
+    //Zona de transicion del escenario inicial, avanza al nivel 1 cuando toca el borde derecho.
+    private static final int ZONA_FINAL_X = 1550;
+    private static final int ZONA_FINAL_ANCHO = 50;
+
+    //Muro que bloquea el paso en el escenario inicial.
+    private static final int MURO_X = 1480;
+    private static final int MURO_Y = 120;
+    private static final int MURO_ANCHO = 120;
+    private static final int MONEDA_MURO_ANCHO = 30;
+    private static final int MONEDA_MURO_ALTO = 30;
+
+    //Punto de aparicion del jugador al entrar a un escenario.
+    private static final int SPAWN_X = 50;
+    private static final int SPAWN_Y = 756;
+
+    private static Integer monedasTotales;
 
     private FabricaNivel1() {
     }
 
-    public static Escenario crearEscenario1(){
-        Nivel nivel = crearContenidoEscenario1();
+    //Comportamientos
+    public static Escenario crearEscenario(int id, Personaje personaje) {
+        switch (id) {
+            case ESCENARIO_1:
+                return crearEscenario1(personaje);
+            case ESCENARIO_2:
+                return crearEscenario2(personaje);
+            case ESCENARIO_3:
+                return crearEscenario3(personaje);
+            default:
+                return null;
+        }
+    }
 
-        Escenario escenario = new Escenario(1, nivel, "src/assets/lvl-bg/Nivel1_1.png");
+    public static Escenario crearEscenario1(Personaje personaje) {
+        Nivel nivel = crearContenidoEscenario1(personaje);
 
-        escenario.agregarZonaTransicion(new ZonaTransicion(0,0,400,100,2,50,756));
+        Escenario escenario = new Escenario(ESCENARIO_1, nivel, "src/assets/lvl-bg/Nivel1_1.jpg");
+
+        //Al final del escenario esta el muro; se abre al encestar en el aro de basquet.
+        escenario.agregarZonaTransicion(
+                new ZonaTransicion(ZONA_FINAL_X, 0, ZONA_FINAL_ANCHO, Configuracion.ALTO, ESCENARIO_2, SPAWN_X, SPAWN_Y));
+        return escenario;
+    }
+
+    public static Escenario crearEscenario2(Personaje personaje) {
+        Nivel nivel = crearContenidoEscenario2(personaje);
+
+        Escenario escenario = new Escenario(ESCENARIO_2, nivel, "src/assets/lvl-bg/Nivel1_2.png");
+
+        //Transición del nivel, solo ocurre si la cabeza del personaje toca el fondo del nivel.
+        escenario.agregarZonaTransicion(
+                new ZonaTransicion(ZONA_X, ZONA_Y - ZONA_ALTO, ZONA_ANCHO, ZONA_ALTO,
+                        ESCENARIO_3, SPAWN_X, SPAWN_Y));
 
         return escenario;
     }
 
-    public static Escenario crearEscenario2(){
-        Nivel nivel = crearContenidoEscenario2();
-        return new Escenario(2, nivel, "src/assets/lvl-bg/Nivel1_2.png");
+    public static Escenario crearEscenario3(Personaje personaje) {
+        Nivel nivel = crearContenidoEscenario3(personaje);
+
+        return new Escenario(ESCENARIO_3, nivel, "src/assets/lvl-bg/Nivel1_3.png");
     }
- 
-    private static Nivel crearContenidoEscenario1() {
+
+    public static int getMonedasTotales() {
+        if (monedasTotales == null) {
+            Personaje personaje = crearPersonajeInicial();
+            monedasTotales = crearEscenario1(personaje).getNivel().getMonedas().size()
+                    + crearEscenario2(personaje).getNivel().getMonedas().size()
+                    + crearEscenario3(personaje).getNivel().getMonedas().size();
+        }
+        return monedasTotales;
+    }
+
+    private static Nivel crearContenidoEscenario1(Personaje personaje) {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
         List<Recolectable> recolectables = new ArrayList<>();
 
-        // Fila de base: plataforma larga con el personaje
-        plataformas.add(new Plataforma(0, 820, ANCHO, 30));
+        // Suelo del escenario, cubre todo el ancho.
+        plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
 
-        Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
-        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
+        // Cinco enemigos terrestres al principio del nivel.
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.0, 240, 776));
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.2, 420, 776));
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 1.8, 600, 776));
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.1, 780, 776));
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 1.9, 960, 776));
 
-        // Fila inferior: moneda suelta
+        // Monedas: una en el suelo y otra flotando a la altura del salto
         monedas.add(new Moneda(300, 770, 30, 30));
+        monedas.add(new Moneda(700, 555, 30, 30));
 
-        // Recolectables al inicio del nivel, flanqueando al personaje:
-        // hielo unos pixeles a la izquierda del spawn (x=120) y fuego a la derecha.
-        // Ambos hacen el mismo dano base que la pelota inicial (10) y duran 15 s en manos del personaje.
-        recolectables.add(new Recolectable(
-                new ArmaHielo(10, 12.0, 5000, 0, 0, 16, 16),
+        // Aro de basquet, en el cielo y en mitad de la pantalla.
+        // al encestar, se empieza a abrir el muro.
+        Aro aro = new Aro(755, 490, 90, 70, false);
+
+        // Muro que bloquea el final del escenario hasta encestar en el aro.
+        Muro muro = new Muro(MURO_X, MURO_Y, MURO_ANCHO, Configuracion.ALTO - MURO_Y);
+        plataformas.add(muro);
+
+        // Moneda apoyada sobre el muro: baja con el y queda en el suelo al abrirse.
+        Moneda monedaMuro = new Moneda(0, 0, MONEDA_MURO_ANCHO, MONEDA_MURO_ALTO);
+        muro.colocarMonedaEncima(monedaMuro);
+        monedas.add(monedaMuro);
+
+        return new Nivel(personaje, aro, enemigos, monedas, plataformas, recolectables, muro);
+    }
+
+    private static Nivel crearContenidoEscenario2(Personaje personaje) {
+        List<Plataforma> plataformas = new ArrayList<>();
+        List<Moneda> monedas = new ArrayList<>();
+        List<Enemigo> enemigos = new ArrayList<>();
+        List<Recolectable> recolectables = new ArrayList<>();
+
+        // Suelo del escenario
+        plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
+
+        // Plataformas del segundo escenario
+        plataformas.add(new Plataforma(120, 700, 300, 26));
+        plataformas.add(new Plataforma(480, 620, 240, 26));
+        plataformas.add(new Plataforma(800, 540, 240, 26));
+        plataformas.add(new Plataforma(1120, 460, 300, 26));
+        plataformas.add(new Plataforma(860, 380, 240, 26));
+        plataformas.add(new Plataforma(600, 300, 240, 26));
+        plataformas.add(new Plataforma(340, 220, 240, 26));
+
+        // Monedas
+        monedas.add(new Moneda(300, 770, 30, 30));
+        monedas.add(new Moneda(560, 570, 30, 30));
+        monedas.add(new Moneda(860, 490, 30, 30));
+
+        // Enemigos
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.0, 1150, 416));
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.0, 200, 656));
+        enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.1, 920, 336));
+
+        // Este escenario no tiene aro: la meta esta en el ultimo escenario del nivel.
+        return new Nivel(personaje, null, enemigos, monedas, plataformas, recolectables, null);
+    }
+
+    private static Nivel crearContenidoEscenario3(Personaje personaje) {
+        List<Plataforma> plataformas = new ArrayList<>();
+        List<Moneda> monedas = new ArrayList<>();
+        List<Enemigo> enemigos = new ArrayList<>();
+        List<Recolectable> recolectables = new ArrayList<>();
+
+        // Sala final
+        plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
+
+        // Pelota de hielo
+        recolectables.add(new Recolectable(new ArmaHielo(10, 12.0, 5000, 0, 0, 16, 16),
                 50, 780, 40, 40));
 
-        recolectables.add(new Recolectable(
-                new ArmaFuego(10, 12.0, 5, 0, 0, 16, 16),
-                190, 780, 40, 40));
+        //Tres enemigos voladores
+        EnemigoVolador voladorBajo = new EnemigoVolador(20, 46, 40, 2.2, 780, 660);
+        voladorBajo.setLimites(700, 900);
+        enemigos.add(voladorBajo);
 
-        // Fila inferior: plataforma blanca corta
-        plataformas.add(new Plataforma(880, 700, 520, 26));
+        EnemigoVolador voladorMedio = new EnemigoVolador(20, 46, 40, 2.0, 760, 500);
+        voladorMedio.setLimites(680, 880);
+        enemigos.add(voladorMedio);
 
-        /* Tres enemigos voladores, se mueven de izquierda a derecha 
-        (la idea es congelarlos para poder subir a la plataforma de arriba)*/
-        
-        EnemigoVolador voladorIzquierdo = new EnemigoVolador(12, 30, 46, 40, 2.6, 320, 640);
-        voladorIzquierdo.setLimites(250, 470);
-        enemigos.add(voladorIzquierdo);
+        EnemigoVolador voladorAlto = new EnemigoVolador(20, 46, 40, 1.8, 720, 340);
+        voladorAlto.setLimites(640, 760);
+        enemigos.add(voladorAlto);
 
-        EnemigoVolador voladorCentral = new EnemigoVolador(12, 30, 46, 40, 2.4, 780, 640);
-        voladorCentral.setLimites(700, 920);
-        enemigos.add(voladorCentral);
+        // Monedas
+        monedas.add(new Moneda(765, 460, 30, 30));
+        monedas.add(new Moneda(690, 170, 30, 30));
 
-        EnemigoVolador voladorDerecho = new EnemigoVolador(12, 30, 46, 40, 2.2, 1220, 640);
-        voladorDerecho.setLimites(1150, 1370);
-        enemigos.add(voladorDerecho);
-
-        // Fila siguiente: plataforma blanca larga con un enemigo terrestre en el medio
-        plataformas.add(new Plataforma(180, 560, 1180, 26));
-        enemigos.add(new EnemigoTerrestre(40, 44, 44, 2.0, 700, 516));
-
-        // Fila siguiente: dos plataformas blancas, cada una con plataformas marrones (que son destructibles)
-        plataformas.add(new Plataforma(120, 400, 300, 26));
-        plataformas.add(new Plataforma(420, 400, 120, 26, MaterialPlataforma.MADERA));
-        plataformas.add(new Plataforma(700, 400, 340, 26));
-        plataformas.add(new Plataforma(1040, 400, 120, 26, MaterialPlataforma.MADERA));
-
-        // Fila superior: plataforma blanca con segmento marron a la derecha, donde esta el aro
-        plataformas.add(new Plataforma(120, 240, 300, 26));
-        plataformas.add(new Plataforma(420, 240, 120, 26, MaterialPlataforma.MADERA));
-
-        // Fila superior: plataforma blanca larga a la derecha, separada del aro
-        plataformas.add(new Plataforma(1080, 240, 440, 26));
-
-        Aro aro = new Aro(255, 170, 90, 70);
-
-        return new Nivel(personaje, aro, enemigos, monedas, plataformas, recolectables);
+        // Aro del ultimo escenario
+        Aro aro = new Aro(755, 160, 90, 70);
+        return new Nivel(personaje, aro, enemigos, monedas, plataformas, recolectables, null);
     }
 
-    private static Nivel crearContenidoEscenario2(){
-        List<Plataforma> plataformas = new ArrayList<>();
-        List<Moneda> monedas = new ArrayList<>();
-        List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
-
-        plataformas.add(new Plataforma(0, 820, ANCHO, 30));
-
+    public static Personaje crearPersonajeInicial() {
         Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
         personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
 
-        Aro aro = new Aro(0,0,1,1);
-        return new Nivel(personaje,aro,enemigos,monedas,plataformas,recolectables);
+        return personaje;
     }
 
 }

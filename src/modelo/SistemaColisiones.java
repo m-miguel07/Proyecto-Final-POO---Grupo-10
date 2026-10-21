@@ -11,7 +11,7 @@ public class SistemaColisiones {
     //Comportamientos
     public void verificarMonedas(Personaje personaje, List<Moneda> monedas) {
         for (Moneda moneda : monedas) {
-            if (!moneda.isRecolectado() && this.colisionaPersonaje(personaje, moneda)) {
+            if (!moneda.isRecolectado() && personaje.interseca(moneda)) {
                 moneda.recolectar();
                 personaje.sumarMoneda();
                 personaje.sumarPuntaje(PUNTAJE_MONEDA);
@@ -53,17 +53,11 @@ public class SistemaColisiones {
                 continue;
             }
 
-            if (this.colisionaPersonaje(personaje, recolectable)) {
+            if (personaje.interseca(recolectable)) {
                 recolectable.recolectar();
                 personaje.equiparArmaTemporal(recolectable.getArma());
                 GestorAudio.getInstancia().reproducirEfecto(GestorAudio.AGARRE_PELOTA);
             }
         }
-    }
-
-    private boolean colisionaPersonaje(Personaje personaje, ObjetoDelJuego objeto) {
-        return Colisiones.hayInterseccion(
-                personaje.getPosicionX(), personaje.getPosicionY(), personaje.getAncho(), personaje.getAlto(),
-                objeto.getPosicionX(), objeto.getPosicionY(), objeto.getAncho(), objeto.getAlto());
     }
 }

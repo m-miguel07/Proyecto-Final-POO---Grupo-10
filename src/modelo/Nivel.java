@@ -8,10 +8,16 @@ public class Nivel {
 
     private Personaje personaje;
     private final Aro aro;
+    private final Muro muro;
     private final List<Enemigo> enemigos;
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
     private final List<Recolectable> recolectables;
+
+    private final List<Enemigo> enemigosVista;
+    private final List<Moneda> monedasVista;
+    private final List<Plataforma> plataformasVista;
+    private final List<Recolectable> recolectablesVista;
 
     private final GestorPelotas gestorPelotas;
     private final SistemaColisiones sistemaColisiones;
@@ -19,17 +25,23 @@ public class Nivel {
 
     //Constructor
     public Nivel(Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
-                 List<Plataforma> plataformas, List<Recolectable> recolectables) {
-        if (personaje == null || aro == null) {
-            throw new IllegalArgumentException("El personaje y el aro son obligatorios");
+                 List<Plataforma> plataformas, List<Recolectable> recolectables, Muro muro) {
+        if (personaje == null) {
+            throw new IllegalArgumentException("El personaje es obligatorio");
         }
 
         this.personaje = personaje;
         this.aro = aro;
+        this.muro = muro;
         this.enemigos = new ArrayList<>(enemigos);
         this.monedas = new ArrayList<>(monedas);
         this.plataformas = new ArrayList<>(plataformas);
         this.recolectables = new ArrayList<>(recolectables);
+
+        this.enemigosVista = Collections.unmodifiableList(this.enemigos);
+        this.monedasVista = Collections.unmodifiableList(this.monedas);
+        this.plataformasVista = Collections.unmodifiableList(this.plataformas);
+        this.recolectablesVista = Collections.unmodifiableList(this.recolectables);
 
         this.gestorPelotas = new GestorPelotas();
         this.sistemaColisiones = new SistemaColisiones();
@@ -45,39 +57,46 @@ public class Nivel {
         return this.aro;
     }
 
+    public Muro getMuro() {
+        return this.muro;
+    }
+
     public List<Enemigo> getEnemigos() {
-        return Collections.unmodifiableList(this.enemigos);
+        return this.enemigosVista;
     }
 
     public List<Moneda> getMonedas() {
-        return Collections.unmodifiableList(this.monedas);
+        return this.monedasVista;
     }
 
     public List<Plataforma> getPlataformas() {
-        return Collections.unmodifiableList(this.plataformas);
+        return this.plataformasVista;
     }
 
     public List<Recolectable> getRecolectables() {
-        return Collections.unmodifiableList(this.recolectables);
+        return this.recolectablesVista;
     }
 
     public List<Pelota> getPelotas() {
         return this.gestorPelotas.getPelotas();
     }
 
-
-    //Setters
-    public void setPersonaje(Personaje personaje){ //Para manejar el traspaso entre escenarios, conservando el estado actual
-        this.personaje = personaje;
-    }
     //Comportamientos
     public void actualizar() {
         this.sistemaColisiones.verificarMonedas(this.personaje, this.monedas);
         this.sistemaColisiones.verificarEnemigos(this.personaje, this.enemigos);
+
+        if (this.muro != null) {
+            if (this.aro != null && this.aro.isEncestado()) {
+                this.muro.abrir();
+            }
+
+            this.muro.actualizar();
+        }
     }
 
     public boolean estaCompleto() {
-        return this.aro.isEncestado();
+        return this.aro != null && this.aro.isEncestado() && this.aro.esMeta();
     }
 
     public int contarMonedasRecolectadas() {
@@ -92,9 +111,9 @@ public class Nivel {
         this.gestorPelotas.agregar(pelota);
     }
 
-    public void actualizarPelotas(int anchoPantalla, int altoPantalla) {
+    public void actualizarPelotas(int anchoPantalla, int altoPantalla, int deltaMS) {
         this.gestorPelotas.actualizar(this.aro, this.personaje, this.enemigos, this.plataformas,
-                anchoPantalla, altoPantalla);
+                anchoPantalla, altoPantalla, deltaMS);
     }
 
     public void eliminarEnemigosDerrotados() {

@@ -8,30 +8,33 @@ public class GestorPelotas {
 
     //Constantes
     private static final int PUNTAJE_ENCESTADO = 500;
-    private static final int MS_POR_FRAME = 16;
 
     //Atributos
     private final List<Pelota> pelotas;
+    private final List<Pelota> pelotasVista;
 
     //Constructor
     public GestorPelotas() {
         this.pelotas = new ArrayList<>();
+        this.pelotasVista = Collections.unmodifiableList(this.pelotas);
     }
 
     //Getters
     public List<Pelota> getPelotas() {
-        return Collections.unmodifiableList(this.pelotas);
+        return this.pelotasVista;
     }
 
     //Comportamientos
     public void agregar(Pelota pelota) {
-        if (pelota != null) {
-            this.pelotas.add(pelota);
+        if (pelota == null) {
+            throw new IllegalArgumentException("La pelota no puede ser nula");
         }
+
+        this.pelotas.add(pelota);
     }
 
     public void actualizar(Aro aro, Personaje personaje, List<Enemigo> enemigos,
-                           List<Plataforma> plataformas, int anchoPantalla, int altoPantalla) {
+                           List<Plataforma> plataformas, int anchoPantalla, int altoPantalla, int deltaMS) {
         GestorAudio gestorAudio = GestorAudio.getInstancia();
 
         for (int i = this.pelotas.size() - 1; i >= 0; i--) {
@@ -43,8 +46,8 @@ public class GestorPelotas {
             pelota.aplicarGravedad();
             pelota.mover();
 
-            // 1. Detección con el Aro (Objetivo final)
-            if (pelota.interseca(aro)) {
+            // Detecta si la pelota impacto con el aro.
+            if (aro != null && pelota.interseca(aro)) {
                 if (!aro.isEncestado()) {
                     aro.encestar();
                     personaje.sumarPuntaje(PUNTAJE_ENCESTADO);
@@ -55,7 +58,7 @@ public class GestorPelotas {
                 continue;
             }
 
-            // 2. Detección con Enemigos (La pelota impacta, hace daño y desaparece)
+            // Detecta si la pelota impacto con un enemigo y desaparece.
             boolean impactoEnemigo = false;
             for (Enemigo enemigo : enemigos) {
                 if (!pelota.interseca(enemigo)) {
@@ -76,7 +79,7 @@ public class GestorPelotas {
                 continue;
             }
 
-            // 3. Detección y rebotes con Plataformas
+            // Detecta si la pelota impacto con alguna plataforma.
             for (Plataforma plataforma : plataformas) {
                 if (plataforma.isDestruida()) {
                     continue;
@@ -117,7 +120,7 @@ public class GestorPelotas {
                 }
             }
 
-            // 4. Rebote en límites laterales de pantalla
+            // La pelota rebota en los limites lataerales de la pantalla.
             if (pelota.getPosicionX() < 0) {
                 if (pelota.rebotarHorizontal(0, Pelota.RESTITUCION)) {
                     gestorAudio.reproducirEfecto(GestorAudio.BOTE_PELOTA);
@@ -128,10 +131,10 @@ public class GestorPelotas {
                 }
             }
 
-            // 5. Inactividad cuando se detiene en el suelo
-            pelota.actualizarInactividad(MS_POR_FRAME);
+            // La pelota desaparece si no se mueve en el suelo.
+            pelota.actualizarInactividad(deltaMS);
 
-            // 6. Eliminar si sale de la pantalla o se desactivó
+            // La pelota desaparece si esta fuera de la pantalla.
             if (!pelota.isActiva() || pelota.estaFueraDePantalla(anchoPantalla, altoPantalla)) {
                 pelota.desactivar();
                 this.pelotas.remove(i);

@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.List;
+
 public abstract class Enemigo extends Entidad {
 
     //Atributos
@@ -21,6 +23,8 @@ public abstract class Enemigo extends Entidad {
     }
 
     //Comportamientos
+    public abstract void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro);
+
     public boolean puedeAtacar(ObjetoDelJuego objetivo) {
         return Colisiones.hayInterseccion(
                 this.getPosicionX() - RANGO_CUERPO_A_CUERPO,

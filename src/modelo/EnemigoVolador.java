@@ -1,26 +1,18 @@
 package modelo;
 
+import java.util.List;
+
 public class EnemigoVolador extends Enemigo {
 
     //Atributos
-    private double altura;
-    private double amplitud;
-    private double posicionYBase;
     private double limiteIzquierdo;
     private double limiteDerecho;
     private int direccion;
 
     //Constructor
-    public EnemigoVolador(double altura, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
+    public EnemigoVolador(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
         super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
 
-        if (altura <= 0) {
-            throw new IllegalArgumentException("La altura debe ser positiva");
-        }
-
-        this.altura = altura;
-        this.amplitud = this.altura / 2.0;
-        this.posicionYBase = posicionY;
         this.limiteIzquierdo = posicionX;
         this.limiteDerecho = posicionX;
         this.direccion = 1;
@@ -37,10 +29,6 @@ public class EnemigoVolador extends Enemigo {
     }
 
     //Comportamientos
-    public void volar(double tiempoEnSegundos) {
-        this.posicionY = this.posicionYBase + (this.amplitud * Math.sin(tiempoEnSegundos * 2.0));
-    }
-
     public void moverHorizontal() {
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
 
@@ -52,12 +40,11 @@ public class EnemigoVolador extends Enemigo {
         this.posicionX = Math.max(this.limiteIzquierdo, Math.min(nuevaX, this.limiteDerecho - this.ancho));
     }
 
-    public void actualizar(double tiempoEnSegundos) {
+    public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
         if (this.estaCongelado()) {
             return;
         }
 
         this.moverHorizontal();
-        this.volar(tiempoEnSegundos);
     }
 }

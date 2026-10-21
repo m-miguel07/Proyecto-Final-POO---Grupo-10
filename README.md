@@ -23,7 +23,7 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 - **Mecánicas de Juego**
     - El jugador empieza con 0 monedas iniciales, las cuales tendra que ir recolectando entre niveles, debiendo recolectar una cantidad de monedas determinada para poder avanzar al siguiente nivel.
 
-    - Para recolectar una moneda, el jugador deberá meter una pelota en el aro, lo cual se verá obstaculizado por la aparición de enemigos, si lo logra, avanza al siguiente escenario hasta llegar al final del nivel.
+    - Para recolectar una moneda, el jugador deberá tocarlas, lo cual se verá obstaculizado por la aparición de enemigos, si lo logra, avanza al siguiente escenario hasta llegar al final del nivel.
     ![alt text](src/assets/prototipo/image.png)
 
     - El puntaje del jugador se calculará en función del tiempo en el que completa el nivel y enemigos derrotados.

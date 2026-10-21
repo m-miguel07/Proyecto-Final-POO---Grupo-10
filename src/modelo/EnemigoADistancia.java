@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.List;
+
 public class EnemigoADistancia extends Enemigo {
 
     //Atributos
@@ -22,16 +24,19 @@ public class EnemigoADistancia extends Enemigo {
     }
 
     //Setters
-    public boolean setAlcance(int alcance) {
+    public void setAlcance(int alcance) {
         if (alcance <= 0) {
-            return false;
+            throw new IllegalArgumentException("El alcance debe ser positivo");
         }
 
         this.alcance = alcance;
-        return true;
     }
 
     //Comportamientos
+    @Override
+    public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
+    }
+
     @Override
     public boolean puedeAtacar(ObjetoDelJuego objetivo) {
         return this.distanciaA(objetivo) <= this.alcance;
