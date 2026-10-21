@@ -63,7 +63,6 @@ public class Personaje extends Entidad {
         return this.direccion;
     }
 
-    
     public int getMonedasRecolectadas(){
         return this.monedasRecolectadas;
     }

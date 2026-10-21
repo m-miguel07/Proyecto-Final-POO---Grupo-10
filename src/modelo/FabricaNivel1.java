@@ -9,10 +9,27 @@ public class FabricaNivel1 {
     public static final int ANCHO = 1600;
     public static final int ALTO = 900;
 
+    public static final int MONEDAS_TOTALES = 1;
+
     private FabricaNivel1() {
     }
 
-    public static Nivel crear() {
+    public static Escenario crearEscenario1(){
+        Nivel nivel = crearContenidoEscenario1();
+
+        Escenario escenario = new Escenario(1, nivel, "src/assets/lvl-bg/Nivel1_1.png");
+
+        escenario.agregarZonaTransicion(new ZonaTransicion(0,0,400,100,2,50,756));
+
+        return escenario;
+    }
+
+    public static Escenario crearEscenario2(){
+        Nivel nivel = crearContenidoEscenario2();
+        return new Escenario(2, nivel, "src/assets/lvl-bg/Nivel1_2.png");
+    }
+ 
+    private static Nivel crearContenidoEscenario1() {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
@@ -77,4 +94,20 @@ public class FabricaNivel1 {
 
         return new Nivel(personaje, aro, enemigos, monedas, plataformas, recolectables);
     }
+
+    private static Nivel crearContenidoEscenario2(){
+        List<Plataforma> plataformas = new ArrayList<>();
+        List<Moneda> monedas = new ArrayList<>();
+        List<Enemigo> enemigos = new ArrayList<>();
+        List<Recolectable> recolectables = new ArrayList<>();
+
+        plataformas.add(new Plataforma(0, 820, ANCHO, 30));
+
+        Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
+        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
+
+        Aro aro = new Aro(0,0,1,1);
+        return new Nivel(personaje,aro,enemigos,monedas,plataformas,recolectables);
+    }
+
 }

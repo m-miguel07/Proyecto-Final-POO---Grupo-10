@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Nivel {
 
-    private final Personaje personaje;
+    private Personaje personaje;
     private final Aro aro;
     private final List<Enemigo> enemigos;
     private final List<Moneda> monedas;
@@ -65,6 +65,11 @@ public class Nivel {
         return this.gestorPelotas.getPelotas();
     }
 
+
+    //Setters
+    public void setPersonaje(Personaje personaje){ //Para manejar el traspaso entre escenarios, conservando el estado actual
+        this.personaje = personaje;
+    }
     //Comportamientos
     public void actualizar() {
         this.sistemaColisiones.verificarMonedas(this.personaje, this.monedas);

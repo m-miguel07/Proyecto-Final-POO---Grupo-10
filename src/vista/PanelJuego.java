@@ -28,6 +28,8 @@ import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
 import modelo.Recolectable;
+import modelo.Escenario;
+import modelo.FabricaNivel1;
 
 public class PanelJuego extends JPanel {
 
@@ -42,11 +44,13 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_FUEGO = new Color(239, 68, 68);
     private static final Color COLOR_PERSONAJE = new Color(37, 99, 235);
 
-    private transient Nivel nivel;
+    private Nivel nivel;
+    private Escenario escenario;
+    
+    private Image imgFondoEscenario;
+
     private String mensaje;
     private long tiempoTranscurrido;
-
-    private Image imgFondoEscenario;
 
     private PanelPausa panelPausa;
     private PanelFinNivel panelDerrota;
@@ -54,12 +58,11 @@ public class PanelJuego extends JPanel {
 
     private HUD hud;
 
-    public PanelJuego(Nivel nivel, String rutaFondoEscenario) {
+    public PanelJuego(Escenario escenario) {
         super(new GridBagLayout());
-        this.nivel = nivel;
+
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
-        this.imgFondoEscenario = new ImageIcon(rutaFondoEscenario).getImage();
 
         this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
@@ -89,6 +92,7 @@ public class PanelJuego extends JPanel {
         this.add(panelDerrota);
         this.add(panelVictoria);
         
+        escenarioCambiado(escenario);
     }
 
     //Getters
@@ -96,6 +100,10 @@ public class PanelJuego extends JPanel {
         return this.nivel;
     }
 
+    public Escenario getEscenario() {
+        return escenario;
+    }
+    
     public PanelPausa getPanelPausa(){
         return this.panelPausa;
     }
@@ -109,10 +117,6 @@ public class PanelJuego extends JPanel {
     }
 
     //Setters
-    public void setNivel(Nivel nivel) {
-        this.nivel = nivel;
-    }
-
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
@@ -131,6 +135,13 @@ public class PanelJuego extends JPanel {
 
     public void toggleVictoria(){
         panelVictoria.setVisible(!panelVictoria.isVisible());
+    }
+
+    public void escenarioCambiado(Escenario escenario){
+        this.escenario = escenario;
+        this.nivel = escenario.getNivel();
+        this.imgFondoEscenario = new ImageIcon(escenario.getRutaFondo()).getImage();
+        repaint();    
     }
 
     @Override
@@ -455,8 +466,8 @@ public class PanelJuego extends JPanel {
         Personaje p = this.nivel.getPersonaje();
 
         //Monedas
-        int recogidas = this.nivel.contarMonedasRecolectadas();
-        int totales = this.nivel.getMonedasTotales();
+        int recogidas = p.getMonedasRecolectadas();
+        int totales = FabricaNivel1.MONEDAS_TOTALES;
 
         //PS
         int vidas = p.getPuntosVida();

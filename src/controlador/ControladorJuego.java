@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import javax.swing.Timer;
+
 import modelo.Arma;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
@@ -16,17 +17,24 @@ import modelo.Nivel;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
+import modelo.ZonaTransicion;
+import modelo.Escenario;
+
 import vista.PanelJuego;
 
 public class ControladorJuego {
+
     //Constantes
     private static final int MS_POR_FRAME = 16;
     private static final long COOLDOWN_DISPARO_MS = 2000;
 
     //Atributos
     private final PanelJuego panel;
+    private Escenario escenarioActual;
     private final Timer timer;
+
     private final GestorAudio gestorAudio;
+
     private long tiempoTranscurridoMS;
     private long ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
 
@@ -44,12 +52,23 @@ public class ControladorJuego {
 
     //Constructor
     public ControladorJuego(ListenerNavegacion listener) {
-        this.panel = new PanelJuego(FabricaNivel1.crear(), "src/assets/lvl-bg/Nivel1_1.png");
+
+        //Escenarios
+        this.escenarioActual = FabricaNivel1.crearEscenario1();
+    
+        //Vista
+        this.panel = new PanelJuego(escenarioActual);
+   
+        //Gameloop
         this.timer = new Timer(MS_POR_FRAME, e -> this.paso());
-        this.listener = listener;
-        this.gestorAudio = GestorAudio.getInstancia();
         this.tiempoTranscurridoMS = 0;
 
+        //Navegación 
+        this.listener = listener;
+
+        //Audio
+        this.gestorAudio = GestorAudio.getInstancia();
+        
         //Panel pausa
         panel.getPanelPausa().getBotonSalir().addActionListener(e -> {
             pausar();
@@ -103,7 +122,6 @@ public class ControladorJuego {
     }
 
     //Comportamientos
-
     private void iniciarMusica(){
         gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
@@ -168,7 +186,10 @@ public class ControladorJuego {
         this.saltoPendiente = false;
         this.teclaDisparo = false;
         this.enPausa = false;
-        this.panel.setNivel(FabricaNivel1.crear());
+
+        this.escenarioActual = FabricaNivel1.crearEscenario1();
+        panel.escenarioCambiado(this.escenarioActual);
+
         this.tiempoTranscurridoMS = 0;
         this.ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
         this.panel.setTiempoTranscurrido(0);
@@ -310,7 +331,7 @@ public class ControladorJuego {
         } else {
             // Tiro por defecto hacia adelante
             vx = arma.getVelocidad() * personaje.getDireccion();
-            vy = -12.0;
+            vy = -12.0; 
         }
 
         Pelota pelota = new Pelota(
@@ -366,6 +387,8 @@ public class ControladorJuego {
 
         personaje.aplicarGravedad();
         personaje.actualizarVertical(plataformas, nivel.getEnemigos(), FabricaNivel1.ALTO);
+        detectarTransicion(personaje);
+
         personaje.actualizarArmaTemporal(MS_POR_FRAME);
 
         for (var enemigo : nivel.getEnemigos()) {
@@ -385,6 +408,40 @@ public class ControladorJuego {
 
         this.panel.setMensaje("");
         this.panel.repaint();
+    }
+
+    //Logica de cambio de escenario
+    private void detectarTransicion(Personaje personaje){
+        for (ZonaTransicion zona : escenarioActual.getZonasTransicion()){
+            if (zona.contiene(personaje.getPosicionX(),personaje.getPosicionY())){
+                Escenario destino;
+
+                switch (zona.getIdEscenarioDestino()){
+                    case 1:
+                        destino = FabricaNivel1.crearEscenario1();
+                        break;
+                    case 2: 
+                        destino = FabricaNivel1.crearEscenario2();
+                        break;  
+                    default:
+                        return;
+                }
+
+                cambiarEscenario(destino, zona.getSpawnX(), zona.getSpawnY());
+                return;
+            }
+        }
+    }
+
+    private void cambiarEscenario(Escenario nuevo, int x, int y){
+        Personaje personaje = this.escenarioActual.getNivel().getPersonaje();
+
+        personaje.setPosicion(x, y);
+
+        nuevo.getNivel().setPersonaje(personaje);
+
+        this.escenarioActual = nuevo;
+        this.panel.escenarioCambiado(nuevo);
     }
 
 }
