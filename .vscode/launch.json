@@ -6,6 +6,13 @@
             "name": "App",
             "request": "launch",
             "mainClass": "App",
+            "projectName": "Proyecto-Final-POO---Grupo-10_300bc7f0"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "App",
             "projectName": "Proyecto-Final-POO---Grupo-10_4a9362e7"
         },
         {
