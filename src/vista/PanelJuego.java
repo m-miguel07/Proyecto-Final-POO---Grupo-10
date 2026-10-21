@@ -28,6 +28,8 @@ import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
 import modelo.Recolectable;
+import modelo.Escenario;
+import modelo.FabricaNivel1;
 
 public class PanelJuego extends JPanel {
 
@@ -42,26 +44,34 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_FUEGO = new Color(239, 68, 68);
     private static final Color COLOR_PERSONAJE = new Color(37, 99, 235);
 
-    private transient Nivel nivel;
+    private Nivel nivel;
+    private Escenario escenario;
+    
+    private Image imgFondoEscenario;
+
     private String mensaje;
     private long tiempoTranscurrido;
 
-    private Image imgFondoEscenario;
     private PanelPausa panelPausa;
+    private PanelFinNivel panelDerrota;
+    private PanelFinNivel panelVictoria;
+
     private HUD hud;
 
-    public PanelJuego(Nivel nivel, String rutaFondoEscenario) {
+    public PanelJuego(Escenario escenario) {
         super(new GridBagLayout());
-        this.nivel = nivel;
+
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
-        this.imgFondoEscenario = new ImageIcon(rutaFondoEscenario).getImage();
 
         this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
         this.setOpaque(true);
 
         this.panelPausa = new PanelPausa();
+        this.panelDerrota = new PanelFinNivel("src/assets/ui/img-lvl-fail.png",new Dimension(627,37),"src/assets/ui/btn-reset-pause-normal.png", "src/assets/ui/btn-reset-pause-hover.png");
+        this.panelVictoria = new PanelFinNivel("src/assets/ui/img-lvl-victory.png",new Dimension(627,37),"src/assets/ui/btn-next-normal.png", "src/assets/ui/btn-next-hover.png");
+
         this.hud = new HUD(
                            "src/assets/hud/icon-ps-00.png",
                            "src/assets/hud/icon-ps-01.png", 
@@ -75,19 +85,38 @@ public class PanelJuego extends JPanel {
                         );
 
         panelPausa.setVisible(false);
+        panelDerrota.setVisible(false);
+        panelVictoria.setVisible(false);
 
         this.add(panelPausa);
+        this.add(panelDerrota);
+        this.add(panelVictoria);
         
+        escenarioCambiado(escenario);
     }
 
+    //Getters
     public Nivel getNivel() {
         return this.nivel;
     }
 
-    public void setNivel(Nivel nivel) {
-        this.nivel = nivel;
+    public Escenario getEscenario() {
+        return escenario;
+    }
+    
+    public PanelPausa getPanelPausa(){
+        return this.panelPausa;
     }
 
+    public PanelFinNivel getPanelDerrota() {
+        return panelDerrota;
+    }
+
+    public PanelFinNivel getPanelVictoria() {
+        return panelVictoria;
+    }
+
+    //Setters
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
     }
@@ -100,8 +129,19 @@ public class PanelJuego extends JPanel {
         panelPausa.setVisible(!panelPausa.isVisible());
     }
 
-    public PanelPausa getPanelPausa(){
-        return this.panelPausa;
+    public void toggleDerrota(){
+        panelDerrota.setVisible(!panelDerrota.isVisible());
+    }
+
+    public void toggleVictoria(){
+        panelVictoria.setVisible(!panelVictoria.isVisible());
+    }
+
+    public void escenarioCambiado(Escenario escenario){
+        this.escenario = escenario;
+        this.nivel = escenario.getNivel();
+        this.imgFondoEscenario = new ImageIcon(escenario.getRutaFondo()).getImage();
+        repaint();    
     }
 
     @Override
@@ -426,8 +466,8 @@ public class PanelJuego extends JPanel {
         Personaje p = this.nivel.getPersonaje();
 
         //Monedas
-        int recogidas = this.nivel.contarMonedasRecolectadas();
-        int totales = this.nivel.getMonedasTotales();
+        int recogidas = p.getMonedasRecolectadas();
+        int totales = FabricaNivel1.MONEDAS_TOTALES;
 
         //PS
         int vidas = p.getPuntosVida();
