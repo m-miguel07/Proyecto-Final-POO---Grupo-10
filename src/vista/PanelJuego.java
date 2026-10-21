@@ -8,8 +8,6 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -18,8 +16,8 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import modelo.Arma;
 import modelo.ArmaFuego;
@@ -80,15 +78,19 @@ public class PanelJuego extends JPanel {
 
     private static final Font FUENTE_MENSAJE = new Font(Font.SANS_SERIF, Font.BOLD, 48);
 
-    private static final Map<String, Image> CACHE_FONDOS = new HashMap<>();
+    private static final Map<String, BufferedImage> CACHE_FONDOS = new HashMap<>();
+    private static final Map<String, BufferedImage> CACHE_FONDOS_ESCALADOS = new HashMap<>();
 
     private Nivel nivel;
     private Escenario escenario;
 
-    private Image imgFondoEscenario;
-    private Image fondoEscalado;
+    private BufferedImage imgFondoEscenario;
+    private BufferedImage fondoEscalado;
+    private String rutaFondoActual;
     private int anchoFondo;
     private int altoFondo;
+    private boolean cargandoFondo;
+    private boolean escalandoFondo;
 
     private String mensaje;
     private long tiempoTranscurrido;
@@ -190,9 +192,19 @@ public class PanelJuego extends JPanel {
     public void escenarioCambiado(Escenario escenario){
         this.escenario = escenario;
         this.nivel = escenario.getNivel();
-        this.imgFondoEscenario = CACHE_FONDOS.computeIfAbsent(
-                escenario.getRutaFondo(), ruta -> new ImageIcon(ruta).getImage());
+
+        this.rutaFondoActual = escenario.getRutaFondo();
+        this.imgFondoEscenario = CACHE_FONDOS.get(this.rutaFondoActual);
         this.fondoEscalado = null;
+        this.cargandoFondo = false;
+        this.escalandoFondo = false;
+
+        if (this.imgFondoEscenario == null) {
+            this.solicitarCargaFondo();
+        } else {
+            this.solicitarEscalado();
+        }
+
         repaint();    
     }
 
@@ -216,34 +228,99 @@ public class PanelJuego extends JPanel {
     }
 
     private void dibujarFondo(Graphics2D g2) {
-        if (this.imgFondoEscenario == null) {
-            return;
-        }
-
         int ancho = getWidth();
         int alto = getHeight();
 
+        if (this.imgFondoEscenario == null) {
+            this.solicitarCargaFondo();
+            return;
+        }
+
         if (this.fondoEscalado == null || this.anchoFondo != ancho || this.altoFondo != alto) {
-            this.fondoEscalado = this.escalar(this.imgFondoEscenario, ancho, alto);
-            this.anchoFondo = ancho;
-            this.altoFondo = alto;
+            this.solicitarEscalado();
+            return;
         }
 
         g2.drawImage(this.fondoEscalado, 0, 0, null);
     }
 
-    private Image escalar(Image original, int ancho, int alto) {
-        if (ancho <= 0 || alto <= 0) {
-            return null;
+    private void solicitarCargaFondo() {
+        if (this.cargandoFondo) {
+            return;
         }
 
-        BufferedImage escalada = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = escalada.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(original, 0, 0, ancho, alto, null);
-        g2.dispose();
+        String ruta = this.rutaFondoActual;
+        this.cargandoFondo = true;
 
-        return escalada;
+        CargadorAssets.cargarImagen(ruta).whenComplete((imagen, error) ->
+                SwingUtilities.invokeLater(() -> {
+                    if (!ruta.equals(this.rutaFondoActual)) {
+                        return;
+                    }
+
+                    this.cargandoFondo = false;
+
+                    if (error != null) {
+                        System.err.println("No se pudo cargar el fondo: " + ruta);
+                        return;
+                    }
+
+                    CACHE_FONDOS.put(ruta, imagen);
+                    this.imgFondoEscenario = imagen;
+                    this.solicitarEscalado();
+                    this.repaint();
+                }));
+    }
+
+    private void solicitarEscalado() {
+        if (this.imgFondoEscenario == null || this.escalandoFondo) {
+            return;
+        }
+
+        int ancho = this.getWidth();
+        int alto = this.getHeight();
+
+        if (ancho <= 0 || alto <= 0) {
+            return;
+        }
+
+        String ruta = this.rutaFondoActual;
+        String clave = ruta + "@" + ancho + "x" + alto;
+        BufferedImage cacheada = CACHE_FONDOS_ESCALADOS.get(clave);
+
+        if (cacheada != null) {
+            this.fondoEscalado = cacheada;
+            this.anchoFondo = ancho;
+            this.altoFondo = alto;
+            return;
+        }
+
+        this.escalandoFondo = true;
+
+        CargadorAssets.escalar(this.imgFondoEscenario, ancho, alto).whenComplete((escalada, error) ->
+                SwingUtilities.invokeLater(() -> {
+                    if (!ruta.equals(this.rutaFondoActual)) {
+                        return;
+                    }
+
+                    this.escalandoFondo = false;
+
+                    if (error != null) {
+                        System.err.println("No se pudo escalar el fondo: " + ruta);
+                        return;
+                    }
+
+                    if (ancho != this.getWidth() || alto != this.getHeight()) {
+                        this.solicitarEscalado();
+                        return;
+                    }
+
+                    CACHE_FONDOS_ESCALADOS.put(clave, escalada);
+                    this.fondoEscalado = escalada;
+                    this.anchoFondo = ancho;
+                    this.altoFondo = alto;
+                    this.repaint();
+                }));
     }
 
     private void dibujarPlataformas(Graphics2D g2) {

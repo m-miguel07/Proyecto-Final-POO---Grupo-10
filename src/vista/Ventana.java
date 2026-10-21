@@ -3,12 +3,9 @@ package vista;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
+import javax.swing.SwingUtilities;
 
 //EN PROGRESO
 
@@ -40,17 +37,14 @@ public class Ventana extends JFrame {
 
         this.panelMenu = new PanelMenuPrincipal("src/assets/menu-bg.jpeg");
         //Establecer icono de la app
-        try {
-            File archivoIcono = new File("src/assets/icon.png");
-            if (archivoIcono.exists()) {
-                Image icono = ImageIO.read(archivoIcono);
-                this.setIconImage(icono);
-            } else {
-                System.err.println("No se encontro el icono: " + archivoIcono.getPath());
+        CargadorAssets.cargarImagen("src/assets/icon.png").whenComplete((icono, error) -> {
+            if (error != null) {
+                System.err.println("No se pudo cargar icono.");
+                return;
             }
-        } catch(IOException | RuntimeException e) {
-            System.err.println("No se pudo cargar icono.");
-        }
+
+            SwingUtilities.invokeLater(() -> this.setIconImage(icono));
+        });
       
         cardLayout = new CardLayout();
         contenedor = new JPanel(cardLayout);
