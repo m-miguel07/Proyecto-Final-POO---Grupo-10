@@ -27,6 +27,8 @@ import vista.PanelJuego;
 
 public class ControladorJuego {
 
+    private ControladorPrincipal controladorPrincipal;
+
     //Constantes
     private static final int INTERVALO_TIMER_MS = 16;
     private static final long DELTA_MAXIMO_MS = 50;
@@ -49,8 +51,6 @@ public class ControladorJuego {
     private long ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
     private long ultimoPasoNanos;
 
-    private final ListenerNavegacion listener;
-
     //Desplazamiento y apuntado
     private int mouseX = -1;
     private int mouseY = -1;
@@ -62,7 +62,9 @@ public class ControladorJuego {
     private boolean teclaDisparo;
 
     //Constructor
-    public ControladorJuego(Partida partida, ListenerNavegacion listener) {
+    public ControladorJuego(Partida partida, ControladorPrincipal controladorPrincipal) {
+
+        this.controladorPrincipal = controladorPrincipal;
 
         //Persistencia
         this.partida = partida;
@@ -84,9 +86,6 @@ public class ControladorJuego {
         this.timer = new Timer(INTERVALO_TIMER_MS, e -> this.paso());
         this.tiempoTranscurridoMS = 0;
         this.ultimoPasoNanos = System.nanoTime();
-
-        //Navegación 
-        this.listener = listener;
 
         //Audio
         this.gestorAudio = GestorAudio.getInstancia();
@@ -162,7 +161,7 @@ public class ControladorJuego {
         reiniciarEstado();
         this.estado = null;
         
-        this.listener.volverAlMenu(); //notifica que se solicito la salida
+        this.controladorPrincipal.volverAlMenu(); //notifica que se solicito la salida
     }
 
     public void iniciar() {

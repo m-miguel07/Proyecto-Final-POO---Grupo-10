@@ -20,7 +20,7 @@ import vista.Ventana;
 
 import persistencia.*;
 
-public class ControladorPrincipal implements ListenerNavegacion{
+public class ControladorPrincipal{
     private final Ventana ventana;
     private final GestorAudio gestorAudio;
 
@@ -100,8 +100,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
                             });
 
         //Sliders (Opciones)
-        
-
+    
         //Musica 
             JSlider sliderBGM = this.ventana.getPanelMenu().getPanelOpciones().getSliderMusica();
             JSlider sliderSFX = this.ventana.getPanelMenu().getPanelOpciones().getSliderSFX();
@@ -110,8 +109,6 @@ public class ControladorPrincipal implements ListenerNavegacion{
                 double valor = sliderBGM.getValue() / 100.0; //Ajuste al rango de 0.0 a 1.0
                 gestorAudio.setVolumenBGM(valor);
                 gestorAudio.reproducirEfecto(GestorAudio.BOTON_CLICK);
-
-                
             });
 
             sliderSFX.addChangeListener(e -> {
@@ -143,6 +140,11 @@ public class ControladorPrincipal implements ListenerNavegacion{
     private void cerrarJuego(){
         partidaDAO.guardar(this.partida); 
         System.exit(0);
+    }
+
+    private void nuevoJuego(){
+        partidaDAO.eliminar();
+        this.part
     }
 
     public void iniciarSecuencia(){
@@ -207,7 +209,6 @@ public class ControladorPrincipal implements ListenerNavegacion{
         });
     }
 
-    @Override 
     public void volverAlMenu(){
         ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
         gestorAudio.reproducirMusica("src/assets/Musica/musica_menu.mp3", true);
