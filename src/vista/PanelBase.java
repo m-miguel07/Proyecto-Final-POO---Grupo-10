@@ -15,6 +15,11 @@ public abstract class PanelBase extends JPanel{ //Panel base con encabezado y fo
 
     private final static String BG_DEFAULT = "src/assets/ui/bg-opc.png";
     private final static Dimension DIM_DEFAULT = new Dimension(480,480);
+    
+    private final static String EXIT_NORMAL_DEFAULT = "src/assets/ui/exit-normal-opc.png";
+    private final static String EXIT_HOVER_DEFAULT =  "src/assets/ui/exit-hover-opc.png";
+
+
     private Image imagenOrigen;
     private BotonMenu botonSalir;
 
@@ -64,8 +69,8 @@ public abstract class PanelBase extends JPanel{ //Panel base con encabezado y fo
         this.add(contenedorEncabezado, BorderLayout.NORTH);
     }
 
-    //Constructor con formato de imagen de fondo y dimension personalizada ; Sin boton de salir (Para PanelFinNivel)
-    public PanelBase(String rutaBg, Dimension dimPanel, String rutaTitulo, Dimension dimTitulo){
+    //Constructor con formato de imagen de fondo y dimension personalizada ; boton de salir opcional (Para PanelFinNivel)
+    public PanelBase(String rutaBg, Dimension dimPanel, String rutaTitulo, Dimension dimTitulo, boolean tieneBotonSalir){
 
         super(new BorderLayout());
 
@@ -75,7 +80,13 @@ public abstract class PanelBase extends JPanel{ //Panel base con encabezado y fo
         this.setPreferredSize(dimPanel);
 
         //Boton salir (X)
-        this.botonSalir = null;
+        if (!tieneBotonSalir){
+            this.botonSalir = null;
+        } else {
+            this.botonSalir = new BotonMenu(EXIT_NORMAL_DEFAULT, EXIT_HOVER_DEFAULT);
+            botonSalir.setPreferredSize(new Dimension(59,59));
+            botonSalir.setFocusable(false);;
+        }
         
         //Contenedores
 
@@ -96,7 +107,16 @@ public abstract class PanelBase extends JPanel{ //Panel base con encabezado y fo
         //Encabezado (titulo)
         JPanel contenedorEncabezado = new JPanel(new BorderLayout());
         contenedorEncabezado.setOpaque(false);
+
         contenedorEncabezado.add(contenedorTitulo, BorderLayout.CENTER);
+        
+        if (tieneBotonSalir){
+            JPanel contenedorBoton = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            contenedorBoton.add(botonSalir);
+            contenedorBoton.setOpaque(false);
+            contenedorBoton.setBorder(BorderFactory.createEmptyBorder(15,15,0,0));
+            contenedorEncabezado.add(contenedorBoton, BorderLayout.WEST);
+        }
         
         this.add(contenedorEncabezado, BorderLayout.NORTH);
     }

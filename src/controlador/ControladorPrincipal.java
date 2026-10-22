@@ -1,5 +1,6 @@
 package controlador;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JSlider;
@@ -14,6 +15,8 @@ import java.awt.event.KeyAdapter;
 import modelo.GestorAudio;
 import modelo.Partida;
 import modelo.PartidaDAO;
+import modelo.Puntaje;
+import modelo.PuntajeDAO;
 
 import vista.PanelMenuPrincipal;
 import vista.Ventana;
@@ -30,13 +33,18 @@ public class ControladorPrincipal{
     private ControladorJuego controladorJuego;
 
     private final PartidaDAO partidaDAO;
-    private  Partida partida;
+    private final PuntajeDAO puntajeDAO;
+
+    private Partida partida;
+    private List<Puntaje> puntajes;
 
     public ControladorPrincipal() throws SQLException{
 
         partidaDAO = new PartidaDAOSQLite();
+        puntajeDAO = new PuntajeDAOSQLite();
         
         partida = partidaDAO.cargar();
+        puntajes = puntajeDAO.mejores(3);
 
         if (partida == null){
             this.partida = new Partida(0,1,0,0.25,0.50);
@@ -84,6 +92,23 @@ public class ControladorPrincipal{
                 this.ventana.getPanelMenu()
                             .getBotonContinuar()
                             .addActionListener(e -> this.iniciarJuego());
+
+        //Boton de puntajes
+                this.ventana.getPanelMenu()
+                            .getBotonRanking()
+                            .addActionListener(e -> {
+                                this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.RANKING);
+                                this.ventana.getPanelMenu().getPanelRanking().mostrarPuntajes(puntajes);
+                            });
+
+        //Boton de salir (Puntajes)
+
+                this.ventana.getPanelMenu()
+                            .getPanelRanking()
+                            .getBotonSalir()
+                            .addActionListener(e -> { 
+                                this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.BOTONES);
+                            });
         //Boton de opciones
                 this.ventana.getPanelMenu()
                             .getBotonOpciones()

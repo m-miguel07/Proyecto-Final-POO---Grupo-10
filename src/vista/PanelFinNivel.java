@@ -16,7 +16,7 @@ public class PanelFinNivel extends PanelBase {
     private BotonMenu boton; //Reiniciar nivel o Siguiente nivel
 
     public PanelFinNivel(String rutaTitulo, Dimension dimTitulo, String rutaBotonNormal, String rutaBotonHover){
-        super(BG_DEFAULT,new Dimension(627,341), rutaTitulo, dimTitulo);
+        super(BG_DEFAULT,new Dimension(627,341), rutaTitulo, dimTitulo, false);
 
         this.botonSalir = new BotonMenu(EXIT_NORMAL, EXIT_HOVER);
         botonSalir.setFocusable(false);

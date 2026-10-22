@@ -18,14 +18,20 @@ public class PanelMenuPrincipal extends JPanel {
     public static final String ENTER = "ENTER";
     public static final String BOTONES = "BOTONES";
     public static final String OPCIONES = "OPCIONES";
+    public static final String RANKING = "RANKING";
 
     private CardLayout layoutInferior;
     private Image imagenOrigen;
+
     private JButton botonNuevoJuego;
     private JButton botonContinuar;
     private JButton botonOpciones;
     private JButton botonSalir;
+    private JButton botonRanking;
+
     private JPanel panelBotones;
+    private PanelRanking panelRanking;
+    
     private JPanel panelEnter;
     private JPanel panelInferior;
     private PanelOpciones panelOpciones;
@@ -43,7 +49,8 @@ public class PanelMenuPrincipal extends JPanel {
         this.botonContinuar = new BotonMenu("src/assets/ui/co-normal.png", "src/assets/ui/co-hover.png");
         this.botonOpciones = new BotonMenu("src/assets/ui/opc-normal.png", "src/assets/ui/opc-hover.png");
         this.botonSalir = new BotonMenu("src/assets/ui/exit-normal.png", "src/assets/ui/exit-hover.png");
-
+        this.botonRanking = new BotonMenu("src/assets/ui/btn-ranking-normal.png", "src/assets/ui/btn-ranking-hover.png");
+        
         //Titulo
         Splash imagenTitulo = new Splash("src/assets/title.png");
         imagenTitulo.setPreferredSize(new Dimension(610,409));
@@ -57,6 +64,7 @@ public class PanelMenuPrincipal extends JPanel {
         this.panelBotones = new JPanel(new GridLayout(0,1,10,20));
         panelBotones.add(botonNuevoJuego);
         panelBotones.add(botonContinuar);
+        panelBotones.add(botonRanking);
         panelBotones.add(botonOpciones);
         panelBotones.add(botonSalir);
         panelBotones.setOpaque(false);
@@ -83,11 +91,17 @@ public class PanelMenuPrincipal extends JPanel {
         JPanel contenedorOpciones = new JPanel(new FlowLayout());
         contenedorOpciones.add(panelOpciones);
         contenedorOpciones.setOpaque(false);
+
+        this.panelRanking = new PanelRanking();
+        JPanel contenedorRanking = new JPanel(new FlowLayout());
+        contenedorRanking.add(panelRanking);
+        contenedorRanking.setOpaque(false);
         
         panelInferior.setOpaque(false);
         panelInferior.add(panelEnter, ENTER);
         panelInferior.add(contenedorBotones, BOTONES);
         panelInferior.add(contenedorOpciones, OPCIONES);
+        panelInferior.add(contenedorRanking, RANKING);
 
         this.add(contenedorTitulo,BorderLayout.CENTER);
         this.add(panelInferior, BorderLayout.SOUTH);
@@ -102,6 +116,10 @@ public class PanelMenuPrincipal extends JPanel {
         return this.botonContinuar;
     }
 
+    public JButton getBotonRanking() {
+        return botonRanking;
+    }
+    
     public JButton getBotonOpciones(){
         return this.botonOpciones;
     }
@@ -115,7 +133,11 @@ public class PanelMenuPrincipal extends JPanel {
     }
 
     public PanelOpciones getPanelOpciones() {
-        return panelOpciones;
+        return this.panelOpciones;
+    }
+
+    public PanelRanking getPanelRanking() {
+        return panelRanking;
     }
 
     

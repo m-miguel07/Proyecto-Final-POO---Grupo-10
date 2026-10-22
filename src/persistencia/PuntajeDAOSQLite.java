@@ -50,7 +50,8 @@ public class PuntajeDAOSQLite implements PuntajeDAO {
         String sql = """
             SELECT jugador, puntaje, tiempo, fecha
             FROM puntajes
-            ORDER BY puntos DESC
+            ORDER BY puntaje DESC
+            LIMIT ?
             """;
 
         try (PreparedStatement ps = Conexion.getInstancia()
