@@ -274,10 +274,12 @@ public class ControladorJuego {
 
     void mostrarDerrota(boolean visible) {
         this.panel.mostrarDerrota(visible);
+        GestorAudio.getInstancia().reproducirEfecto(GestorAudio.NIVEL_FALLIDO);
     }
 
     void mostrarVictoria(boolean visible) {
         this.panel.mostrarVictoria(visible);
+        GestorAudio.getInstancia().reproducirEfecto(GestorAudio.MONEDA);
     }
 
     void ocultarPaneles() {
@@ -333,6 +335,7 @@ public class ControladorJuego {
                     teclaDerecha = false;
                 } else if (codigo == KeyEvent.VK_SPACE || codigo == KeyEvent.VK_W || codigo == KeyEvent.VK_UP) {
                     teclaSaltar = false;
+                    GestorAudio.getInstancia().reproducirEfecto(GestorAudio.SALTO);
                 } else if (codigo == KeyEvent.VK_J) {
                     teclaDisparo = false;
                 }

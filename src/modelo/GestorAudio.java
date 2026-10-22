@@ -22,6 +22,10 @@ public class GestorAudio { //Aplica patron Singleton
     public static final String GOLPE_PELOTA = "GOLPE_PELOTA";
     public static final String MONEDA = "MONEDA";
     public static final String AGARRE_PELOTA = "AGARRE_PELOTA";
+    public static final String PERDER_VIDA = "PERDER_VIDA";
+    public static final String SALTO = "SALTO";
+    public static final String NIVEL_FALLIDO = "NIVEL_FALLIDO";
+    public static final String NIVEL_COMPLETO = "NIVEL_COMPLETO";
 
     private volatile double volumenBGM = 0.10;
     private double volumenSFX = 0.10;
@@ -41,6 +45,9 @@ public class GestorAudio { //Aplica patron Singleton
         cargar(GOLPE_PELOTA, "src/assets/Sonidos/golpe_pelota.mp3");
         cargar(MONEDA, "src/assets/Sonidos/moneda.mp3");
         cargar(AGARRE_PELOTA, "src/assets/Sonidos/agarre_pelota.mp3");
+        cargar(SALTO, "src/assets/Sonidos/salto.mp3");
+        cargar(PERDER_VIDA, "src/assets/Sonidos/perder_vida.mp3");
+        cargar(NIVEL_FALLIDO, "src/assets/Sonidos/silbato_terminado.mp3");
     }
 
     public static GestorAudio getInstancia(){

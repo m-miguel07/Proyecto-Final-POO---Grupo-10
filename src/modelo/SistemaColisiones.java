@@ -32,6 +32,7 @@ public class SistemaColisiones {
 
             if (enemigo.puedeAtacar(personaje)) {
                 personaje.perderVida();
+                GestorAudio.getInstancia().reproducirEfecto(GestorAudio.PERDER_VIDA);
                 break;
             }
         }
