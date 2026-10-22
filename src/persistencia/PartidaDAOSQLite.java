@@ -57,7 +57,7 @@ public class PartidaDAOSQLite implements PartidaDAO { //Almacena datos de partid
                 return new Partida(
                     rs.getInt("puntaje_acumulado"),
                     rs.getInt("nivel_actual"),
-                    rs.getLong("tiempo_acumulado"),
+                    rs.getLong("tiempo_acumulado") * 1000,
                     rs.getFloat("volumen_sfx"),
                     rs.getFloat("volumen_bgm")
                 );

@@ -78,13 +78,11 @@ public class ControladorJuego {
         }
 
         this.panel = new PanelJuego(escenarioActual);
-        if (this.partida.getNivelActual() == 2) {
-            this.panel.setTiempoTranscurrido(partida.getTiempoAcumulado());
-        }
+        this.tiempoTranscurridoMS = partida.getTiempoAcumulado();
+        this.panel.setTiempoTranscurrido(this.tiempoTranscurridoMS);
 
         //Gameloop
         this.timer = new Timer(INTERVALO_TIMER_MS, e -> this.paso());
-        this.tiempoTranscurridoMS = 0;
         this.ultimoPasoNanos = System.nanoTime();
 
         //Audio
@@ -115,16 +113,14 @@ public class ControladorJuego {
 
         panel.getPanelVictoria().getBoton().addActionListener(e ->{
             pasarDeNivel();
-            
         });
 
         panel.getPanelVictoria().getBotonSalir().addActionListener(e -> {
-            salirAlMenu();
+            salirAlMenu(2);
         });
 
         this.registrarTeclado();
         this.registrarMouse();
-        this.panel.setMensaje("NIVEL 1");
     }
 
     //Getters
@@ -139,7 +135,19 @@ public class ControladorJuego {
     //Comportamientos
 
     //Persistencia
-    public void guardarPartida(){ //Actualiza el objeto partida, para ser guardado posteriormente por el partidaDAO
+    public void guardarPartida(){
+        guardarPartida(null);
+    }
+
+    private void guardarPartida(Integer nivelDeContinuacion){
+        actualizarDatosPartida();
+        if (nivelDeContinuacion != null) {
+            this.partida.setNivelActual(nivelDeContinuacion);
+        }
+        this.controladorPrincipal.persistirPartida(); //Sube a la base de datos la información de la partida
+    }
+
+    private void actualizarDatosPartida(){
         Nivel nivelActual = this.escenarioActual.getNivel();
 
         partida.setNivelActual(nivelActual.getNumeroNivel());
@@ -154,9 +162,13 @@ public class ControladorJuego {
 
     //Gameloop
     public void salirAlMenu(){
+        salirAlMenu(null);
+    }
+
+    private void salirAlMenu(Integer nivelDeContinuacion){
         detener();
         gestorAudio.detenerMusica();
-        guardarPartida();
+        guardarPartida(nivelDeContinuacion);
         this.panel.ocultarPaneles();
         reiniciarEstado();
         this.estado = null;
@@ -205,34 +217,34 @@ public class ControladorJuego {
         this.teclaDisparo = false;
 
         Personaje personaje = this.fabricaNivel.crearPersonajeInicial();
+        if (this.partida.getNivelActual() == 2) {
+            personaje.setPuntaje(this.partida.getPuntajeAcumulado());
+        }
         this.escenarioActual = this.fabricaNivel.crearEscenario(1, personaje);
 
-        if (this.partida.getNivelActual() == 2) {
-            this.panel.setTiempoTranscurrido(this.partida.getTiempoAcumulado());
-        } else {
-            this.panel.setTiempoTranscurrido(0);
-        }
+        this.tiempoTranscurridoMS = this.partida.getNivelActual() == 2 ? this.partida.getTiempoAcumulado(): 0;
+        this.panel.setTiempoTranscurrido(this.tiempoTranscurridoMS);
 
         panel.escenarioCambiado(this.escenarioActual);
 
-        this.tiempoTranscurridoMS = 0;
         this.ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
         this.ultimoPasoNanos = System.nanoTime();
         
-        this.panel.setMensaje("NIVEL 1");
     }
 
     private void pasarDeNivel(){ 
+        actualizarDatosPartida();
         this.partida.setNivelActual(2);
         this.fabricaNivel = FabricaNiveles.para(2);
         reiniciar();
+        guardarPartida();
     }
 
     void cambiarEstado(EstadoJuego nuevoEstado) {
         if (this.estado != null) {
             this.estado.salir(this);
         }
-
+        
         this.estado = nuevoEstado;
 
         if (this.estado != null) {

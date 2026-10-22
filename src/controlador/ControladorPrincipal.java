@@ -39,12 +39,16 @@ public class ControladorPrincipal{
         partida = partidaDAO.cargar();
 
         if (partida == null){
-            this.partida = new Partida(0,1,0,0.10,0.10);
+            this.partida = new Partida(0,1,0,0.25,0.50);
         }
 
         this.ventana =  new Ventana();
         this.gestorAudio = GestorAudio.getInstancia();
-        cargarConfiguracionAudio();
+
+        if (partida != null){
+            cargarConfiguracionAudio();
+        }
+       
 
         this.videoTerminado = new AtomicBoolean(false);
 
@@ -126,38 +130,42 @@ public class ControladorPrincipal{
         this.iniciarSecuencia();
     }
 
+    //Extrae de los datos de guardado los valores de volumen
     private void cargarConfiguracionAudio(){
         if (this.partida != null){
-            partida.setVolumenBGM(0.10);
-            partida.setVolumenSFX(0.10);
-            gestorAudio.setVolumenBGM(0.10);
-            gestorAudio.setVolumenSFX(0.10);
+            
+            double volumenBGM = partida.getVolumenBGM();
+            double volumenSFX = partida.getVolumenSFX();
 
-            ventana.getPanelMenu().getPanelOpciones().setVolumenes(0.10, 0.10); //Actualiza la visual de los sliders acorde al volumen guardado
+            gestorAudio.setVolumenBGM(volumenBGM);
+            gestorAudio.setVolumenSFX(volumenSFX);
+
+            ventana.getPanelMenu().getPanelOpciones().setVolumenes(volumenSFX,volumenBGM); //Actualiza la visual de los sliders acorde al volumen guardado
         }
     }
 
     private void cerrarJuego(){
-        partidaDAO.guardar(this.partida); 
+        persistirPartida();
         System.exit(0);
     }
 
-    private void nuevoJuego(){
-        partidaDAO.eliminar();
-        this.part
+    public void persistirPartida() {
+        if (!partidaDAO.guardar(this.partida)) {
+            System.err.println("No se pudo persistir la partida.");
+        }
     }
 
     public void iniciarSecuencia(){
         ventana.mostrarTarjeta(Ventana.CARD_SPLASH_MATERIA);
         ventana.setVisible(true);
-
+        
         new Thread(() -> {
             try {
                 Thread.sleep(tiempoSplashMS);
                 SwingUtilities.invokeLater(this::iniciarVideoIntro);
                 
             } catch(InterruptedException e){
-                //Thread.currentThread().interrupt();
+                
             }
         }).start();
     }
@@ -190,8 +198,12 @@ public class ControladorPrincipal{
             this.controladorJuego = null;
         }
 
+        //Se conservan los ajustes de audio seleccionados antes de borrar la partida.
+        double SFXprevio = partida.getVolumenSFX();
+        double BGMprevio = partida.getVolumenBGM();
+
         partidaDAO.eliminar();
-        this.partida = new Partida(0, 1, 0, 0.10, 0.10);
+        this.partida = new Partida(0, 1, 0, SFXprevio, BGMprevio);
         iniciarJuego();
     }
 

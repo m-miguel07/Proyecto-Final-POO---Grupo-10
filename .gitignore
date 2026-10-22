@@ -3,6 +3,9 @@
 out/
 target/
 
+# Base de datos
+*.db
+
 # Empaquetados
 *.war
 
