@@ -29,6 +29,10 @@ public class EnemigoVolador extends Enemigo {
     }
 
     //Comportamientos
+    @Override
+    public void recibirDanioDeHielo(int danio) {
+    }
+
     public void moverHorizontal() {
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
 

@@ -17,21 +17,9 @@ public class ArmaHielo extends Arma {
     }
 
     //Comportamientos
-    public void congelar(Entidad objetivo) {
-        if (objetivo instanceof Enemigo) {
-            ((Enemigo) objetivo).congelar(this.duracionRalentizacion);
-        }
-    }
-
     @Override
     public void aplicarDanio(Entidad objetivo) {
-        //si el objetivo es un enemigo volador, simplemente lo congela y no le hace daño.
-        if (objetivo instanceof EnemigoVolador) {
-            this.congelar(objetivo);
-            return;
-        }
-
-        objetivo.recibirDanio(this.getDanioBase());
-        this.congelar(objetivo);
+        objetivo.recibirDanioDeHielo(this.getDanioBase());
+        objetivo.recibirCongelacion(this.duracionRalentizacion);
     }
 }

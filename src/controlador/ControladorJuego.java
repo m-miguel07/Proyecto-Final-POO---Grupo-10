@@ -12,8 +12,8 @@ import modelo.Arma;
 import modelo.Configuracion;
 import modelo.Enemigo;
 import modelo.Muro;
-import modelo.FabricaNivel1;
-import modelo.FabricaNivel2;
+import modelo.FabricaNivel;
+import modelo.FabricaNiveles;
 import modelo.GestorAudio;
 import modelo.Nivel;
 import modelo.Partida;
@@ -35,6 +35,8 @@ public class ControladorJuego {
     //Visual
     private final PanelJuego panel;
     private Escenario escenarioActual;
+    private FabricaNivel fabricaNivel;
+    private EstadoJuego estado;
 
     //Guardado
     private Partida partida;
@@ -58,7 +60,6 @@ public class ControladorJuego {
     private boolean teclaSaltar;
     private boolean saltoPendiente;
     private boolean teclaDisparo;
-    private boolean enPausa;
 
     //Constructor
     public ControladorJuego(Partida partida, ListenerNavegacion listener) {
@@ -67,16 +68,11 @@ public class ControladorJuego {
         this.partida = partida;
 
         //logica de generación de nivel
-        switch (this.partida.getNivelActual()){
-            case 1: 
-                this.escenarioActual = FabricaNivel1.crearEscenario1(FabricaNivel1.crearPersonajeInicial());
-                break;
-            case 2:
-                this.escenarioActual = FabricaNivel2.crearEscenario1(FabricaNivel2.crearPersonajeInicial());
-                this.escenarioActual.getNivel().getPersonaje().setPuntaje(partida.getPuntajeAcumulado());
-                break;
-            default:
-                throw new IllegalArgumentException("Nivel no soportado: " + this.partida.getNivelActual());
+        this.fabricaNivel = FabricaNiveles.para(this.partida.getNivelActual());
+        this.escenarioActual = this.fabricaNivel.crearEscenario(1, this.fabricaNivel.crearPersonajeInicial());
+
+        if (this.partida.getNivelActual() == 2) {
+            this.escenarioActual.getNivel().getPersonaje().setPuntaje(partida.getPuntajeAcumulado());
         }
 
         this.panel = new PanelJuego(escenarioActual);
@@ -101,35 +97,29 @@ public class ControladorJuego {
         });
 
         panel.getPanelPausa().getBotonReiniciar().addActionListener(e ->{
-            panel.togglePausa();
             reiniciar();
         });
 
         panel.getPanelPausa().getBotonSalida().addActionListener(e ->{
-            panel.togglePausa();
             salirAlMenu();
         });
 
         //Paneles de fin de nivel (Perdiste | Ganaste)
         panel.getPanelDerrota().getBoton().addActionListener(e ->{
-            panel.toggleDerrota();
             reiniciar();
             
         });
 
         panel.getPanelDerrota().getBotonSalir().addActionListener(e -> {
-            panel.toggleDerrota();
             salirAlMenu();
         });
 
         panel.getPanelVictoria().getBoton().addActionListener(e ->{
-            panel.toggleVictoria();
             pasarDeNivel();
             
         });
 
         panel.getPanelVictoria().getBotonSalir().addActionListener(e -> {
-            panel.toggleVictoria();
             salirAlMenu();
         });
 
@@ -168,7 +158,9 @@ public class ControladorJuego {
         detener();
         gestorAudio.detenerMusica();
         guardarPartida();
+        this.panel.ocultarPaneles();
         reiniciarEstado();
+        this.estado = null;
         
         this.listener.volverAlMenu(); //notifica que se solicito la salida
     }
@@ -179,11 +171,9 @@ public class ControladorJuego {
         this.teclaSaltar = false;
         this.saltoPendiente = false;
         this.teclaDisparo = false;
-        this.enPausa = false;
         this.ultimoPasoNanos = System.nanoTime();
 
-        this.panel.requestFocusInWindow();
-        this.timer.start();
+        this.cambiarEstado(EstadoJugando.INSTANCIA);
     }
 
     public void detener() {
@@ -192,33 +182,20 @@ public class ControladorJuego {
     }
 
     public void pausar(){
-        if (!enPausa){
-            enPausa = true;
-            detener();
-        } else {
-            enPausa = false;
-            gestorAudio.reanudarMusica();
-            iniciar();
+        if (this.estado != null) {
+            this.estado.pausar(this);
         }
-
-         panel.togglePausa();
-                
     }
 
     public void reiniciar() {
-
         this.detener();
         gestorAudio.detenerMusica();
-
-        //Cierra cualquier panel abierto (pausa, derrota, victoria) antes de reiniciar
-        this.panel.ocultarPaneles();
 
         reiniciarEstado();
 
         iniciarMusica();
-        
-        this.panel.requestFocusInWindow();
-        this.timer.start();
+
+        this.cambiarEstado(EstadoJugando.INSTANCIA);
     }
 
     private void reiniciarEstado() {
@@ -227,24 +204,16 @@ public class ControladorJuego {
         this.teclaSaltar = false;
         this.saltoPendiente = false;
         this.teclaDisparo = false;
-        this.enPausa = false;
 
-        Personaje personaje;
+        Personaje personaje = this.fabricaNivel.crearPersonajeInicial();
+        this.escenarioActual = this.fabricaNivel.crearEscenario(1, personaje);
 
-        switch (partida.getNivelActual()) {
-            case 1:
-                personaje = FabricaNivel1.crearPersonajeInicial();
-                this.escenarioActual = FabricaNivel1.crearEscenario1(personaje);
-                this.panel.setTiempoTranscurrido(0);
-                break;
-            case 2:
-                personaje = FabricaNivel2.crearPersonajeInicial();
-                this.escenarioActual = FabricaNivel2.crearEscenario1(personaje);
-                this.panel.setTiempoTranscurrido(partida.getTiempoAcumulado());
-            default:
-                break;
+        if (this.partida.getNivelActual() == 2) {
+            this.panel.setTiempoTranscurrido(this.partida.getTiempoAcumulado());
+        } else {
+            this.panel.setTiempoTranscurrido(0);
         }
-       
+
         panel.escenarioCambiado(this.escenarioActual);
 
         this.tiempoTranscurridoMS = 0;
@@ -256,7 +225,52 @@ public class ControladorJuego {
 
     private void pasarDeNivel(){ 
         this.partida.setNivelActual(2);
+        this.fabricaNivel = FabricaNiveles.para(2);
         reiniciar();
+    }
+
+    void cambiarEstado(EstadoJuego nuevoEstado) {
+        if (this.estado != null) {
+            this.estado.salir(this);
+        }
+
+        this.estado = nuevoEstado;
+
+        if (this.estado != null) {
+            this.estado.entrar(this);
+        }
+    }
+
+    void iniciarTimer() {
+        this.timer.start();
+    }
+
+    void detenerTimer() {
+        this.timer.stop();
+    }
+
+    void pausarMusica() {
+        this.gestorAudio.pausarMusica();
+    }
+
+    void reanudarMusica() {
+        this.gestorAudio.reanudarMusica();
+    }
+
+    void mostrarPausa(boolean visible) {
+        this.panel.mostrarPausa(visible);
+    }
+
+    void mostrarDerrota(boolean visible) {
+        this.panel.mostrarDerrota(visible);
+    }
+
+    void mostrarVictoria(boolean visible) {
+        this.panel.mostrarVictoria(visible);
+    }
+
+    void ocultarPaneles() {
+        this.panel.ocultarPaneles();
     }
 
     //Desplazamiento
@@ -334,7 +348,7 @@ public class ControladorJuego {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (!enPausa) {
+                    if (estado != null && estado.permiteDisparar()) {
                         mouseX = e.getX();
                         mouseY = e.getY();
                         ControladorJuego.this.disparar();
@@ -348,7 +362,11 @@ public class ControladorJuego {
     private void disparar() {
         Personaje personaje = this.getNivel().getPersonaje();
 
-        if (!personaje.estaVivo() || this.getNivel().estaCompleto() || this.enPausa) {
+        if (this.estado == null || !this.estado.permiteDisparar()) {
+            return;
+        }
+
+        if (!personaje.estaVivo() || this.getNivel().estaCompleto()) {
             return;
         }
 
@@ -419,28 +437,29 @@ public class ControladorJuego {
     }
 
     private void paso() {
+        if (this.estado == null || !this.estado.permiteJugar()) {
+            return;
+        }
+
         int deltaMS = this.calcularDeltaMS();
 
         Nivel nivel = this.getNivel();
         Personaje personaje = nivel.getPersonaje();
 
         if (!personaje.estaVivo()) {
-            this.panel.toggleDerrota();
+            this.cambiarEstado(EstadoDerrota.INSTANCIA);
             this.panel.repaint();
-            this.timer.stop();
             return;
         }
 
         if (nivel.estaCompleto()) {
-            switch (nivel.getNumeroNivel()){
-                case 1:
-                    this.panel.toggleVictoria();
-                    this.panel.repaint();
-                    this.timer.stop();
-                    break;
-                case 2:
-                    //SECUENCIA DEL FINAL
+            if (nivel.getNumeroNivel() == 1) {
+                this.cambiarEstado(EstadoVictoria.INSTANCIA);
+            } else {
+                this.cambiarEstado(EstadoJuegoCompletado.INSTANCIA);
             }
+
+            this.panel.repaint();
             return;
         }
 
@@ -494,17 +513,7 @@ public class ControladorJuego {
     private void detectarTransicion(Personaje personaje){
         for (ZonaTransicion zona : escenarioActual.getZonasTransicion()){
             if (zona.contiene(personaje.getPosicionX(),personaje.getPosicionY())){
-                Escenario destino;
-                switch (escenarioActual.getNivel().getNumeroNivel()){
-                    case 1:
-                        destino = FabricaNivel1.crearEscenario(zona.getIdEscenarioDestino(), personaje);
-                        break;
-                    case 2:
-                        destino = FabricaNivel2.crearEscenario(zona.getIdEscenarioDestino(), personaje);
-                        break;
-                    default:
-                        destino = null;
-                }
+                Escenario destino = this.fabricaNivel.crearEscenario(zona.getIdEscenarioDestino(), personaje);
                
                 if (destino == null) {
                     return;

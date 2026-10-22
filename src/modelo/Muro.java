@@ -84,6 +84,7 @@ public class Muro extends Plataforma {
     private boolean colisionaCon(ObjetoDelJuego objeto) {
         return objeto.getPosicionX() + objeto.getAncho() > this.getPosicionX()
                 && objeto.getPosicionX() < this.getPosicionX() + this.getAncho()
-                && objeto.getPosicionY() + objeto.getAlto() > this.getPosicionY();
+                && objeto.getPosicionY() + objeto.getAlto() > this.getPosicionY()
+                && objeto.getPosicionY() < this.getPosicionY() + this.getAlto();
     }
 }

@@ -212,6 +212,11 @@ public class Personaje extends Entidad {
                 continue;
             }
 
+            if (plataforma.bloqueaDesdeAbajo() && this.bloqueaDesdeAbajo(plataforma, pieAnterior)) {
+                this.posicionY = plataforma.getPosicionY() + plataforma.getAlto();
+                this.velocidadY = 0.0;
+            }
+
             if (this.aterrizaSobre(plataforma, pieAnterior)) {
                 this.posicionY = plataforma.getPosicionY() - this.alto;
                 this.velocidadY = 0.0;
@@ -237,6 +242,20 @@ public class Personaje extends Entidad {
             this.velocidadY = 0.0;
             this.enElSuelo = true;
         }
+    }
+
+    private boolean bloqueaDesdeAbajo(Plataforma plataforma, double pieAnterior) {
+        double techoAnterior = pieAnterior - this.alto;
+        double techo = this.posicionY;
+        double basePlataforma = plataforma.getPosicionY() + plataforma.getAlto();
+
+        boolean haySolapeHorizontal = this.posicionX + this.ancho > plataforma.getPosicionX()
+                && this.posicionX < plataforma.getPosicionX() + plataforma.getAncho();
+
+        return this.velocidadY < 0
+                && haySolapeHorizontal
+                && techoAnterior >= basePlataforma
+                && techo <= basePlataforma;
     }
 
     public boolean aterrizaSobre(ObjetoDelJuego objeto, double pieAnterior) {

@@ -3,7 +3,7 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FabricaNivel1 {
+public class FabricaNivel1 implements FabricaNivel {
 
     private static final int NUMERO_NIVEL = 1;
 
@@ -35,11 +35,11 @@ public class FabricaNivel1 {
 
     private static Integer monedasTotales;
 
-    private FabricaNivel1() {
+    FabricaNivel1() {
     }
 
     //Comportamientos
-    public static Escenario crearEscenario(int id, Personaje personaje) {
+    public Escenario crearEscenario(int id, Personaje personaje) {
         switch (id) {
             case ESCENARIO_1:
                 return crearEscenario1(personaje);
@@ -82,7 +82,7 @@ public class FabricaNivel1 {
         return new Escenario(ESCENARIO_3, nivel, "src/assets/lvl-bg/Nivel1_3.png");
     }
 
-    public static int getMonedasTotales() {
+    public int getMonedasTotales() {
         if (monedasTotales == null) {
             Personaje personaje = crearPersonajeInicial();
             monedasTotales = crearEscenario1(personaje).getNivel().getMonedas().size()
@@ -125,7 +125,7 @@ public class FabricaNivel1 {
         muro.colocarMonedaEncima(monedaMuro);
         monedas.add(monedaMuro);
 
-        return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, muro);
+        return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), muro);
     }
 
     private static Nivel crearContenidoEscenario2(Personaje personaje) {
@@ -157,7 +157,7 @@ public class FabricaNivel1 {
         enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.1, 920, 336));
 
         // Este escenario no tiene aro: la meta esta en el ultimo escenario del nivel.
-        return new Nivel(NUMERO_NIVEL, personaje, null, enemigos, monedas, plataformas, recolectables, null);
+        return new Nivel(NUMERO_NIVEL, personaje, null, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), null);
     }
 
     private static Nivel crearContenidoEscenario3(Personaje personaje) {
@@ -192,10 +192,10 @@ public class FabricaNivel1 {
 
         // Aro del ultimo escenario
         Aro aro = new Aro(755, 160, 90, 70);
-        return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, null);
+        return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), null);
     }
 
-    public static Personaje crearPersonajeInicial() {
+    public Personaje crearPersonajeInicial() {
         Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
         personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
 

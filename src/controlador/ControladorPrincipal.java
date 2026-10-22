@@ -39,7 +39,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
         partida = partidaDAO.cargar();
 
         if (partida == null){
-            this.partida = new Partida(0,1,0,0.5,1.0);
+            this.partida = new Partida(0,1,0,0.10,0.10);
         }
 
         this.ventana =  new Ventana();
@@ -74,7 +74,7 @@ public class ControladorPrincipal implements ListenerNavegacion{
         //Boton de nuevo juego
                 this.ventana.getPanelMenu()
                             .getBotonNuevoJuego()
-                            .addActionListener(e -> this.iniciarJuego());
+                            .addActionListener(e -> this.iniciarJuegoNuevo());
 
         //Boton de continuar
                 this.ventana.getPanelMenu()
@@ -131,10 +131,12 @@ public class ControladorPrincipal implements ListenerNavegacion{
 
     private void cargarConfiguracionAudio(){
         if (this.partida != null){
-            gestorAudio.setVolumenBGM(partida.getVolumenBGM());
-            gestorAudio.setVolumenSFX(partida.getVolumenSFX());
+            partida.setVolumenBGM(0.10);
+            partida.setVolumenSFX(0.10);
+            gestorAudio.setVolumenBGM(0.10);
+            gestorAudio.setVolumenSFX(0.10);
 
-            ventana.getPanelMenu().getPanelOpciones().setVolumenes(partida.getVolumenSFX(), partida.getVolumenBGM()); //Actualiza la visual de los sliders acorde al volumen guardado
+            ventana.getPanelMenu().getPanelOpciones().setVolumenes(0.10, 0.10); //Actualiza la visual de los sliders acorde al volumen guardado
         }
     }
 
@@ -178,6 +180,17 @@ public class ControladorPrincipal implements ListenerNavegacion{
             ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
             gestorAudio.reproducirMusica("src/assets/Musica/musica_menu.mp3", true);
         });
+    }
+
+    private void iniciarJuegoNuevo(){
+        if (this.controladorJuego != null){
+            this.controladorJuego.detener();
+            this.controladorJuego = null;
+        }
+
+        partidaDAO.eliminar();
+        this.partida = new Partida(0, 1, 0, 0.10, 0.10);
+        iniciarJuego();
     }
 
     public void iniciarJuego(){

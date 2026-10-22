@@ -23,8 +23,10 @@ import modelo.Arma;
 import modelo.ArmaFuego;
 import modelo.ArmaHielo;
 import modelo.Aro;
+import modelo.Boton;
 import modelo.Configuracion;
 import modelo.Enemigo;
+import modelo.EnemigoADistancia;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
 import modelo.Moneda;
@@ -32,10 +34,11 @@ import modelo.Nivel;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
+import modelo.Proyectil;
 import modelo.Muro;
 import modelo.Recolectable;
 import modelo.Escenario;
-import modelo.FabricaNivel1;
+import modelo.FabricaNiveles;
 
 public class PanelJuego extends JPanel {
 
@@ -47,6 +50,11 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_MURO_BORDE = new Color(72, 54, 42, 130);
     private static final Color COLOR_MADERA = new Color(150, 96, 48);
     private static final Color COLOR_MADERA_BORDE = new Color(94, 58, 26);
+    private static final Color COLOR_PLATAFORMA_NEGRA = new Color(18, 18, 18);
+    private static final Color COLOR_PLATAFORMA_NEGRA_BORDE = new Color(70, 70, 70);
+    private static final Color COLOR_BOTON = new Color(34, 197, 94);
+    private static final Color COLOR_BOTON_ACTIVADO = new Color(21, 128, 61);
+    private static final Color COLOR_BOTON_BORDE = new Color(20, 83, 45);
     private static final Color COLOR_MONEDA = new Color(250, 204, 21);
     private static final Color COLOR_MONEDA_BORDE = new Color(180, 130, 10);
     private static final Color COLOR_ENEMIGO = new Color(225, 45, 45);
@@ -107,7 +115,7 @@ public class PanelJuego extends JPanel {
 
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
-        this.monedasTotales = FabricaNivel1.getMonedasTotales();
+        this.monedasTotales = FabricaNiveles.para(escenario.getNivel().getNumeroNivel()).getMonedasTotales();
 
         this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
@@ -174,16 +182,16 @@ public class PanelJuego extends JPanel {
         this.tiempoTranscurrido = tiempoTranscurrido;
     }
 
-    public void togglePausa(){
-        panelPausa.setVisible(!panelPausa.isVisible());
+    public void mostrarPausa(boolean visible){
+        panelPausa.setVisible(visible);
     }
 
-    public void toggleDerrota(){
-        panelDerrota.setVisible(!panelDerrota.isVisible());
+    public void mostrarDerrota(boolean visible){
+        panelDerrota.setVisible(visible);
     }
 
-    public void toggleVictoria(){
-        panelVictoria.setVisible(!panelVictoria.isVisible());
+    public void mostrarVictoria(boolean visible){
+        panelVictoria.setVisible(visible);
     }
 
     //Metodos
@@ -223,8 +231,10 @@ public class PanelJuego extends JPanel {
         this.dibujarPlataformas(g2);
         this.dibujarMonedas(g2);
         this.dibujarRecolectables(g2);
+        this.dibujarBotones(g2);
         this.dibujarAro(g2);
         this.dibujarEnemigos(g2);
+        this.dibujarProyectiles(g2);
         this.dibujarPersonaje(g2);
         this.dibujarPelotas(g2);
         this.dibujarHud(g2);
@@ -340,12 +350,16 @@ public class PanelJuego extends JPanel {
             }
 
             boolean madera = plataforma.esDestructible();
-            g2.setColor(madera ? COLOR_MADERA : COLOR_PLATAFORMA);
+            boolean negra = plataforma.esNegra();
+            Color relleno = negra ? COLOR_PLATAFORMA_NEGRA : (madera ? COLOR_MADERA : COLOR_PLATAFORMA);
+            Color borde = negra ? COLOR_PLATAFORMA_NEGRA_BORDE : (madera ? COLOR_MADERA_BORDE : COLOR_PLATAFORMA_BORDE);
+
+            g2.setColor(relleno);
             g2.fill(new RoundRectangle2D.Double(
                     plataforma.getPosicionX(), plataforma.getPosicionY(),
                     plataforma.getAncho(), plataforma.getAlto(), 10, 10));
 
-            g2.setColor(madera ? COLOR_MADERA_BORDE : COLOR_PLATAFORMA_BORDE);
+            g2.setColor(borde);
             g2.setStroke(TRAZO_MEDIO);
             g2.draw(new RoundRectangle2D.Double(
                     plataforma.getPosicionX(), plataforma.getPosicionY(),
@@ -360,6 +374,21 @@ public class PanelJuego extends JPanel {
                             x, plataforma.getPosicionY() + plataforma.getAlto() - 3));
                 }
             }
+        }
+    }
+
+    private void dibujarBotones(Graphics2D g2) {
+        for (Boton boton : this.nivel.getBotones()) {
+            g2.setColor(boton.isActivado() ? COLOR_BOTON_ACTIVADO : COLOR_BOTON);
+            g2.fill(new RoundRectangle2D.Double(
+                    boton.getPosicionX(), boton.getPosicionY(),
+                    boton.getAncho(), boton.getAlto(), 12, 12));
+
+            g2.setColor(COLOR_BOTON_BORDE);
+            g2.setStroke(TRAZO_MEDIO);
+            g2.draw(new RoundRectangle2D.Double(
+                    boton.getPosicionX(), boton.getPosicionY(),
+                    boton.getAncho(), boton.getAlto(), 12, 12));
         }
     }
 
@@ -485,6 +514,29 @@ public class PanelJuego extends JPanel {
 
             if (enemigo.estaQuemado()) {
                 this.dibujarFuego(g2, enemigo);
+            }
+        }
+    }
+
+    private void dibujarProyectiles(Graphics2D g2) {
+        for (Enemigo enemigo : this.nivel.getEnemigos()) {
+            if (!(enemigo instanceof EnemigoADistancia)) {
+                continue;
+            }
+
+            EnemigoADistancia aDistancia = (EnemigoADistancia) enemigo;
+
+            for (Proyectil proyectil : aDistancia.getProyectiles()) {
+                g2.setColor(COLOR_VOLADOR);
+                g2.fill(new Ellipse2D.Double(
+                        proyectil.getPosicionX(), proyectil.getPosicionY(),
+                        proyectil.getAncho(), proyectil.getAlto()));
+
+                g2.setColor(COLOR_FUEGO_BORDE);
+                g2.setStroke(TRAZO_MEDIO);
+                g2.draw(new Ellipse2D.Double(
+                        proyectil.getPosicionX(), proyectil.getPosicionY(),
+                        proyectil.getAncho(), proyectil.getAlto()));
             }
         }
     }

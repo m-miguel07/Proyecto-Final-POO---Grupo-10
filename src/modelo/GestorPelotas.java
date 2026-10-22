@@ -34,7 +34,8 @@ public class GestorPelotas {
     }
 
     public void actualizar(Aro aro, Personaje personaje, List<Enemigo> enemigos,
-                           List<Plataforma> plataformas, int anchoPantalla, int altoPantalla, int deltaMS) {
+                           List<Plataforma> plataformas, List<Boton> botones,
+                           int anchoPantalla, int altoPantalla, int deltaMS) {
         GestorAudio gestorAudio = GestorAudio.getInstancia();
 
         for (int i = this.pelotas.size() - 1; i >= 0; i--) {
@@ -53,6 +54,24 @@ public class GestorPelotas {
                     personaje.sumarPuntaje(PUNTAJE_ENCESTADO);
                     gestorAudio.reproducirEfecto(GestorAudio.ENCESTADO);
                 }
+                pelota.desactivar();
+                this.pelotas.remove(i);
+                continue;
+            }
+
+            // Detecta si la pelota activo un boton.
+            boolean activoBoton = false;
+            for (Boton boton : botones) {
+                if (boton.isActivado() || !pelota.interseca(boton)) {
+                    continue;
+                }
+
+                boton.activar();
+                activoBoton = true;
+                break;
+            }
+
+            if (activoBoton) {
                 pelota.desactivar();
                 this.pelotas.remove(i);
                 continue;
@@ -82,6 +101,12 @@ public class GestorPelotas {
             // Detecta si la pelota impacto con alguna plataforma.
             for (Plataforma plataforma : plataformas) {
                 if (plataforma.isDestruida()) {
+                    continue;
+                }
+
+                //La plataforma negra permite que la pelota atraviese,
+                //vuelve a tener colisión una vez que la atraviese.
+                if (plataforma.permitePasarPelota() && pelota.getVelocidadY() <= 0) {
                     continue;
                 }
 

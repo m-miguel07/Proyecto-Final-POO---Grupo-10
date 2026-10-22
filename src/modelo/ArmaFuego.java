@@ -17,17 +17,9 @@ public class ArmaFuego extends Arma {
     }
 
     //Comportamientos
-    public void quemar(Entidad objetivo) {
-        if (objetivo instanceof Enemigo) {
-            ((Enemigo) objetivo).quemar(2000, this.danioPorQuemadura);
-        } else {
-            objetivo.recibirDanio(this.danioPorQuemadura);
-        }
-    }
-
     @Override
     public void aplicarDanio(Entidad objetivo) {
         objetivo.recibirDanio(this.getDanioBase());
-        this.quemar(objetivo);
+        objetivo.recibirQuemadura(2000, this.danioPorQuemadura);
     }
 }

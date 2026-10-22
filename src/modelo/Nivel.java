@@ -15,11 +15,13 @@ public class Nivel {
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
     private final List<Recolectable> recolectables;
+    private final List<Boton> botones;
 
     private final List<Enemigo> enemigosVista;
     private final List<Moneda> monedasVista;
     private final List<Plataforma> plataformasVista;
     private final List<Recolectable> recolectablesVista;
+    private final List<Boton> botonesVista;
 
     private final GestorPelotas gestorPelotas;
     private final SistemaColisiones sistemaColisiones;
@@ -27,7 +29,7 @@ public class Nivel {
 
     //Constructor
     public Nivel(int numeroNivel, Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
-                 List<Plataforma> plataformas, List<Recolectable> recolectables, Muro muro) {
+                 List<Plataforma> plataformas, List<Recolectable> recolectables, List<Boton> botones, Muro muro) {
         if (personaje == null) {
             throw new IllegalArgumentException("El personaje es obligatorio");
         }
@@ -40,11 +42,13 @@ public class Nivel {
         this.monedas = new ArrayList<>(monedas);
         this.plataformas = new ArrayList<>(plataformas);
         this.recolectables = new ArrayList<>(recolectables);
+        this.botones = botones == null ? new ArrayList<>() : new ArrayList<>(botones);
 
         this.enemigosVista = Collections.unmodifiableList(this.enemigos);
         this.monedasVista = Collections.unmodifiableList(this.monedas);
         this.plataformasVista = Collections.unmodifiableList(this.plataformas);
         this.recolectablesVista = Collections.unmodifiableList(this.recolectables);
+        this.botonesVista = Collections.unmodifiableList(this.botones);
 
         this.gestorPelotas = new GestorPelotas();
         this.sistemaColisiones = new SistemaColisiones();
@@ -83,6 +87,10 @@ public class Nivel {
         return this.recolectablesVista;
     }
 
+    public List<Boton> getBotones() {
+        return this.botonesVista;
+    }
+
     public List<Pelota> getPelotas() {
         return this.gestorPelotas.getPelotas();
     }
@@ -92,13 +100,27 @@ public class Nivel {
         this.sistemaColisiones.verificarMonedas(this.personaje, this.monedas);
         this.sistemaColisiones.verificarEnemigos(this.personaje, this.enemigos);
 
+        if (this.aro != null) {
+            this.aro.actualizar();
+        }
+
         if (this.muro != null) {
-            if (this.aro != null && this.aro.isEncestado()) {
+            if ((this.aro != null && this.aro.isEncestado()) || this.hayBotonActivado()) {
                 this.muro.abrir();
             }
 
             this.muro.actualizar();
         }
+    }
+
+    private boolean hayBotonActivado() {
+        for (Boton boton : this.botones) {
+            if (boton.isActivado()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean estaCompleto() {
@@ -118,7 +140,7 @@ public class Nivel {
     }
 
     public void actualizarPelotas(int anchoPantalla, int altoPantalla, int deltaMS) {
-        this.gestorPelotas.actualizar(this.aro, this.personaje, this.enemigos, this.plataformas,
+        this.gestorPelotas.actualizar(this.aro, this.personaje, this.enemigos, this.plataformas, this.botones,
                 anchoPantalla, altoPantalla, deltaMS);
     }
 
