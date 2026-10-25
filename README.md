@@ -49,26 +49,23 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
 #### Patrón de diseño adicional: State
 **Nombre del patrón: State (Estado)** 
-- **Justificación:** Se utiliza el patrón State para representar los distintos estados internos de una partida y evitar que ControladorJuego concentre la lógica de cada estado mediante flags e ifs dispersos.
+- **Justificación:** Se utiliza el patrón State para representar los distintos estados internos de una partida, evitando el problema del enfoque previo, donde ControladorJuego concentraba la lógica de cada estado mediante flags e ifs dispersos.
+Dichos estados controlan la visibilidad de determinados paneles, capacidad de movimiento del personaje y control del gameloop.
 
-Existía el problema inicial de desconocimiento entre **controladorJuego** y **controladorPrincipal** al momento de tener que pasar del menu de pausa y la vista del juego  ( **PanelPausa** + **PanelJuego** ) a la vista del menu principal **PanelMenuPrincipal** a través del boton de "Salir del juego". 
- ![PanelPausa](src/assets/Capturas_justificacion/captura_observer_003.png)
+- **Implementación:**
+- **Estructura**
+![alt text](src/assets/Capturas-Patron-State/interfaz.png)
 
-Por eso mismo aplicando **Observer** se hizo que:
-- **ControladorJuego** fuera el observado, recibiendo el listener por constructor 
-![Constructor](src/assets/Capturas_justificacion/captura_observer_002.png)
-- **ControladorPrincipal** el observador implementando la interfaz **ListenerNavegacion** con el metodo abstracto **volverAlmenu()**
-![Interfaz ListenerNavegacion](src/assets/Capturas_justificacion/captura_observer_000.png)
+- **Estados: (Jugando, Victoria, Derrota, Pausado, JuegoCompletado)**
+![alt text](src/assets/Capturas-Patron-State/state.png)
 
-El cual es llamado cuando el usuario presiona el boton de salida desde el menu de pausa
-**ControladorPrincipal** haciendo override de dicho metodo, ejecuta el cambio de vista a CARD_MENU_PRINCIPAL y cambia la musica.
+- **Ejemplos de uso**
+![alt text](src/assets/Capturas-Patron-State/captura_state_000.png)
 
-- En **ControladorPrincipal:**
- ![alt text](src/assets/Capturas_justificacion/captura_observer_001.png)
+![alt text](src/assets/Capturas-Patron-State/captura_state_001.png)
 
-- **Diagrama de clases:**
-
-![Observer](src/assets/Capturas_justificacion/captura_observer_004.png)
+- **Diagrama de clases**
+![alt text](src/assets/Capturas-Patron-State/UML.png)
 
 #### **Prototipo Visual**
  #### Prototipo y descripción de escenario:
