@@ -13,8 +13,10 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -56,14 +58,12 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_BOTON_ACTIVADO = new Color(21, 128, 61);
     private static final Color COLOR_BOTON_BORDE = new Color(20, 83, 45);
     private static final Color COLOR_MONEDA = new Color(250, 204, 21);
-    private static final Color COLOR_MONEDA_BORDE = new Color(180, 130, 10);
     private static final Color COLOR_ENEMIGO = new Color(225, 45, 45);
     private static final Color COLOR_ENEMIGO_BORDE = new Color(140, 20, 20);
     private static final Color COLOR_CONGELADO_BORDE = new Color(37, 99, 180);
     private static final Color COLOR_VOLADOR = new Color(249, 140, 30);
     private static final Color COLOR_ALA_BORDE = new Color(194, 106, 20);
     private static final Color COLOR_HIELO = new Color(125, 211, 252);
-    private static final Color COLOR_HIELO_BORDE = new Color(56, 140, 190);
     private static final Color COLOR_ALA_HIELO = new Color(147, 197, 253);
     private static final Color COLOR_ALA_HIELO_BORDE = new Color(96, 165, 250);
     private static final Color COLOR_FUEGO = new Color(239, 68, 68);
@@ -99,6 +99,14 @@ public class PanelJuego extends JPanel {
     private int altoFondo;
     private boolean cargandoFondo;
     private boolean escalandoFondo;
+
+    private BufferedImage imgAro;
+    private BufferedImage imgAroEncestado;
+
+    private BufferedImage imgMoneda; 
+    private BufferedImage imgArmaEstandar;
+    private BufferedImage imgArmaHielo;
+    private BufferedImage imgArmaFuego;
 
     private String mensaje;
     private long tiempoTranscurrido;
@@ -148,6 +156,9 @@ public class PanelJuego extends JPanel {
         this.add(panelDerrota);
         this.add(panelVictoria);
         this.add(panelFinJuego);
+        
+        cargarImagenesAro();
+        cargarImagenesRecolectables();
         
         escenarioCambiado(escenario);
     }
@@ -207,6 +218,32 @@ public class PanelJuego extends JPanel {
     }
 
     //Metodos
+
+    private void cargarImagen(String ruta, Consumer<BufferedImage> imgResultado){
+        CargadorAssets.cargarImagen(ruta).whenComplete((imagen, error) ->
+                SwingUtilities.invokeLater(() -> {
+
+                    if (error != null) {
+                        System.err.println("No se pudo cargar el fondo: " + ruta);
+                        return;
+                    }
+                    imgResultado.accept(imagen);
+                    repaint();
+                }));
+    }
+
+    private void cargarImagenesRecolectables(){
+        cargarImagen("src/assets/game/coin.png",imagen -> this.imgMoneda = imagen);
+        cargarImagen("src/assets/game/ball.png",imagen -> this.imgArmaEstandar = imagen);
+        cargarImagen("src/assets/game/fire.png",imagen -> this.imgArmaFuego = imagen);
+        cargarImagen("src/assets/game/ice.png",imagen -> this.imgArmaHielo = imagen);
+    }
+
+    private void cargarImagenesAro(){
+        cargarImagen("src/assets/game/aro.png", imagen -> this.imgAro = imagen);
+        cargarImagen("src/assets/game/aro-encestado.png", imagen -> this.imgAroEncestado = imagen);
+    }
+
     public void ocultarPaneles(){
         panelPausa.setVisible(false);
         panelDerrota.setVisible(false);
@@ -436,16 +473,10 @@ public class PanelJuego extends JPanel {
                 continue;
             }
 
-            g2.setColor(COLOR_MONEDA);
-            g2.fill(new Ellipse2D.Double(
-                    moneda.getPosicionX(), moneda.getPosicionY(),
-                    moneda.getAncho(), moneda.getAlto()));
-
-            g2.setColor(COLOR_MONEDA_BORDE);
-            g2.setStroke(TRAZO_MEDIO);
-            g2.draw(new Ellipse2D.Double(
-                    moneda.getPosicionX(), moneda.getPosicionY(),
-                    moneda.getAncho(), moneda.getAlto()));
+            if (imgMoneda != null) {
+                g2.drawImage(imgMoneda, (int) moneda.getPosicionX(), (int) moneda.getPosicionY(), moneda.getAncho(), moneda.getAlto(), this);
+            }
+            
         }
     }
 
@@ -455,31 +486,19 @@ public class PanelJuego extends JPanel {
                 continue;
             }
 
-            double x = recolectable.getPosicionX();
-            double y = recolectable.getPosicionY();
-            double w = recolectable.getAncho();
-            double h = recolectable.getAlto();
+            int x = (int) recolectable.getPosicionX();
+            int y = (int) recolectable.getPosicionY();
+            int w = (int) recolectable.getAncho();
+            int h = (int) recolectable.getAlto();
 
-            Color relleno;
-            Color borde;
 
             if (recolectable.getArma() instanceof ArmaHielo) {
-                relleno = COLOR_HIELO;
-                borde = COLOR_HIELO_BORDE;
+                g2.drawImage(imgArmaHielo, x, y, w, h, this);
             } else if (recolectable.getArma() instanceof ArmaFuego) {
-                relleno = COLOR_FUEGO;
-                borde = COLOR_FUEGO_BORDE;
+                g2.drawImage(imgArmaFuego, x, y, w, h, this);
             } else {
-                relleno = COLOR_MONEDA;
-                borde = COLOR_MONEDA_BORDE;
+               g2.drawImage(imgMoneda, x, y, w, h, this);
             }
-
-            Ellipse2D circulo = new Ellipse2D.Double(x, y, w, h);
-            g2.setColor(relleno);
-            g2.fill(circulo);
-            g2.setColor(borde);
-            g2.setStroke(TRAZO_MEDIO);
-            g2.draw(circulo);
         }
     }
 
@@ -490,29 +509,17 @@ public class PanelJuego extends JPanel {
             return;
         }
 
-        double x = aro.getPosicionX();
-        double y = aro.getPosicionY();
-        double w = aro.getAncho();
-        double h = aro.getAlto();
+        int x = (int)aro.getPosicionX();
+        int y = (int)aro.getPosicionY();
+        int w = aro.getAncho();
+        int h = aro.getAlto();
 
-        double centroX = x + w * 0.5;
-        double centroY = y + h * 0.55;
-
-        g2.setColor(COLOR_ARO_BLANCO);
-        g2.fill(new RoundRectangle2D.Double(x + w - 20, y + 8, 20, h * 0.62, 6, 6));
-        g2.setColor(COLOR_ARO_GRIS);
-        g2.setStroke(TRAZO_MEDIO);
-        g2.draw(new RoundRectangle2D.Double(x + w - 20, y + 8, 20, h * 0.62, 6, 6));
-
-        g2.setColor(aro.isEncestado() ? COLOR_ARO_ENCESTADO : COLOR_ARO_PENDIENTE);
-        g2.setStroke(TRAZO_GRUESO);
-        g2.draw(new Ellipse2D.Double(centroX - 24, centroY - 8, 48, 16));
-
-        g2.setStroke(TRAZO_MEDIO);
-        g2.setColor(COLOR_ARO_BLANCO);
-        g2.draw(new java.awt.geom.Line2D.Double(centroX - 20, centroY + 8, centroX - 12, y + h));
-        g2.draw(new java.awt.geom.Line2D.Double(centroX, centroY + 8, centroX, y + h));
-        g2.draw(new java.awt.geom.Line2D.Double(centroX + 20, centroY + 8, centroX + 12, y + h));
+        
+        if (!aro.isEncestado()){
+            g2.drawImage(imgAro, x,y,w,h,this);
+        } else {
+            g2.drawImage(imgAroEncestado, x,y,w,h,this);
+        }
     }
 
     private void dibujarEnemigos(Graphics2D g2) {
@@ -677,10 +684,10 @@ public class PanelJuego extends JPanel {
             return;
         }
 
-        double x = p.getPosicionX();
-        double y = p.getPosicionY();
-        double w = p.getAncho();
-        double h = p.getAlto();
+        int x = (int) p.getPosicionX();
+        int y = (int) p.getPosicionY();
+        int w = (int) p.getAncho();
+        int h = (int) p.getAlto();
 
         g2.setColor(COLOR_PERSONAJE);
         g2.fill(new RoundRectangle2D.Double(x + 4, y + h * 0.42, w - 8, h * 0.58, 10, 10));
@@ -695,34 +702,70 @@ public class PanelJuego extends JPanel {
         g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 + 12, y + h + pieIzq));
 
         Arma armaEquipada = p.getArmaEquipada();
+
+        BufferedImage spritePelota;
+
         if (armaEquipada instanceof ArmaFuego) {
-            g2.setColor(COLOR_FUEGO);
+            spritePelota = imgArmaFuego;
         } else if (armaEquipada instanceof ArmaHielo) {
-            g2.setColor(COLOR_HIELO);
+            spritePelota = imgArmaHielo;
         } else {
-            g2.setColor(COLOR_MONEDA);
+            spritePelota = imgArmaEstandar;
         }
 
         if (p.getDireccion() < 0) {
-            g2.fill(new Ellipse2D.Double(x + w / 2.0 - 28, y + h * 0.55, 18, 18));
+            g2.drawImage(
+                        spritePelota, 
+                        (int)(x + w / 2.0 - 28), 
+                        (int)(y + h * 0.55), 
+                        25, 
+                        25, 
+                        this
+                    );
+
         } else {
-            g2.fill(new Ellipse2D.Double(x + w / 2.0 + 10, y + h * 0.55, 18, 18));
+            g2.drawImage(
+                        spritePelota,
+                        (int)(x + w / 2.0 + 10),
+                        (int)(y + h * 0.55),
+                        25,
+                        25,
+                        this
+                    );
         }
     }
 
     private void dibujarPelotas(Graphics2D g2) {
         for (Pelota pelota : this.nivel.getPelotas()) {
             if (pelota.esDeFuego()) {
-                g2.setColor(COLOR_FUEGO);
-            } else if (pelota.esDeHielo()) {
-                g2.setColor(COLOR_HIELO);
-            } else {
-                g2.setColor(COLOR_MONEDA);
-            }
+                g2.drawImage(
+                            imgArmaFuego, 
+                            (int) pelota.getPosicionX(), 
+                            (int) pelota.getPosicionY(),
+                            pelota.getAncho(), 
+                            pelota.getAlto(), 
+                            this
+                        );
 
-            g2.fill(new Ellipse2D.Double(
-                    pelota.getPosicionX(), pelota.getPosicionY(),
-                    pelota.getAncho(), pelota.getAlto()));
+            } else if (pelota.esDeHielo()) {
+                g2.drawImage(
+                            imgArmaHielo, 
+                            (int) pelota.getPosicionX(), 
+                            (int) pelota.getPosicionY(),
+                            pelota.getAncho(), 
+                            pelota.getAlto(), 
+                            this
+                        );
+            } else {
+                g2.drawImage(
+                            imgArmaEstandar, 
+                            (int) pelota.getPosicionX(), 
+                            (int) pelota.getPosicionY(),
+                            pelota.getAncho(), 
+                            pelota.getAlto(), 
+                            this
+                        );
+            }
         }
     }
 

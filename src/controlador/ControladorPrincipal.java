@@ -58,7 +58,6 @@ public class ControladorPrincipal{
             cargarConfiguracionAudio();
         }
        
-
         this.videoTerminado = new AtomicBoolean(false);
 
         //Listeners del menu principal
@@ -248,8 +247,6 @@ public class ControladorPrincipal{
 
         cerrarControladorJuego();
         iniciarJuego();
-    
-        
     }
 
     public void iniciarJuego(){

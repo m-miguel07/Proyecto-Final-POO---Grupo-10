@@ -489,7 +489,7 @@ public class ControladorJuego {
                 arma,
                 centroX - 8,
                 centroY - 8,
-                16, 16,
+                25, 25,
                 vx,
                 vy);
 
