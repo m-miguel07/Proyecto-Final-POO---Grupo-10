@@ -74,7 +74,11 @@ public class PanelVideoIntro extends JPanel {
             });
 
             jfxPanel.setScene(scene);
-            mediaPlayer.play();
+            
+            mediaPlayer.setOnReady(() -> {
+                mediaPlayer.play();
+            });
+            
 
             SwingUtilities.invokeLater(() -> jfxPanel.requestFocusInWindow());
         });

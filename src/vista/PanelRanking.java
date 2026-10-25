@@ -8,7 +8,6 @@ import java.awt.Font;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import javax.swing.JScrollPane;
@@ -72,6 +71,7 @@ public class PanelRanking extends PanelBase {
 
         JScrollPane scrollPane = new JScrollPane(tablaRanking);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK,3));
+        scrollPane.setBackground(Color.BLACK);
         scrollPane.setPreferredSize(DIM_TABLA);
 
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);

@@ -10,7 +10,7 @@ public final class EstadoJuegoCompletado implements EstadoJuego {
     @Override
     public void entrar(ControladorJuego controlador) {
         controlador.detenerTimer();
-        controlador.ocultarPaneles();
+        controlador.mostrarFinJuego(true);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package controlador;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,8 +44,8 @@ public class ControladorPrincipal{
         partidaDAO = new PartidaDAOSQLite();
         puntajeDAO = new PuntajeDAOSQLite();
         
-        partida = partidaDAO.cargar();
-        puntajes = puntajeDAO.mejores(3);
+        this.partida = partidaDAO.cargar();
+        this.puntajes = new ArrayList<Puntaje>(); 
 
         if (partida == null){
             this.partida = new Partida(0,1,0,0.25,0.50);
@@ -57,7 +58,6 @@ public class ControladorPrincipal{
             cargarConfiguracionAudio();
         }
        
-
         this.videoTerminado = new AtomicBoolean(false);
 
         //Listeners del menu principal
@@ -97,6 +97,8 @@ public class ControladorPrincipal{
                 this.ventana.getPanelMenu()
                             .getBotonRanking()
                             .addActionListener(e -> {
+                                this.puntajes = puntajeDAO.mejores(3);
+
                                 this.ventana.getPanelMenu().mostrarPanel(PanelMenuPrincipal.RANKING);
                                 this.ventana.getPanelMenu().getPanelRanking().mostrarPuntajes(puntajes);
                             });
@@ -155,6 +157,8 @@ public class ControladorPrincipal{
         this.iniciarSecuencia();
     }
 
+    //Persistencia 
+
     //Extrae de los datos de guardado los valores de volumen
     private void cargarConfiguracionAudio(){
         if (this.partida != null){
@@ -169,17 +173,26 @@ public class ControladorPrincipal{
         }
     }
 
-    private void cerrarJuego(){
-        persistirPartida();
-        System.exit(0);
-    }
-
     public void persistirPartida() {
         if (!partidaDAO.guardar(this.partida)) {
             System.err.println("No se pudo persistir la partida.");
         }
     }
 
+    public boolean borrarPartida(){
+        if (!partidaDAO.eliminar()) {
+            System.err.println("No se pudo borrar la partida.");
+            return false;
+        }
+
+        double SFXprevio = partida.getVolumenSFX();
+        double BGMprevio = partida.getVolumenBGM();
+
+        this.partida = new Partida(0, 1, 0, SFXprevio, BGMprevio);
+        return true;
+    }
+
+    //Manejo de secuencia inicial: splash y video de intro
     public void iniciarSecuencia(){
         ventana.mostrarTarjeta(Ventana.CARD_SPLASH_MATERIA);
         ventana.setVisible(true);
@@ -217,25 +230,29 @@ public class ControladorPrincipal{
         });
     }
 
-    private void iniciarJuegoNuevo(){
+    //Nuevo Juego ; Continuar ; Volver al menu ; Salir del juego
+
+    public void cerrarControladorJuego(){
         if (this.controladorJuego != null){
             this.controladorJuego.detener();
             this.controladorJuego = null;
         }
+    }
 
-        //Se conservan los ajustes de audio seleccionados antes de borrar la partida.
-        double SFXprevio = partida.getVolumenSFX();
-        double BGMprevio = partida.getVolumenBGM();
+    private void iniciarJuegoNuevo(){
+        
+        if (!borrarPartida()){
+            return;
+        }
 
-        partidaDAO.eliminar();
-        this.partida = new Partida(0, 1, 0, SFXprevio, BGMprevio);
+        cerrarControladorJuego();
         iniciarJuego();
     }
 
     public void iniciarJuego(){
         SwingUtilities.invokeLater(() -> {
             if (this.controladorJuego == null){
-                this.controladorJuego = new ControladorJuego(this.partida, this);
+                this.controladorJuego = new ControladorJuego(this.partida, this.puntajeDAO, this);
             }
 
             gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
@@ -249,5 +266,10 @@ public class ControladorPrincipal{
     public void volverAlMenu(){
         ventana.mostrarTarjeta(Ventana.CARD_MENU_PRINCIPAL);
         gestorAudio.reproducirMusica("src/assets/Musica/musica_menu.mp3", true);
+    }
+
+    private void cerrarJuego(){
+        persistirPartida();
+        System.exit(0);
     }
 }

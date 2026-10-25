@@ -26,6 +26,7 @@ public class GestorAudio { //Aplica patron Singleton
     public static final String SALTO = "SALTO";
     public static final String NIVEL_FALLIDO = "NIVEL_FALLIDO";
     public static final String NIVEL_COMPLETO = "NIVEL_COMPLETO";
+    public static final String FIN_JUEGO = "FIN_JUEGO";
 
     private volatile double volumenBGM = 0.10;
     private double volumenSFX = 0.10;
@@ -48,6 +49,7 @@ public class GestorAudio { //Aplica patron Singleton
         cargar(SALTO, "src/assets/Sonidos/salto.mp3");
         cargar(PERDER_VIDA, "src/assets/Sonidos/perder_vida.mp3");
         cargar(NIVEL_FALLIDO, "src/assets/Sonidos/silbato_terminado.mp3");
+        cargar(FIN_JUEGO,"src/assets/Sonidos/fin_juego.mp3");
     }
 
     public static GestorAudio getInstancia(){
