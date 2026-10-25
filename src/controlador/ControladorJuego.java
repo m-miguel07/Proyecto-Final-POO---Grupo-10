@@ -5,7 +5,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.time.LocalDate;
 import java.util.List;
+
 import javax.swing.Timer;
 
 import modelo.Arma;
@@ -20,10 +22,13 @@ import modelo.Partida;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
+import modelo.Puntaje;
+import modelo.PuntajeDAO;
 import modelo.ZonaTransicion;
 import modelo.Escenario;
 
 import vista.PanelJuego;
+import vista.PanelJuegoCompletado;
 
 public class ControladorJuego {
 
@@ -42,6 +47,8 @@ public class ControladorJuego {
 
     //Guardado
     private Partida partida;
+    private PuntajeDAO puntajeDAO;
+
     //Audio
     private final GestorAudio gestorAudio;
 
@@ -62,12 +69,13 @@ public class ControladorJuego {
     private boolean teclaDisparo;
 
     //Constructor
-    public ControladorJuego(Partida partida, ControladorPrincipal controladorPrincipal) {
+    public ControladorJuego(Partida partida, PuntajeDAO puntajeDAO, ControladorPrincipal controladorPrincipal) {
 
         this.controladorPrincipal = controladorPrincipal;
 
         //Persistencia
         this.partida = partida;
+        this.puntajeDAO = puntajeDAO;
 
         //logica de generación de nivel
         this.fabricaNivel = FabricaNiveles.para(this.partida.getNivelActual());
@@ -98,7 +106,7 @@ public class ControladorJuego {
         });
 
         panel.getPanelPausa().getBotonSalida().addActionListener(e ->{
-            salirAlMenu();
+            salirAlMenu(true);
         });
 
         //Paneles de fin de nivel (Perdiste | Ganaste)
@@ -108,7 +116,7 @@ public class ControladorJuego {
         });
 
         panel.getPanelDerrota().getBotonSalir().addActionListener(e -> {
-            salirAlMenu();
+            salirAlMenu(true);
         });
 
         panel.getPanelVictoria().getBoton().addActionListener(e ->{
@@ -116,7 +124,12 @@ public class ControladorJuego {
         });
 
         panel.getPanelVictoria().getBotonSalir().addActionListener(e -> {
-            salirAlMenu(2);
+            salirAlMenu(2, true);
+        });
+
+        //Panel de juego completado
+        panel.getPanelFinJuego().getCampoNombre().addActionListener(e ->{
+           guardarPuntaje();
         });
 
         this.registrarTeclado();
@@ -143,6 +156,7 @@ public class ControladorJuego {
         actualizarDatosPartida();
         if (nivelDeContinuacion != null) {
             this.partida.setNivelActual(nivelDeContinuacion);
+            this.fabricaNivel = FabricaNiveles.para(nivelDeContinuacion);
         }
         this.controladorPrincipal.persistirPartida(); //Sube a la base de datos la información de la partida
     }
@@ -155,25 +169,56 @@ public class ControladorJuego {
         partida.setTiempo(panel.getTiempoTranscurrido());
     }
 
+    private void guardarPuntaje(){
+        PanelJuegoCompletado panelFinJuego = panel.getPanelFinJuego();
+        String nombreJugador = panelFinJuego.getCampoNombre().getText();
+
+        if (nombreJugador.length() < 1 || nombreJugador.length() > 10) {
+            panelFinJuego.informar(PanelJuegoCompletado.INVALIDO);
+            return;
+        }
+
+        if (puntajeDAO.guardar(new Puntaje(nombreJugador, partida.getPuntajeAcumulado(), partida.getTiempoAcumulado() / 1000, LocalDate.now().toString())) 
+            && controladorPrincipal.borrarPartida()
+            ){
+            panelFinJuego.informar(PanelJuegoCompletado.EXITO);
+        } else {
+            panelFinJuego.informar(PanelJuegoCompletado.ERROR);
+            return;
+        }
+        
+        
+        Timer timer = new Timer(3000, e-> { //Espera 3s antes de volver al menu
+            controladorPrincipal.cerrarControladorJuego();
+            salirAlMenu(false);    
+        }); 
+        timer.setRepeats(false);
+        timer.start();    
+    }
+
     //Audio
     private void iniciarMusica(){
         gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
 
     //Gameloop
-    public void salirAlMenu(){
-        salirAlMenu(null);
+
+    public void salirAlMenu(boolean guardarPartida){
+        salirAlMenu(null, guardarPartida);
     }
 
-    private void salirAlMenu(Integer nivelDeContinuacion){
+    private void salirAlMenu(Integer nivelDeContinuacion, boolean guardarPartida){
         detener();
         gestorAudio.detenerMusica();
-        guardarPartida(nivelDeContinuacion);
+        if (guardarPartida){
+            guardarPartida(nivelDeContinuacion);
+        }
+        
         this.panel.ocultarPaneles();
         reiniciarEstado();
         this.estado = null;
         
-        this.controladorPrincipal.volverAlMenu(); //notifica que se solicito la salida
+        this.controladorPrincipal.volverAlMenu(); 
     }
 
     public void iniciar() {
@@ -280,6 +325,17 @@ public class ControladorJuego {
     void mostrarVictoria(boolean visible) {
         this.panel.mostrarVictoria(visible);
         GestorAudio.getInstancia().reproducirEfecto(GestorAudio.MONEDA);
+    }
+
+    void mostrarFinJuego(boolean visible){
+        if (visible){
+            actualizarDatosPartida();
+
+            this.panel.getPanelFinJuego().mostrarStats(partida.getPuntajeAcumulado(), partida.getTiempoAcumulado());
+            GestorAudio.getInstancia().reproducirEfecto(GestorAudio.FIN_JUEGO);
+        }
+
+        this.panel.mostrarFinJuego(visible);
     }
 
     void ocultarPaneles() {
@@ -471,6 +527,7 @@ public class ControladorJuego {
                 this.cambiarEstado(EstadoVictoria.INSTANCIA);
             } else {
                 this.cambiarEstado(EstadoJuegoCompletado.INSTANCIA);
+                
             }
 
             this.panel.repaint();

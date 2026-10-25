@@ -107,6 +107,7 @@ public class PanelJuego extends JPanel {
     private PanelPausa panelPausa;
     private PanelFinNivel panelDerrota;
     private PanelFinNivel panelVictoria;
+    private PanelJuegoCompletado panelFinJuego;
 
     private HUD hud;
 
@@ -124,6 +125,7 @@ public class PanelJuego extends JPanel {
         this.panelPausa = new PanelPausa();
         this.panelDerrota = new PanelFinNivel("src/assets/ui/img-lvl-fail.png",new Dimension(627,37),"src/assets/ui/btn-reset-pause-normal.png", "src/assets/ui/btn-reset-pause-hover.png");
         this.panelVictoria = new PanelFinNivel("src/assets/ui/img-lvl-victory.png",new Dimension(627,37),"src/assets/ui/btn-next-normal.png", "src/assets/ui/btn-next-hover.png");
+        this.panelFinJuego = new PanelJuegoCompletado();
 
         this.hud = new HUD(
                            "src/assets/hud/icon-ps-00.png",
@@ -140,10 +142,12 @@ public class PanelJuego extends JPanel {
         panelPausa.setVisible(false);
         panelDerrota.setVisible(false);
         panelVictoria.setVisible(false);
+        panelFinJuego.setVisible(false);
 
         this.add(panelPausa);
         this.add(panelDerrota);
         this.add(panelVictoria);
+        this.add(panelFinJuego);
         
         escenarioCambiado(escenario);
     }
@@ -173,6 +177,10 @@ public class PanelJuego extends JPanel {
         return panelVictoria;
     }
 
+    public PanelJuegoCompletado getPanelFinJuego() {
+        return panelFinJuego;
+    }
+
     //Setters
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
@@ -194,11 +202,16 @@ public class PanelJuego extends JPanel {
         panelVictoria.setVisible(visible);
     }
 
+    public void mostrarFinJuego(boolean visible){
+        panelFinJuego.setVisible(visible);
+    }
+
     //Metodos
     public void ocultarPaneles(){
         panelPausa.setVisible(false);
         panelDerrota.setVisible(false);
         panelVictoria.setVisible(false);
+        panelFinJuego.setVisible(false);
         repaint();
     }
 

@@ -24,11 +24,11 @@ public class PuntajeDAOSQLite implements PuntajeDAO {
             """;
 
         try (PreparedStatement ps = Conexion.getInstancia()
-                .get().prepareStatement(sql)) {
+            .get().prepareStatement(sql)) {
 
             ps.setString(1, puntaje.getJugador());
             ps.setInt(2, puntaje.getPuntos());
-            ps.setInt(3, puntaje.getTiempo());
+            ps.setLong(3, puntaje.getTiempo());
             ps.setString(4, puntaje.getFecha());
 
             return ps.executeUpdate() > 0;

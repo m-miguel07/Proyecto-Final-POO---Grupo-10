@@ -8,7 +8,6 @@ import java.awt.Font;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import javax.swing.JScrollPane;
