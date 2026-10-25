@@ -13,7 +13,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -46,6 +45,7 @@ public class PanelJuego extends JPanel {
 
     private static final Color COLOR_PLATAFORMA = new Color(226, 228, 234);
     private static final Color COLOR_PLATAFORMA_BORDE = new Color(150, 154, 166);
+    
     //Tonos calidos translucidos, tomados del fondo del nivel
     private static final Color COLOR_MURO_ARRIBA = new Color(104, 82, 68, 105);
     private static final Color COLOR_MURO_ABAJO = new Color(162, 130, 100, 95);
@@ -66,21 +66,15 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_HIELO = new Color(125, 211, 252);
     private static final Color COLOR_ALA_HIELO = new Color(147, 197, 253);
     private static final Color COLOR_ALA_HIELO_BORDE = new Color(96, 165, 250);
-    private static final Color COLOR_FUEGO = new Color(239, 68, 68);
     private static final Color COLOR_FUEGO_BORDE = new Color(160, 30, 30);
     private static final Color COLOR_FUEGO_LLAMA = new Color(249, 115, 22);
     private static final Color COLOR_FUEGO_NUCLEO = new Color(253, 224, 71);
-    private static final Color COLOR_ARO_BLANCO = new Color(235, 240, 245);
-    private static final Color COLOR_ARO_GRIS = new Color(120, 130, 145);
-    private static final Color COLOR_ARO_ENCESTADO = new Color(250, 204, 21);
-    private static final Color COLOR_ARO_PENDIENTE = new Color(230, 80, 40);
     private static final Color COLOR_PERSONAJE = new Color(37, 99, 235);
     private static final Color COLOR_PERSONAJE_CABEZA = new Color(253, 224, 71);
     private static final Color COLOR_PERSONAJE_PIERNAS = new Color(30, 41, 59);
 
     private static final BasicStroke TRAZO_FINO = new BasicStroke(2f);
     private static final BasicStroke TRAZO_MEDIO = new BasicStroke(3f);
-    private static final BasicStroke TRAZO_GRUESO = new BasicStroke(6f);
     private static final BasicStroke TRAZO_PIERNAS =
             new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
