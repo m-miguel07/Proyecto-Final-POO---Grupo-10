@@ -14,6 +14,10 @@ public class EnemigoTerrestre extends Enemigo {
         this.direccion = 1;
     }
 
+
+    public int getDireccion(){
+        return this.direccion;
+    }
     //Comportamientos
     //Invierte el sentido de la patrulla (por ejemplo, al chocar con el muro).
     public void invertirDireccion() {

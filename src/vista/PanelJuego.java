@@ -58,14 +58,7 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_BOTON_ACTIVADO = new Color(21, 128, 61);
     private static final Color COLOR_BOTON_BORDE = new Color(20, 83, 45);
     private static final Color COLOR_MONEDA = new Color(250, 204, 21);
-    private static final Color COLOR_ENEMIGO = new Color(225, 45, 45);
-    private static final Color COLOR_ENEMIGO_BORDE = new Color(140, 20, 20);
-    private static final Color COLOR_CONGELADO_BORDE = new Color(37, 99, 180);
     private static final Color COLOR_VOLADOR = new Color(249, 140, 30);
-    private static final Color COLOR_ALA_BORDE = new Color(194, 106, 20);
-    private static final Color COLOR_HIELO = new Color(125, 211, 252);
-    private static final Color COLOR_ALA_HIELO = new Color(147, 197, 253);
-    private static final Color COLOR_ALA_HIELO_BORDE = new Color(96, 165, 250);
     private static final Color COLOR_FUEGO_BORDE = new Color(160, 30, 30);
     private static final Color COLOR_FUEGO_LLAMA = new Color(249, 115, 22);
     private static final Color COLOR_FUEGO_NUCLEO = new Color(253, 224, 71);
@@ -96,6 +89,13 @@ public class PanelJuego extends JPanel {
 
     private BufferedImage imgAro;
     private BufferedImage imgAroEncestado;
+
+    private BufferedImage imgEnemigo;
+
+    private BufferedImage imgEnemigoDistancia;
+    
+    private BufferedImage imgEnemigoVolador;
+    private BufferedImage imgEnemigoVoladorCongelado;
 
     private BufferedImage imgMoneda; 
     private BufferedImage imgArmaEstandar;
@@ -151,6 +151,7 @@ public class PanelJuego extends JPanel {
         this.add(panelVictoria);
         this.add(panelFinJuego);
         
+        cargarEnemigos();
         cargarImagenesAro();
         cargarImagenesRecolectables();
         
@@ -236,6 +237,13 @@ public class PanelJuego extends JPanel {
     private void cargarImagenesAro(){
         cargarImagen("src/assets/game/aro.png", imagen -> this.imgAro = imagen);
         cargarImagen("src/assets/game/aro-encestado.png", imagen -> this.imgAroEncestado = imagen);
+    }
+
+    private void cargarEnemigos(){
+        cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigo = imagen);
+        cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigoDistancia = imagen); //Placeholder
+        cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigoVolador = imagen); //Placeholder
+        cargarImagen("src/assets/game/terrestre-ice.png", imagen -> this.imgEnemigoVoladorCongelado = imagen); //Placeholder
     }
 
     public void ocultarPaneles(){
@@ -470,7 +478,6 @@ public class PanelJuego extends JPanel {
             if (imgMoneda != null) {
                 g2.drawImage(imgMoneda, (int) moneda.getPosicionX(), (int) moneda.getPosicionY(), moneda.getAncho(), moneda.getAlto(), this);
             }
-            
         }
     }
 
@@ -503,8 +510,8 @@ public class PanelJuego extends JPanel {
             return;
         }
 
-        int x = (int)aro.getPosicionX();
-        int y = (int)aro.getPosicionY();
+        int x = (int) aro.getPosicionX();
+        int y = (int) aro.getPosicionY();
         int w = aro.getAncho();
         int h = aro.getAlto();
 
@@ -523,7 +530,7 @@ public class PanelJuego extends JPanel {
             } else if (enemigo instanceof EnemigoTerrestre) {
                 this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
             } else {
-                this.dibujarEnemigoGenerico(g2, enemigo);
+                this.dibujarEnemigoADistancia(g2, enemigo);
             }
 
             if (enemigo.estaQuemado()) {
@@ -556,84 +563,27 @@ public class PanelJuego extends JPanel {
     }
 
     private void dibujarTerrestre(Graphics2D g2, EnemigoTerrestre enemigo) {
-        boolean congelado = enemigo.estaCongelado();
+        boolean mirandoIzquierda = enemigo.getDireccion() == 1;
 
-        g2.setColor(congelado ? COLOR_HIELO : COLOR_ENEMIGO);
-        g2.fill(new Ellipse2D.Double(
-                enemigo.getPosicionX(), enemigo.getPosicionY(),
-                enemigo.getAncho(), enemigo.getAlto()));
-
-        g2.setColor(congelado ? COLOR_CONGELADO_BORDE : COLOR_ENEMIGO_BORDE);
-        g2.setStroke(TRAZO_MEDIO);
-        g2.draw(new Ellipse2D.Double(
-                enemigo.getPosicionX(), enemigo.getPosicionY(),
-                enemigo.getAncho(), enemigo.getAlto()));
-
-        g2.setColor(Color.WHITE);
-        double cx = enemigo.getPosicionX() + enemigo.getAncho() / 2.0;
-        double cy = enemigo.getPosicionY() + enemigo.getAlto() / 2.0;
-        g2.fill(new Ellipse2D.Double(cx - 12, cy - 7, 8, 8));
-        g2.fill(new Ellipse2D.Double(cx + 4, cy - 7, 8, 8));
+        if(mirandoIzquierda) {
+            g2.drawImage(imgEnemigo, (int)enemigo.getPosicionX() + enemigo.getAncho(), (int) enemigo.getPosicionY(), -enemigo.getAncho(), enemigo.getAlto(), this);
+        } else {
+            g2.drawImage(imgEnemigo, (int)enemigo.getPosicionX(), (int) enemigo.getPosicionY(), enemigo.getAncho(), enemigo.getAlto(), this);
+        }
     }
 
-    private void dibujarEnemigoGenerico(Graphics2D g2, Enemigo enemigo) {
-        boolean congelado = enemigo.estaCongelado();
-
-        g2.setColor(congelado ? COLOR_HIELO : COLOR_ENEMIGO);
-        g2.fill(new Ellipse2D.Double(
-                enemigo.getPosicionX(), enemigo.getPosicionY(),
-                enemigo.getAncho(), enemigo.getAlto()));
-        g2.setColor(congelado ? COLOR_CONGELADO_BORDE : COLOR_ENEMIGO_BORDE);
-        g2.setStroke(TRAZO_MEDIO);
-        g2.draw(new Ellipse2D.Double(
-                enemigo.getPosicionX(), enemigo.getPosicionY(),
-                enemigo.getAncho(), enemigo.getAlto()));
+    private void dibujarEnemigoADistancia(Graphics2D g2, Enemigo enemigo) {
+        g2.drawImage(imgEnemigoDistancia, (int)enemigo.getPosicionX(), (int) enemigo.getPosicionY(), enemigo.getAncho(), enemigo.getAlto(), this);
     }
 
     private void dibujarVolador(Graphics2D g2, EnemigoVolador volador) {
-        double x = volador.getPosicionX();
-        double y = volador.getPosicionY();
-        double w = volador.getAncho();
-        double h = volador.getAlto();
-        double cx = x + w / 2.0;
-        double cy = y + h / 2.0;
         boolean congelado = volador.estaCongelado();
 
-        Color colorCuerpo = congelado ? COLOR_HIELO : COLOR_ENEMIGO;
-        Color colorBorde = congelado ? COLOR_CONGELADO_BORDE : COLOR_ENEMIGO_BORDE;
-        Color colorAla = congelado ? COLOR_ALA_HIELO : COLOR_VOLADOR;
-        Color colorAlaBorde = congelado ? COLOR_ALA_HIELO_BORDE : COLOR_ALA_BORDE;
-
-        Path2D alaIzq = new Path2D.Double();
-        alaIzq.moveTo(cx, cy);
-        alaIzq.lineTo(x - 26, y - 2);
-        alaIzq.lineTo(x - 4, y + h * 0.42);
-        alaIzq.lineTo(x - 18, y + h + 2);
-        alaIzq.lineTo(cx, cy);
-        alaIzq.closePath();
-
-        Path2D alaDer = new Path2D.Double();
-        alaDer.moveTo(cx, cy);
-        alaDer.lineTo(x + w + 26, y - 2);
-        alaDer.lineTo(x + w + 4, y + h * 0.42);
-        alaDer.lineTo(x + w + 18, y + h + 2);
-        alaDer.lineTo(cx, cy);
-        alaDer.closePath();
-
-        g2.setColor(colorAla);
-        g2.fill(alaIzq);
-        g2.fill(alaDer);
-
-        g2.setColor(colorAlaBorde);
-        g2.setStroke(TRAZO_FINO);
-        g2.draw(alaIzq);
-        g2.draw(alaDer);
-
-        g2.setColor(colorCuerpo);
-        g2.fill(new Ellipse2D.Double(x + w * 0.25, y + h * 0.25, w * 0.5, h * 0.5));
-        g2.setColor(colorBorde);
-        g2.setStroke(TRAZO_FINO);
-        g2.draw(new Ellipse2D.Double(x + w * 0.25, y + h * 0.25, w * 0.5, h * 0.5));
+        if(congelado){
+            g2.drawImage(imgEnemigoVoladorCongelado, (int)volador.getPosicionX(), (int) volador.getPosicionY(), volador.getAncho(), volador.getAlto(), this);
+        } else {
+            g2.drawImage(imgEnemigoVolador, (int)volador.getPosicionX(), (int) volador.getPosicionY(), volador.getAncho(), volador.getAlto(), this);
+        }
     }
 
     private void dibujarFuego(Graphics2D g2, Enemigo enemigo) {
