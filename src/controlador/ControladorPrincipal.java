@@ -230,7 +230,7 @@ public class ControladorPrincipal{
         });
     }
 
-    //Nuevo Juego ; Continuar ; Volver al menu ; Salir del juego
+    // Cerrar controlador ; Nuevo Juego ; Continuar ; Volver al menu ; Salir del juego
 
     public void cerrarControladorJuego(){
         if (this.controladorJuego != null){

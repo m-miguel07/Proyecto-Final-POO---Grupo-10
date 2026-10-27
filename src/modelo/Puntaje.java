@@ -1,6 +1,6 @@
 package modelo;
 
-public class Puntaje { //Para tabla de puntajes historicos
+public class Puntaje { 
 
     private final String jugador;
     private final int puntos;

@@ -195,7 +195,7 @@ public class FabricaNivel2 implements FabricaNivel {
 
         //Enemigo volador y las plataformas
         plataformas.add(new Plataforma(0, 540, 240, 24));
-        EnemigoVolador volador = new EnemigoVolador(20, 44, 44, 1.5, 300, 680);
+        EnemigoVolador volador = new EnemigoVolador(20, EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 1.5, 300, 680);
         volador.setLimites(220, 480);
         enemigos.add(volador);
 

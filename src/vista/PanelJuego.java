@@ -241,9 +241,9 @@ public class PanelJuego extends JPanel {
 
     private void cargarEnemigos(){
         cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigo = imagen);
-        cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigoDistancia = imagen); //Placeholder
-        cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigoVolador = imagen); //Placeholder
-        cargarImagen("src/assets/game/terrestre-ice.png", imagen -> this.imgEnemigoVoladorCongelado = imagen); //Placeholder
+        cargarImagen("src/assets/game/terrestre.png", imagen -> this.imgEnemigoDistancia = imagen);
+        cargarImagen("src/assets/game/volador.png", imagen -> this.imgEnemigoVolador = imagen); 
+        cargarImagen("src/assets/game/volador-ice.png", imagen -> this.imgEnemigoVoladorCongelado = imagen);
     }
 
     public void ocultarPaneles(){

@@ -174,15 +174,15 @@ public class FabricaNivel1 implements FabricaNivel {
                 50, 780, 40, 40));
 
         //Tres enemigos voladores
-        EnemigoVolador voladorBajo = new EnemigoVolador(20, 46, 40, 2.2, 780, 660);
+        EnemigoVolador voladorBajo = new EnemigoVolador(20, EnemigoVolador.ANCHO,EnemigoVolador.ALTO, 2.2, 780, 660);
         voladorBajo.setLimites(700, 900);
         enemigos.add(voladorBajo);
 
-        EnemigoVolador voladorMedio = new EnemigoVolador(20, 46, 40, 2.0, 760, 500);
+        EnemigoVolador voladorMedio = new EnemigoVolador(20,EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 2.0, 760, 500);
         voladorMedio.setLimites(680, 880);
         enemigos.add(voladorMedio);
 
-        EnemigoVolador voladorAlto = new EnemigoVolador(20, 46, 40, 1.8, 720, 340);
+        EnemigoVolador voladorAlto = new EnemigoVolador(20, EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 1.8, 720, 340);
         voladorAlto.setLimites(640, 760);
         enemigos.add(voladorAlto);
 

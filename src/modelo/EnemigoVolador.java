@@ -4,6 +4,9 @@ import java.util.List;
 
 public class EnemigoVolador extends Enemigo {
 
+    public static int ANCHO = 85;
+    public static int ALTO = 65;
+
     //Atributos
     private double limiteIzquierdo;
     private double limiteDerecho;
