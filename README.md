@@ -45,7 +45,7 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
 
 #### **Diagrama de Clases UML (Conceptual)**
 
- ![Diagrama UML](src/assets/diagrama_uml.PNG)
+ ![Diagrama UML](src/assets/diagrama_uml.png)
 
 #### Patrón de diseño adicional: State
 **Nombre del patrón: State (Estado)** 
