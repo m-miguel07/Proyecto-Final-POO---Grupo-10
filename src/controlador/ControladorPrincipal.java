@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
@@ -197,15 +198,10 @@ public class ControladorPrincipal{
         ventana.mostrarTarjeta(Ventana.CARD_SPLASH_MATERIA);
         ventana.setVisible(true);
         
-        new Thread(() -> {
-            try {
-                Thread.sleep(tiempoSplashMS);
-                SwingUtilities.invokeLater(this::iniciarVideoIntro);
-                
-            } catch(InterruptedException e){
-                
-            }
-        }).start();
+        Timer timer = new Timer(tiempoSplashMS, e -> iniciarVideoIntro());
+        timer.setRepeats(false);
+        timer.start();    
+        
     }
 
     private void iniciarVideoIntro(){
