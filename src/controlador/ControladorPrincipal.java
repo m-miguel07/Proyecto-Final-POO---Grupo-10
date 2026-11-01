@@ -193,6 +193,10 @@ public class ControladorPrincipal{
         return true;
     }
 
+    public PartidaDAO getPartidaDAO() {
+         return this.partidaDAO;
+    }
+
     //Manejo de secuencia inicial: splash y video de intro
     public void iniciarSecuencia(){
         ventana.mostrarTarjeta(Ventana.CARD_SPLASH_MATERIA);

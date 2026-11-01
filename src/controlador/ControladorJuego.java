@@ -7,26 +7,31 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDate;
 import java.util.List;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-
 import modelo.Arma;
 import modelo.Configuracion;
 import modelo.Enemigo;
-import modelo.Muro;
+import modelo.Escenario;
 import modelo.FabricaNivel;
 import modelo.FabricaNiveles;
 import modelo.GestorAudio;
+import modelo.GestorGuardado;
+import modelo.Moneda;
+import modelo.Muro;
 import modelo.Nivel;
 import modelo.Partida;
+import modelo.PartidaDAO;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
 import modelo.Puntaje;
 import modelo.PuntajeDAO;
 import modelo.ZonaTransicion;
-import modelo.Escenario;
-
 import vista.PanelJuego;
 import vista.PanelJuegoCompletado;
 
@@ -47,6 +52,7 @@ public class ControladorJuego {
 
     //Guardado
     private Partida partida;
+    private PartidaDAO partidaDAO;
     private PuntajeDAO puntajeDAO;
 
     //Audio
@@ -57,6 +63,20 @@ public class ControladorJuego {
     private long tiempoTranscurridoMS;
     private long ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
     private long ultimoPasoNanos;
+
+    //Generador de items aleatorios con un hilo daemon
+    private static final AtomicInteger CONTADOR_SPAWNER = new AtomicInteger(1);
+    
+    private final ScheduledExecutorService spawnerExecutor = Executors.newSingleThreadScheduledExecutor(tarea -> {
+        Thread hilo = new Thread(tarea, "spawner-monedas-" + CONTADOR_SPAWNER.getAndIncrement());
+        hilo.setDaemon(true);
+        return hilo;
+    });
+
+    // Límite de monedas aleatorias generadas (la idea es que solo genere 3 monedas por escenario)
+    private static final int MAX_MONEDAS_ALEATORIAS_POR_ESCENARIO = 3;
+    private int monedasAleatoriasGeneradasEsteEscenario = 0;
+    private Escenario escenarioParaContador;
 
     //Desplazamiento y apuntado
     private int mouseX = -1;
@@ -75,6 +95,7 @@ public class ControladorJuego {
 
         //Persistencia
         this.partida = partida;
+        this.partidaDAO = controladorPrincipal.getPartidaDAO();
         this.puntajeDAO = puntajeDAO;
 
         //logica de generación de nivel
@@ -134,6 +155,9 @@ public class ControladorJuego {
 
         this.registrarTeclado();
         this.registrarMouse();
+        this.monedasAleatoriasGeneradasEsteEscenario = 0; //contador
+        this.escenarioParaContador = this.escenarioActual;
+        GeneradorMonedas();
     }
 
     //Getters
@@ -158,7 +182,7 @@ public class ControladorJuego {
             this.partida.setNivelActual(nivelDeContinuacion);
             this.fabricaNivel = FabricaNiveles.para(nivelDeContinuacion);
         }
-        this.controladorPrincipal.persistirPartida(); //Sube a la base de datos la información de la partida
+        GestorGuardado.guardarPartida(this.partida, this.partidaDAO);
     }
 
     private void actualizarDatosPartida(){
@@ -178,11 +202,17 @@ public class ControladorJuego {
             return;
         }
 
-        if (puntajeDAO.guardar(new Puntaje(nombreJugador, partida.getPuntajeAcumulado(), partida.getTiempoAcumulado() / 1000, LocalDate.now().toString())) 
-            && controladorPrincipal.borrarPartida()
-            ){
-            panelFinJuego.informar(PanelJuegoCompletado.EXITO);
-        } else {
+        Puntaje puntajeAGuardar = new Puntaje(nombreJugador, partida.getPuntajeAcumulado(), partida.getTiempoAcumulado() / 1000, LocalDate.now().toString());
+        GestorGuardado.guardarPuntaje(puntajeAGuardar, this.puntajeDAO);
+
+        try {
+            if (controladorPrincipal.borrarPartida()) {
+                panelFinJuego.informar(PanelJuegoCompletado.EXITO);
+            } else {
+                panelFinJuego.informar(PanelJuegoCompletado.ERROR);
+                return;
+            }
+        } catch (Exception e) {
             panelFinJuego.informar(PanelJuegoCompletado.ERROR);
             return;
         }
@@ -217,6 +247,7 @@ public class ControladorJuego {
         this.panel.ocultarPaneles();
         reiniciarEstado();
         this.estado = null;
+        DetenerGeneradorMonedas();
         
         this.controladorPrincipal.volverAlMenu(); 
     }
@@ -232,6 +263,53 @@ public class ControladorJuego {
         this.cambiarEstado(EstadoJugando.INSTANCIA);
     }
 
+    //generador de monedas aleatorio (tiene un limite de 3 monedas por escenario)
+    private void GeneradorMonedas() {
+        this.spawnerExecutor.scheduleWithFixedDelay(() -> {
+            if (this.estado == null || !this.estado.permiteJugar()) {
+                return;
+            }
+
+            if (Math.random() >= 0.35) {
+                return;
+            }
+
+            int x = (int) (Math.random() * (Configuracion.ANCHO - 32));
+            int y = (int) (Math.random() * 400) + 150;
+
+            SwingUtilities.invokeLater(() -> {
+                if (this.estado == null || !this.estado.permiteJugar()) {
+                    return;
+                }
+
+                Nivel nivel = this.getNivel();
+                if (nivel == null) {
+                    return;
+                }
+
+                if (this.escenarioParaContador != this.escenarioActual) {
+                    this.escenarioParaContador = this.escenarioActual;
+                    this.monedasAleatoriasGeneradasEsteEscenario = 0;
+                }
+
+                if (this.monedasAleatoriasGeneradasEsteEscenario >= MAX_MONEDAS_ALEATORIAS_POR_ESCENARIO) {
+                    return;
+                }
+
+                nivel.agregarMoneda(new Moneda(x, y, 32, 32));
+                this.monedasAleatoriasGeneradasEsteEscenario++;
+            });
+        }, 2000, 3000, TimeUnit.MILLISECONDS);
+    }
+
+    //apagar el hilo
+    private void DetenerGeneradorMonedas() {
+        if (!this.spawnerExecutor.isShutdown()) {
+            this.spawnerExecutor.shutdownNow();
+        }
+    }
+
+    //se detiene al salir al menu principal
     public void detener() {
         this.timer.stop();
         gestorAudio.pausarMusica();
@@ -271,6 +349,8 @@ public class ControladorJuego {
         this.panel.setTiempoTranscurrido(this.tiempoTranscurridoMS);
 
         panel.escenarioCambiado(this.escenarioActual);
+        this.escenarioParaContador = this.escenarioActual;
+        this.monedasAleatoriasGeneradasEsteEscenario = 0;
 
         this.ultimoDisparoMS = -COOLDOWN_DISPARO_MS;
         this.ultimoPasoNanos = System.nanoTime();
@@ -596,10 +676,15 @@ public class ControladorJuego {
         }
     }
 
+    //Si detecta un cambio de escenario, el contador se resetea y vuelven a generarse las 3 monedas.
     private void cambiarEscenario(Escenario nuevo, int x, int y, Personaje personaje){
         personaje.setPosicion(x, y);
         this.escenarioActual = nuevo;
         this.panel.escenarioCambiado(nuevo);
+        if (this.escenarioParaContador != this.escenarioActual) {
+            this.escenarioParaContador = this.escenarioActual;
+            this.monedasAleatoriasGeneradasEsteEscenario = 0;
+        }
     }
 
 }
