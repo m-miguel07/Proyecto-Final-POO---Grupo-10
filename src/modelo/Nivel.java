@@ -139,6 +139,13 @@ public class Nivel {
         this.gestorPelotas.agregar(pelota);
     }
 
+    //Método nuevo para agregar monedas fuera del constructor (hilo para la generación de items aleatorios) 
+    public void agregarMoneda(Moneda moneda) {
+        if (moneda != null) {
+            this.monedas.add(moneda);
+        }
+    }
+
     public void actualizarPelotas(int anchoPantalla, int altoPantalla, int deltaMS) {
         this.gestorPelotas.actualizar(this.aro, this.personaje, this.enemigos, this.plataformas, this.botones,
                 anchoPantalla, altoPantalla, deltaMS);
