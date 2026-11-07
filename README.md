@@ -76,6 +76,11 @@ Dichos estados controlan la visibilidad de determinados paneles, capacidad de mo
  - **Plataformas especiales:** Las plataformas de color **negro**, son plataformas las cuales no colisionan con la pelota, es decir, puede pasar a través de ellas.
  - Las plataformas de **madera** (color marron) pueden ser destruidas por la pelota de fuego (color rojo).
  - Las plataformas **botón** (color verde), al ser accionadas por la pelota, destruyen una plataforma determinada, la cual libera el paso.
+ #### Capturas del menu:
+ ![Menu principal](src/assets/Capturas-menu/menu-main.png)
+ ![Ranking](src/assets/Capturas-menu/menu-rank.png)
+ ![Opciones](src/assets/Capturas-menu/menu-opc.png)
+
 
 
 ## 4. Stack Tecnológico
