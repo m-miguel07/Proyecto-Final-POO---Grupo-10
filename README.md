@@ -21,16 +21,15 @@ El sistema será un juego funcional y extensible que permitirá al jugador exper
     - Los obstaculos aumentan progresivamente a medida que se avance en el juego.
 
 - **Mecánicas de Juego**
-    - El jugador empieza con 0 monedas iniciales, las cuales tendra que ir recolectando entre niveles, debiendo recolectar una cantidad de monedas determinada para poder avanzar al siguiente nivel.
+    - El jugador empieza con 0 monedas iniciales, las monedas se encuentran dispersas por los niveles.
 
     - Para recolectar una moneda, el jugador deberá tocarlas, lo cual se verá obstaculizado por la aparición de enemigos, si lo logra, avanza al siguiente escenario hasta llegar al final del nivel.
     ![alt text](src/assets/prototipo/image.png)
 
-    - El puntaje del jugador se calculará en función del tiempo en el que completa el nivel y enemigos derrotados.
+    - El puntaje del jugador se calculará en función de la recolección de monedas y enemigos derrotados.
 
 - **Sistema de combate**
     - El jugador tiene como arma principal una pelota de basquet, la cual arroja a los enemigos para derrotarlos, la pelota puede lanzarse en cualquier dirección.
-    - Si el enemigo esta lo suficientemente cerca el jugador podra combatir cuerpo a cuerpo.
 
 - **Interfaz Gráfica (IGU):**
     - Contador de tiempo
