@@ -81,11 +81,14 @@ Dichos estados controlan la visibilidad de determinados paneles, capacidad de mo
  ![Ranking](src/assets/Capturas-menu/menu-rank.png)
  ![Opciones](src/assets/Capturas-menu/menu-opc.png)
 
-
-
 ## 4. Stack Tecnológico
 - **Lenguaje:** Java 25
 - **IDE:** Visual Studio Code
 - **Base de Datos:** SQLite
 - **Framework de IGU:** Java Swing y JavaFX
 - **Control de Versiones:** Git y GitHub Classroom
+
+## Ejecución del juego
+1. Descargar o clonar el repositorio
+2. Abrirlo con un IDE configurado con Java (Visual Studio Code, Eclipse, etc)
+3. Ejecutar desde **App.java**
