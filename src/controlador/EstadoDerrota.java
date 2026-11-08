@@ -20,6 +20,7 @@ public final class EstadoDerrota implements EstadoJuego {
 
     @Override
     public void pausar(ControladorJuego controlador) {
+        return; //No existe pausa en el estado de derrota
     }
 
     @Override

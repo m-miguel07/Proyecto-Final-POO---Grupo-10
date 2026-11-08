@@ -18,7 +18,7 @@ public class ArmaFuego extends Arma {
 
     //Comportamientos
     @Override
-    public void aplicarDanio(Entidad objetivo) {
+    public void aplicarDanio(Enemigo objetivo) {
         objetivo.recibirDanio(this.getDanioBase());
         objetivo.recibirQuemadura(2000, this.danioPorQuemadura);
     }

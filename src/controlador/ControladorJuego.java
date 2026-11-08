@@ -92,6 +92,7 @@ public class ControladorJuego {
     public ControladorJuego(Partida partida, PuntajeDAO puntajeDAO, ControladorPrincipal controladorPrincipal) {
 
         this.controladorPrincipal = controladorPrincipal;
+        this.estado = EstadoInactivo.INSTANCIA;
 
         //Persistencia
         this.partida = partida;
@@ -193,7 +194,7 @@ public class ControladorJuego {
         partida.setTiempo(panel.getTiempoTranscurrido());
     }
 
-    private void guardarPuntaje(){
+    public void guardarPuntaje(){
         PanelJuegoCompletado panelFinJuego = panel.getPanelFinJuego();
         String nombreJugador = panelFinJuego.getCampoNombre().getText();
 
@@ -227,10 +228,21 @@ public class ControladorJuego {
     }
 
     //Audio
-    private void iniciarMusica(){
+    void iniciarMusica(){
         gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
     }
 
+    void pausarMusica() {
+        this.gestorAudio.pausarMusica();
+    }
+
+    void reanudarMusica() {
+        this.gestorAudio.reanudarMusica();
+    }
+
+    void detenerMusica() {
+        this.gestorAudio.detenerMusica();
+    }
     //Gameloop
 
     public void salirAlMenu(boolean guardarPartida){
@@ -238,15 +250,14 @@ public class ControladorJuego {
     }
 
     private void salirAlMenu(Integer nivelDeContinuacion, boolean guardarPartida){
-        detener();
-        gestorAudio.detenerMusica();
+        detenerMusica();
+
         if (guardarPartida){
             guardarPartida(nivelDeContinuacion);
         }
         
-        this.panel.ocultarPaneles();
         reiniciarEstado();
-        this.estado = null;
+        cambiarEstado(EstadoInactivo.INSTANCIA);
         DetenerGeneradorMonedas();
         
         this.controladorPrincipal.volverAlMenu(); 
@@ -266,7 +277,7 @@ public class ControladorJuego {
     //generador de monedas aleatorio (tiene un limite de 3 monedas por escenario)
     private void GeneradorMonedas() {
         this.spawnerExecutor.scheduleWithFixedDelay(() -> {
-            if (this.estado == null || !this.estado.permiteJugar()) {
+            if (!this.estado.permiteJugar()) {
                 return;
             }
 
@@ -278,7 +289,7 @@ public class ControladorJuego {
             int y = (int) (Math.random() * 400) + 150;
 
             SwingUtilities.invokeLater(() -> {
-                if (this.estado == null || !this.estado.permiteJugar()) {
+                if (!this.estado.permiteJugar()) {
                     return;
                 }
 
@@ -309,20 +320,11 @@ public class ControladorJuego {
         }
     }
 
-    //se detiene al salir al menu principal
-    public void detener() {
-        this.timer.stop();
-        gestorAudio.pausarMusica();
-    }
-
     public void pausar(){
-        if (this.estado != null) {
-            this.estado.pausar(this);
-        }
+        estado.pausar(this); 
     }
 
     public void reiniciar() {
-        this.detener();
         gestorAudio.detenerMusica();
 
         reiniciarEstado();
@@ -366,15 +368,9 @@ public class ControladorJuego {
     }
 
     void cambiarEstado(EstadoJuego nuevoEstado) {
-        if (this.estado != null) {
-            this.estado.salir(this);
-        }
-        
+        this.estado.salir(this);
         this.estado = nuevoEstado;
-
-        if (this.estado != null) {
-            this.estado.entrar(this);
-        }
+        this.estado.entrar(this);
     }
 
     void iniciarTimer() {
@@ -383,14 +379,6 @@ public class ControladorJuego {
 
     void detenerTimer() {
         this.timer.stop();
-    }
-
-    void pausarMusica() {
-        this.gestorAudio.pausarMusica();
-    }
-
-    void reanudarMusica() {
-        this.gestorAudio.reanudarMusica();
     }
 
     void mostrarPausa(boolean visible) {
@@ -498,7 +486,7 @@ public class ControladorJuego {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (estado != null && estado.permiteDisparar()) {
+                    if (estado.permiteDisparar()) {
                         mouseX = e.getX();
                         mouseY = e.getY();
                         ControladorJuego.this.disparar();
@@ -512,7 +500,7 @@ public class ControladorJuego {
     private void disparar() {
         Personaje personaje = this.getNivel().getPersonaje();
 
-        if (this.estado == null || !this.estado.permiteDisparar()) {
+        if (!this.estado.permiteDisparar()) {
             return;
         }
 
@@ -587,7 +575,7 @@ public class ControladorJuego {
     }
 
     private void paso() {
-        if (this.estado == null || !this.estado.permiteJugar()) {
+        if (!this.estado.permiteJugar()) {
             return;
         }
 

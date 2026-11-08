@@ -18,7 +18,7 @@ public class ArmaHielo extends Arma {
 
     //Comportamientos
     @Override
-    public void aplicarDanio(Entidad objetivo) {
+    public void aplicarDanio(Enemigo objetivo) {
         objetivo.recibirDanioDeHielo(this.getDanioBase());
         objetivo.recibirCongelacion(this.duracionRalentizacion);
     }

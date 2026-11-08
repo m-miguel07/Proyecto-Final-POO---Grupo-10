@@ -34,6 +34,7 @@ public class EnemigoVolador extends Enemigo {
     //Comportamientos
     @Override
     public void recibirDanioDeHielo(int danio) {
+        return; //No recibe daño de hielo
     }
 
     public void moverHorizontal() {

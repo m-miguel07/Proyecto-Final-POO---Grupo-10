@@ -275,4 +275,5 @@ public class Personaje extends Entidad {
     public boolean estaVivo() {
         return this.getPuntosVida() > 0;
     }
+
 }

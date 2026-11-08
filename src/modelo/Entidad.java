@@ -49,14 +49,4 @@ public abstract class Entidad extends ObjetoDelJuego {
         this.puntosVida = Math.max(0, this.puntosVida - danio);
     }
 
-    public void recibirDanioDeHielo(int danio) {
-        this.recibirDanio(danio);
-    }
-
-    public void recibirCongelacion(int duracionMS) {
-    }
-
-    public void recibirQuemadura(int duracionMS, int danioPorTick) {
-        this.recibirDanio(danioPorTick);
-    }
 }

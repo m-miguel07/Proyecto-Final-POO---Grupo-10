@@ -54,7 +54,11 @@ public class EnemigoADistancia extends Enemigo {
         this.objetivo = objetivo;
     }
 
-    //Comportamientos
+    @Override 
+    public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro){
+        return; //No tiene movimiento, no requiere actualizar
+    }
+
     @Override
     public void actualizarEstados(int deltaMS) {
         super.actualizarEstados(deltaMS);

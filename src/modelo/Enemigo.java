@@ -23,8 +23,8 @@ public abstract class Enemigo extends Entidad {
     }
 
     //Comportamientos
-    public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
-    }
+    public abstract void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro);
+
 
     public boolean puedeAtacar(ObjetoDelJuego objetivo) {
         return Colisiones.hayInterseccion(
@@ -35,14 +35,17 @@ public abstract class Enemigo extends Entidad {
                 objetivo.getPosicionX(), objetivo.getPosicionY(), objetivo.getAncho(), objetivo.getAlto());
     }
 
-    @Override
+    
     public void recibirCongelacion(int duracionMS) {
         this.congelar(duracionMS);
     }
 
-    @Override
     public void recibirQuemadura(int duracionMS, int danioPorTick) {
         this.quemar(duracionMS, danioPorTick);
+    }
+
+    public void recibirDanioDeHielo(int danio) {
+        this.recibirDanio(danio);
     }
 
     public void congelar(int duracionMS) {

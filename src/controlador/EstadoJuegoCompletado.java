@@ -15,10 +15,12 @@ public final class EstadoJuegoCompletado implements EstadoJuego {
 
     @Override
     public void salir(ControladorJuego controlador) {
+        return;
     }
 
     @Override
     public void pausar(ControladorJuego controlador) {
+        return; //Idem EstadoDerrota
     }
 
     @Override

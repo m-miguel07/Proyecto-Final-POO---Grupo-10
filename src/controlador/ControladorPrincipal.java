@@ -234,7 +234,6 @@ public class ControladorPrincipal{
 
     public void cerrarControladorJuego(){
         if (this.controladorJuego != null){
-            this.controladorJuego.detener();
             this.controladorJuego = null;
         }
     }

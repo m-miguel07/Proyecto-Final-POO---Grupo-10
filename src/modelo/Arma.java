@@ -32,5 +32,5 @@ public abstract class Arma extends ObjetoDelJuego{
     }
 
     //Comportamientos
-    public abstract void aplicarDanio(Entidad objetivo);
+    public abstract void aplicarDanio(Enemigo objetivo);
 }

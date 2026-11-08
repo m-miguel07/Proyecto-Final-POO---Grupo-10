@@ -20,6 +20,7 @@ public final class EstadoVictoria implements EstadoJuego {
 
     @Override
     public void pausar(ControladorJuego controlador) {
+        return;
     }
 
     @Override
