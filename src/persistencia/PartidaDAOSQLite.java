@@ -77,7 +77,8 @@ public class PartidaDAOSQLite implements PartidaDAO { //Almacena datos de partid
         String sql = "DELETE FROM partidas_guardadas WHERE id = 1";
 
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-            return ps.executeUpdate() > 0;
+            ps.executeUpdate();
+            return true;
 
         } catch (SQLException e) {
             System.out.println ("No se pudieron eliminar los datos guardados: ");

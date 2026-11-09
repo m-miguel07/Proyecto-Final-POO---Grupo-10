@@ -174,21 +174,21 @@ public class FabricaNivel1 implements FabricaNivel {
                 50, 780, 40, 40));
 
         //Tres enemigos voladores
-        EnemigoVolador voladorBajo = new EnemigoVolador(20, EnemigoVolador.ANCHO,EnemigoVolador.ALTO, 2.2, 780, 660);
+        EnemigoVolador voladorBajo = new EnemigoVolador(20, EnemigoVolador.ANCHO,EnemigoVolador.ALTO, 2.2, 780, 640);
         voladorBajo.setLimites(700, 900);
         enemigos.add(voladorBajo);
 
-        EnemigoVolador voladorMedio = new EnemigoVolador(20,EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 2.0, 760, 500);
+        EnemigoVolador voladorMedio = new EnemigoVolador(20,EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 2.0, 760, 460);
         voladorMedio.setLimites(680, 880);
         enemigos.add(voladorMedio);
 
-        EnemigoVolador voladorAlto = new EnemigoVolador(20, EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 1.8, 720, 340);
+        EnemigoVolador voladorAlto = new EnemigoVolador(20, EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 1.8, 720, 300);
         voladorAlto.setLimites(640, 760);
         enemigos.add(voladorAlto);
 
         // Monedas
         monedas.add(new Moneda(765, 460, 30, 30));
-        monedas.add(new Moneda(690, 170, 30, 30));
+        monedas.add(new Moneda(690, 150, 30, 30));
 
         // Aro del ultimo escenario
         Aro aro = new Aro(755, 160, 90, 70);

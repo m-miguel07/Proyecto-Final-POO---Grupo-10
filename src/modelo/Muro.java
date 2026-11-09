@@ -2,6 +2,8 @@ package modelo;
 
 public class Muro extends Plataforma {
 
+    public static final int ID_TIPO = 1;
+
     //Constantes
     private static final double VELOCIDAD_BAJADA = 8.0;
 
@@ -17,6 +19,11 @@ public class Muro extends Plataforma {
     }
 
     //Getters
+    @Override 
+    public int getIdTipo(){
+        return ID_TIPO;
+    }
+    
     //verifica si el muro bajo completo, sino sigue bloqueando el paso al siguiente nivel.
     public boolean isBloqueando() {
         return !this.abierto || this.getPosicionY() < Configuracion.SUELO_Y;

@@ -46,14 +46,6 @@ public class Pelota extends ObjetoDelJuego {
         return this.activa;
     }
 
-    public boolean esDeFuego() {
-        return this.arma instanceof ArmaFuego;
-    }
-
-    public boolean esDeHielo() {
-        return this.arma instanceof ArmaHielo;
-    }
-
     //Comportamientos
     public void aplicarGravedad() {
         this.velocidadY += GRAVEDAD;

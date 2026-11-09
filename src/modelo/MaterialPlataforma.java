@@ -9,7 +9,7 @@ public enum MaterialPlataforma {
     private final boolean destructible;
     private final boolean atravesablePorPelota;
 
-    MaterialPlataforma(boolean destructible, boolean atravesablePorPelota) {
+    private MaterialPlataforma(boolean destructible, boolean atravesablePorPelota) {
         this.destructible = destructible;
         this.atravesablePorPelota = atravesablePorPelota;
     }

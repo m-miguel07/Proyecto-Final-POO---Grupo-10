@@ -6,6 +6,7 @@ public abstract class Arma extends ObjetoDelJuego{
     private int danioBase;
     private double velocidad;
 
+
     //Constructor
     public Arma(int danioBase, double velocidad, double posicionX, double posicionY, int ancho, int alto) {
         super(ancho,alto,posicionX,posicionY);
@@ -20,6 +21,7 @@ public abstract class Arma extends ObjetoDelJuego{
 
         this.danioBase = danioBase;
         this.velocidad = velocidad;
+
     }
 
     //Getters
@@ -31,6 +33,10 @@ public abstract class Arma extends ObjetoDelJuego{
         return this.velocidad;
     }
 
+    public abstract int getIdTipo(); //Cada hijo devuelve su id especifico.
+
     //Comportamientos
-    public abstract void aplicarDanio(Enemigo objetivo);
+    public void aplicarDanio(Enemigo objetivo){
+         objetivo.recibirDanio(this.getDanioBase());
+    }
 }

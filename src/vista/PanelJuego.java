@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import modelo.Arma;
+import modelo.ArmaEstandar;
 import modelo.ArmaFuego;
 import modelo.ArmaHielo;
 import modelo.Aro;
@@ -396,8 +397,8 @@ public class PanelJuego extends JPanel {
                 continue;
             }
 
-            if (plataforma instanceof Muro) {
-                this.dibujarMuro(g2, (Muro) plataforma);
+            if (plataforma.getIdTipo() == Muro.ID_TIPO) {
+                dibujarMuro(g2, (Muro) plataforma);
                 continue;
             }
 
@@ -493,12 +494,15 @@ public class PanelJuego extends JPanel {
             int h = (int) recolectable.getAlto();
 
 
-            if (recolectable.getArma() instanceof ArmaHielo) {
-                g2.drawImage(imgArmaHielo, x, y, w, h, this);
-            } else if (recolectable.getArma() instanceof ArmaFuego) {
-                g2.drawImage(imgArmaFuego, x, y, w, h, this);
-            } else {
-               g2.drawImage(imgMoneda, x, y, w, h, this);
+            switch (recolectable.getArma().getIdTipo()){
+                case ArmaFuego.ID_TIPO:
+                    g2.drawImage(imgArmaFuego, x, y, w, h, this);
+                    break;
+                case ArmaHielo.ID_TIPO:
+                    g2.drawImage(imgArmaHielo, x, y, w, h, this);
+                    break;
+                default:
+                    g2.drawImage(imgMoneda, x, y, w, h, this);
             }
         }
     }
@@ -525,12 +529,16 @@ public class PanelJuego extends JPanel {
 
     private void dibujarEnemigos(Graphics2D g2) {
         for (Enemigo enemigo : this.nivel.getEnemigos()) {
-            if (enemigo instanceof EnemigoVolador) {
-                this.dibujarVolador(g2, (EnemigoVolador) enemigo);
-            } else if (enemigo instanceof EnemigoTerrestre) {
-                this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
-            } else {
-                this.dibujarEnemigoADistancia(g2, enemigo);
+            switch (enemigo.getIdTipo()){
+                case 0: 
+                    this.dibujarEnemigoADistancia(g2, enemigo);
+                    break;
+                case 1:
+                    this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
+                    break;
+                case 2:
+                    this.dibujarVolador(g2, (EnemigoVolador) enemigo);
+                    break;
             }
 
             if (enemigo.estaQuemado()) {
@@ -541,7 +549,7 @@ public class PanelJuego extends JPanel {
 
     private void dibujarProyectiles(Graphics2D g2) {
         for (Enemigo enemigo : this.nivel.getEnemigos()) {
-            if (!(enemigo instanceof EnemigoADistancia)) {
+            if ((enemigo.getIdTipo() != EnemigoADistancia.ID_TIPO)) {
                 continue;
             }
 
@@ -649,14 +657,20 @@ public class PanelJuego extends JPanel {
 
         BufferedImage spritePelota;
 
-        if (armaEquipada instanceof ArmaFuego) {
-            spritePelota = imgArmaFuego;
-        } else if (armaEquipada instanceof ArmaHielo) {
-            spritePelota = imgArmaHielo;
-        } else {
-            spritePelota = imgArmaEstandar;
+        switch (armaEquipada.getIdTipo()){
+            case ArmaEstandar.ID_TIPO:
+                spritePelota = imgArmaEstandar;
+                break;
+            case ArmaFuego.ID_TIPO:
+                spritePelota = imgArmaFuego;
+                break;
+            case ArmaHielo.ID_TIPO:
+                spritePelota = imgArmaHielo;
+                break;
+            default:
+                throw new IllegalArgumentException("ID de arma equipada invalido");
         }
-
+        
         if (p.getDireccion() < 0) {
             g2.drawImage(
                         spritePelota, 
@@ -681,27 +695,10 @@ public class PanelJuego extends JPanel {
 
     private void dibujarPelotas(Graphics2D g2) {
         for (Pelota pelota : this.nivel.getPelotas()) {
-            if (pelota.esDeFuego()) {
-                g2.drawImage(
-                            imgArmaFuego, 
-                            (int) pelota.getPosicionX(), 
-                            (int) pelota.getPosicionY(),
-                            pelota.getAncho(), 
-                            pelota.getAlto(), 
-                            this
-                        );
 
-            } else if (pelota.esDeHielo()) {
-                g2.drawImage(
-                            imgArmaHielo, 
-                            (int) pelota.getPosicionX(), 
-                            (int) pelota.getPosicionY(),
-                            pelota.getAncho(), 
-                            pelota.getAlto(), 
-                            this
-                        );
-            } else {
-                g2.drawImage(
+            switch (pelota.getArma().getIdTipo()){
+                case ArmaEstandar.ID_TIPO:
+                    g2.drawImage(
                             imgArmaEstandar, 
                             (int) pelota.getPosicionX(), 
                             (int) pelota.getPosicionY(),
@@ -709,6 +706,29 @@ public class PanelJuego extends JPanel {
                             pelota.getAlto(), 
                             this
                         );
+                    break;
+                case ArmaFuego.ID_TIPO:
+                    g2.drawImage(
+                                imgArmaFuego, 
+                                (int) pelota.getPosicionX(), 
+                                (int) pelota.getPosicionY(),
+                                pelota.getAncho(), 
+                                pelota.getAlto(), 
+                                this
+                            );
+                    break;
+                case ArmaHielo.ID_TIPO:
+                    g2.drawImage(
+                                imgArmaHielo, 
+                                (int) pelota.getPosicionX(), 
+                                (int) pelota.getPosicionY(),
+                                pelota.getAncho(), 
+                                pelota.getAlto(), 
+                                this
+                            );
+                    break;
+                default:
+                    throw new IllegalArgumentException("ID de pelota invalido");
             }
         }
     }

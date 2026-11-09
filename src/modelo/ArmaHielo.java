@@ -2,6 +2,8 @@ package modelo;
 
 public class ArmaHielo extends Arma {
 
+    public static final int ID_TIPO = 2;
+
     //Atributos
     private int duracionRalentizacion;
 
@@ -16,6 +18,12 @@ public class ArmaHielo extends Arma {
         this.duracionRalentizacion = duracionRalentizacion;
     }
 
+    //Getter
+    @Override
+    public int getIdTipo(){
+        return ID_TIPO;
+    }
+    
     //Comportamientos
     @Override
     public void aplicarDanio(Enemigo objetivo) {

@@ -30,7 +30,7 @@ public class SistemaColisiones {
                 continue;
             }
 
-            if (enemigo.puedeAtacar(personaje)) {
+            if (enemigo.interseca(personaje)) {
                 personaje.perderVida();
                 GestorAudio.getInstancia().reproducirEfecto(GestorAudio.PERDER_VIDA);
                 break;

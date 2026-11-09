@@ -4,12 +4,14 @@ import java.util.List;
 
 public class EnemigoTerrestre extends Enemigo {
 
+    public static final int ID_TIPO = 1;
+
     //Atributos
     private int direccion;
 
     //Constructor
     public EnemigoTerrestre(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
-        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY, EnemigoTerrestre.ID_TIPO);
 
         this.direccion = 1;
     }
@@ -38,7 +40,7 @@ public class EnemigoTerrestre extends Enemigo {
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
 
         if (nuevaX < 0 || nuevaX + this.ancho > anchoPantalla) {
-            this.direccion *= -1;
+            invertirDireccion();
             return;
         }
 
@@ -61,7 +63,7 @@ public class EnemigoTerrestre extends Enemigo {
             }
         }
 
-        this.direccion *= -1;
+        invertirDireccion();
     }
 
     private boolean estaApoyadoEn(Plataforma plataforma) {

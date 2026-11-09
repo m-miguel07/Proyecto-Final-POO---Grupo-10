@@ -111,7 +111,7 @@ public class GestorPelotas {
                 }
 
                 if (pelota.interseca(plataforma)) {
-                    if (pelota.esDeFuego() && plataforma.esDestructible()) {
+                    if (pelota.getArma().getIdTipo() == ArmaFuego.ID_TIPO && plataforma.esDestructible()) {
                         plataforma.destruir();
                         continue;
                     }

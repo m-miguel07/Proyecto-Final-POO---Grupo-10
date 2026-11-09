@@ -1,5 +1,7 @@
 package modelo;
 
+import java.awt.geom.Rectangle2D;
+
 public abstract class ObjetoDelJuego {
 
     //Atributos
@@ -37,6 +39,10 @@ public abstract class ObjetoDelJuego {
         return this.posicionY;
     }
 
+    public Rectangle2D getLimites() {
+        return new Rectangle2D.Double(posicionX,posicionY,ancho,alto);
+    }
+
     //Setters
     public void setPosicion(double x, double y){
         this.posicionX = x;
@@ -45,8 +51,6 @@ public abstract class ObjetoDelJuego {
 
     //Comportamientos
     public boolean interseca(ObjetoDelJuego otro) {
-        return Colisiones.hayInterseccion(
-                this.posicionX, this.posicionY, this.ancho, this.alto,
-                otro.posicionX, otro.posicionY, otro.ancho, otro.alto);
+        return this.getLimites().intersects(otro.getLimites());
     }
 }

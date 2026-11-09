@@ -6,6 +6,8 @@ import java.util.List;
 
 public class EnemigoADistancia extends Enemigo {
 
+    public static final int ID_TIPO = 0;
+
     private static final int INTERVALO_DISPARO_MS = 2000;
     private static final double VELOCIDAD_PROYECTIL = 7.0;
     private static final int PROYECTIL_ANCHO = 16;
@@ -20,7 +22,7 @@ public class EnemigoADistancia extends Enemigo {
 
     //Constructor
     public EnemigoADistancia(int alcance, int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
-        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY, EnemigoADistancia.ID_TIPO);
 
         if (alcance <= 0) {
             throw new IllegalArgumentException("El alcance debe ser positivo");

@@ -4,6 +4,8 @@ import java.util.List;
 
 public class EnemigoVolador extends Enemigo {
 
+    public static final int ID_TIPO = 2;
+
     public static int ANCHO = 85;
     public static int ALTO = 65;
 
@@ -14,7 +16,7 @@ public class EnemigoVolador extends Enemigo {
 
     //Constructor
     public EnemigoVolador(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
-        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
+        super(puntosVida, ancho, alto, velocidad, posicionX, posicionY, EnemigoVolador.ID_TIPO);
 
         this.limiteIzquierdo = posicionX;
         this.limiteDerecho = posicionX;

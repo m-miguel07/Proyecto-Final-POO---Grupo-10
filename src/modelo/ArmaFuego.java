@@ -2,6 +2,8 @@ package modelo;
 
 public class ArmaFuego extends Arma {
 
+    public static final int ID_TIPO = 1;
+
     //Atributos
     private int danioPorQuemadura;
 
@@ -15,11 +17,17 @@ public class ArmaFuego extends Arma {
 
         this.danioPorQuemadura = danioPorQuemadura;
     }
+    
+    //Getter
+    @Override 
+    public int getIdTipo(){
+        return ID_TIPO;
+    }
 
     //Comportamientos
     @Override
     public void aplicarDanio(Enemigo objetivo) {
-        objetivo.recibirDanio(this.getDanioBase());
+        super.aplicarDanio(objetivo);
         objetivo.recibirQuemadura(2000, this.danioPorQuemadura);
     }
 }

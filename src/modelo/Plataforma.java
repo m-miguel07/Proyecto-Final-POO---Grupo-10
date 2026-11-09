@@ -2,6 +2,8 @@ package modelo;
 
 public class Plataforma extends ObjetoDelJuego {
 
+    public static final int ID_TIPO = 0;
+    
     //Atributos
     private MaterialPlataforma material;
     private boolean destruida;
@@ -16,8 +18,7 @@ public class Plataforma extends ObjetoDelJuego {
         this(posicionX, posicionY, ancho, alto, material, material == MaterialPlataforma.NEGRA);
     }
 
-    public Plataforma(double posicionX, double posicionY, int ancho, int alto,
-                      MaterialPlataforma material, boolean bloqueaDesdeAbajo) {
+    public Plataforma(double posicionX, double posicionY, int ancho, int alto, MaterialPlataforma material, boolean bloqueaDesdeAbajo) {
         super(ancho, alto, posicionX, posicionY);
 
         if (material == null) {
@@ -30,6 +31,10 @@ public class Plataforma extends ObjetoDelJuego {
     }
 
     //Getters
+    public int getIdTipo(){
+        return ID_TIPO;
+    }
+
     public boolean isDestruida() {
         return this.destruida;
     }
