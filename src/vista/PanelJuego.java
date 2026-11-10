@@ -38,7 +38,7 @@ import modelo.Personaje;
 import modelo.Plataforma;
 import modelo.Proyectil;
 import modelo.Muro;
-import modelo.Recolectable;
+import modelo.RecolectableArma;
 import modelo.Escenario;
 import modelo.FabricaNiveles;
 
@@ -483,7 +483,7 @@ public class PanelJuego extends JPanel {
     }
 
     private void dibujarRecolectables(Graphics2D g2) {
-        for (Recolectable recolectable : this.nivel.getRecolectables()) {
+        for (RecolectableArma recolectable : this.nivel.getRecolectables()) {
             if (recolectable.isRecolectado()) {
                 continue;
             }

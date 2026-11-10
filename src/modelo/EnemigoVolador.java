@@ -34,10 +34,6 @@ public class EnemigoVolador extends Enemigo {
     }
 
     //Comportamientos
-    @Override
-    public void recibirDanioDeHielo(int danio) {
-        return; //No recibe daño de hielo
-    }
 
     public void moverHorizontal() {
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
@@ -55,6 +51,6 @@ public class EnemigoVolador extends Enemigo {
             return;
         }
 
-        this.moverHorizontal();
+        moverHorizontal();
     }
 }

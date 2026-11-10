@@ -1,6 +1,6 @@
 package modelo;
 
-public abstract class Arma extends ObjetoDelJuego{
+public abstract class Arma {
 
     //Atributos
     private int danioBase;
@@ -8,10 +8,9 @@ public abstract class Arma extends ObjetoDelJuego{
 
 
     //Constructor
-    public Arma(int danioBase, double velocidad, double posicionX, double posicionY, int ancho, int alto) {
-        super(ancho,alto,posicionX,posicionY);
+    public Arma(int danioBase, double velocidad) {
 
-        if (danioBase <= 0) {
+        if (danioBase < 0) {
             throw new IllegalArgumentException("El danio base debe ser positivo");
         }
 

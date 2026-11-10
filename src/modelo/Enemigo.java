@@ -52,10 +52,6 @@ public abstract class Enemigo extends Entidad {
         this.quemar(duracionMS, danioPorTick);
     }
 
-    public void recibirDanioDeHielo(int danio) {
-        this.recibirDanio(danio);
-    }
-
     public void congelar(int duracionMS) {
         this.tiempoCongeladoMS = Math.min(5000, Math.max(this.tiempoCongeladoMS, duracionMS));
     }

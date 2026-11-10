@@ -16,12 +16,11 @@ public final class GestorGuardado {
         return hilo;
     });
 
-    //Constructor vacio para evitar instanciarlo. (solo se requiere utilizar los métodos estáticos de GestorGuardado)
     private GestorGuardado() {
     }
 
     public static void guardarPartida(Partida partida, PartidaDAO partidaDAO) {
-        //validación
+    
         if (partida == null || partidaDAO == null) {
             return;
         }

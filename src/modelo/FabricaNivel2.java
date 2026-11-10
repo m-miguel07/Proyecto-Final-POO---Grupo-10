@@ -102,7 +102,7 @@ public class FabricaNivel2 implements FabricaNivel {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<RecolectableArma> recolectables = new ArrayList<>();
 
         // Suelo del escenario, cubre todo el ancho.
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
@@ -139,14 +139,14 @@ public class FabricaNivel2 implements FabricaNivel {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<RecolectableArma> recolectables = new ArrayList<>();
 
         // Suelo del escenario
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
 
         // Pelota de fuego
-        recolectables.add(new Recolectable(new ArmaFuego(10, 12.0, 5, 0, 0, 16, 16),
-                140, 780, 40, 40));
+        recolectables.add(new RecolectableArma(new ArmaFuego(10, 12.0, 5),
+                400, 780, 40, 40));
 
         //Plataformas
         plataformas.add(new Plataforma(0, 660, 300, 26, MaterialPlataforma.NORMAL, true));
@@ -183,15 +183,15 @@ public class FabricaNivel2 implements FabricaNivel {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<RecolectableArma> recolectables = new ArrayList<>();
         List<Boton> botones = new ArrayList<>();
 
         // Plataforma.
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
 
         // Pelota de hielo.
-        recolectables.add(new Recolectable(new ArmaHielo(10, 12.0, 5000, 0, 0, 16, 16),
-                50, 780, 40, 40));
+        recolectables.add(new RecolectableArma(new ArmaHielo(0, 12.0, 5000),
+                300, 780, 40, 40));
 
         //Enemigo volador y las plataformas
         plataformas.add(new Plataforma(0, 540, 240, 24));
@@ -233,7 +233,7 @@ public class FabricaNivel2 implements FabricaNivel {
 
     public Personaje crearPersonajeInicial() {
         Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
-        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
+        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0));
 
         return personaje;
     }

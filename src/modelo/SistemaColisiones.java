@@ -48,8 +48,8 @@ public class SistemaColisiones {
         });
     }
 
-    public void eliminarRecolectados(Personaje personaje, List<Recolectable> recolectables) {
-        for (Recolectable recolectable : recolectables) {
+    public void eliminarRecolectados(Personaje personaje, List<RecolectableArma> recolectables) {
+        for (RecolectableArma recolectable : recolectables) {
             if (recolectable.isRecolectado()) {
                 continue;
             }

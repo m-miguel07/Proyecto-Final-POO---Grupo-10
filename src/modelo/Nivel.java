@@ -14,13 +14,13 @@ public class Nivel {
     private final List<Enemigo> enemigos;
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
-    private final List<Recolectable> recolectables;
+    private final List<RecolectableArma> recolectables;
     private final List<Boton> botones;
 
     private final List<Enemigo> enemigosVista;
     private final List<Moneda> monedasVista;
     private final List<Plataforma> plataformasVista;
-    private final List<Recolectable> recolectablesVista;
+    private final List<RecolectableArma> recolectablesVista;
     private final List<Boton> botonesVista;
 
     private final GestorPelotas gestorPelotas;
@@ -29,7 +29,7 @@ public class Nivel {
 
     //Constructor
     public Nivel(int numeroNivel, Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
-                 List<Plataforma> plataformas, List<Recolectable> recolectables, List<Boton> botones, Muro muro) {
+                 List<Plataforma> plataformas, List<RecolectableArma> recolectables, List<Boton> botones, Muro muro) {
         if (personaje == null) {
             throw new IllegalArgumentException("El personaje es obligatorio");
         }
@@ -83,7 +83,7 @@ public class Nivel {
         return this.plataformasVista;
     }
 
-    public List<Recolectable> getRecolectables() {
+    public List<RecolectableArma> getRecolectables() {
         return this.recolectablesVista;
     }
 

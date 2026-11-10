@@ -82,7 +82,7 @@ public class HUD {
             g2.drawString(String.valueOf(puntaje), 1355, 90);
         }
        
-        g2.drawString(String.valueOf(monedasRecogidas), 370, 75);
+        g2.drawString(monedasRecogidas + " / " + monedasTotales , 370, 75);
 
         if (tiempoTranscurrido < 10) {
             g2.drawString(tiempoTranscurrido + "s", 725, 100);

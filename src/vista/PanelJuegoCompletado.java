@@ -107,25 +107,27 @@ public class PanelJuegoCompletado extends PanelBase{
 
     public void informar(int estado){
         switch (estado){
-            case 1:
+            case EXITO:
                 etiquetaInfo.setForeground(new Color(24, 0, 173));
                 etiquetaInfo.setText("PUNTAJE GUARDADO CON EXITO");
                 break;
-            case 0:
+            case INVALIDO:
                 etiquetaInfo.setForeground(Color.RED);
                 etiquetaInfo.setText("INGRESE UN NOMBRE DE 1 A 10 CARACTERES");
                 break;
+            case ERROR:
+                etiquetaInfo.setForeground(Color.RED);
+                etiquetaInfo.setText("ERROR AL GUARDAR PUNTAJE");
             default:
                 break;
         }
 
-    etiquetaInfo.setVisible(true);
-    Timer timer = new Timer(3000, e-> { //Muestra el mensaje por 3s
-        etiquetaInfo.setVisible(false);
-    });
+        etiquetaInfo.setVisible(true);
+        Timer timer = new Timer(3000, e-> { //Muestra el mensaje por 3s
+            etiquetaInfo.setVisible(false);
+        });
 
-    timer.setRepeats(false);
-    timer.start();
-
+        timer.setRepeats(false);
+        timer.start();
     }
 }

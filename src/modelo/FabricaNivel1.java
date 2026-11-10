@@ -96,7 +96,7 @@ public class FabricaNivel1 implements FabricaNivel {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<RecolectableArma> recolectables = new ArrayList<>();
 
         // Suelo del escenario, cubre todo el ancho.
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
@@ -132,7 +132,7 @@ public class FabricaNivel1 implements FabricaNivel {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<RecolectableArma> recolectables = new ArrayList<>();
 
         // Suelo del escenario
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
@@ -164,14 +164,14 @@ public class FabricaNivel1 implements FabricaNivel {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<RecolectableArma> recolectables = new ArrayList<>();
 
         // Sala final
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
 
         // Pelota de hielo
-        recolectables.add(new Recolectable(new ArmaHielo(10, 12.0, 5000, 0, 0, 16, 16),
-                50, 780, 40, 40));
+        recolectables.add(new RecolectableArma(new ArmaHielo(0, 12.0, 5000),
+                300, 780, 40, 40));
 
         //Tres enemigos voladores
         EnemigoVolador voladorBajo = new EnemigoVolador(20, EnemigoVolador.ANCHO,EnemigoVolador.ALTO, 2.2, 780, 640);
@@ -197,7 +197,7 @@ public class FabricaNivel1 implements FabricaNivel {
 
     public Personaje crearPersonajeInicial() {
         Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
-        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
+        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0));
 
         return personaje;
     }

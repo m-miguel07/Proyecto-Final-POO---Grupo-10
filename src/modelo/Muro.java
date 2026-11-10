@@ -55,7 +55,7 @@ public class Muro extends Plataforma {
             this.setPosicion(this.getPosicionX(), nuevaY);
         }
 
-        this.ubicarMonedaEncima();
+        ubicarMonedaEncima();
     }
 
     private void ubicarMonedaEncima() {
@@ -71,7 +71,7 @@ public class Muro extends Plataforma {
 
     //prohibe al jugador atravesar el muro si esta cerrado o sigue bajando.
     public void bloquearPersonaje(Personaje personaje) {
-        if (!this.isBloqueando() || !this.colisionaCon(personaje)) {
+        if (!this.isBloqueando() || !this.interseca(personaje)) {
             return;
         }
 
@@ -80,18 +80,12 @@ public class Muro extends Plataforma {
 
     //prohibe a los enemigos atravesar el muro.
     public void bloquearEnemigo(EnemigoTerrestre enemigo) {
-        if (!this.isBloqueando() || !this.colisionaCon(enemigo)) {
+        if (!this.isBloqueando() || !this.interseca(enemigo)) {
             return;
         }
 
-        enemigo.setPosicion(this.getPosicionX() - enemigo.getAncho(), enemigo.getPosicionY());
+        enemigo.setPosicion(this.getPosicionX() - enemigo.getAncho() * 1.25, enemigo.getPosicionY());
         enemigo.invertirDireccion();
     }
 
-    private boolean colisionaCon(ObjetoDelJuego objeto) {
-        return objeto.getPosicionX() + objeto.getAncho() > this.getPosicionX()
-                && objeto.getPosicionX() < this.getPosicionX() + this.getAncho()
-                && objeto.getPosicionY() + objeto.getAlto() > this.getPosicionY()
-                && objeto.getPosicionY() < this.getPosicionY() + this.getAlto();
-    }
 }
