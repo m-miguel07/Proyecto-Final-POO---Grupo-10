@@ -1,16 +1,16 @@
 package modelo;
 
-public class Recolectable extends Recogible {
+public class ArmaRecolectable extends Recogible {
 
     //Atributos
     private final Arma arma;
 
     //Constructor
-    public Recolectable(Arma arma, double posicionX, double posicionY, int ancho, int alto) {
+    public ArmaRecolectable(Arma arma, double posicionX, double posicionY, int ancho, int alto) {
         super(posicionX, posicionY, ancho, alto);
 
         if (arma == null) {
-            throw new IllegalArgumentException("El recolectable debe contener un arma");
+            throw new IllegalArgumentException("El arma en el suelo debe contener un arma");
         }
 
         this.arma = arma;

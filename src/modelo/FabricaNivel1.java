@@ -3,42 +3,17 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FabricaNivel1 implements FabricaNivel {
+public class FabricaNivel1 extends FabricaNivelBase {
 
     private static final int NUMERO_NIVEL = 1;
 
-    //Escenarios del nivel, de abajo hacia arriba.
-    private static final int ESCENARIO_1 = 1;
-    private static final int ESCENARIO_2 = 2;
-    private static final int ESCENARIO_3 = 3;
-
-    //Zona de transicion superior.
-    private static final int ZONA_X = 0;
-    private static final int ZONA_Y = 0;
-    private static final int ZONA_ANCHO = 400;
-    private static final int ZONA_ALTO = 100;
-
-    //Zona de transicion del escenario inicial, avanza al nivel 1 cuando toca el borde derecho.
-    private static final int ZONA_FINAL_X = 1550;
-    private static final int ZONA_FINAL_ANCHO = 50;
-
-    //Muro que bloquea el paso en el escenario inicial.
-    private static final int MURO_X = 1480;
-    private static final int MURO_Y = 120;
-    private static final int MURO_ANCHO = 120;
-    private static final int MONEDA_MURO_ANCHO = 30;
-    private static final int MONEDA_MURO_ALTO = 30;
-
-    //Punto de aparicion del jugador al entrar a un escenario.
-    private static final int SPAWN_X = 50;
-    private static final int SPAWN_Y = 756;
-
-    private static Integer monedasTotales;
+    private Integer monedasTotales;
 
     FabricaNivel1() {
     }
 
     //Comportamientos
+    @Override
     public Escenario crearEscenario(int id, Personaje personaje) {
         switch (id) {
             case ESCENARIO_1:
@@ -52,7 +27,7 @@ public class FabricaNivel1 implements FabricaNivel {
         }
     }
 
-    public static Escenario crearEscenario1(Personaje personaje) {
+    public Escenario crearEscenario1(Personaje personaje) {
         Nivel nivel = crearContenidoEscenario1(personaje);
 
         Escenario escenario = new Escenario(ESCENARIO_1, nivel, "src/assets/lvl-bg/Nivel1_1.jpg");
@@ -63,7 +38,7 @@ public class FabricaNivel1 implements FabricaNivel {
         return escenario;
     }
 
-    public static Escenario crearEscenario2(Personaje personaje) {
+    public Escenario crearEscenario2(Personaje personaje) {
         Nivel nivel = crearContenidoEscenario2(personaje);
 
         Escenario escenario = new Escenario(ESCENARIO_2, nivel, "src/assets/lvl-bg/Nivel1_2.png");
@@ -76,12 +51,13 @@ public class FabricaNivel1 implements FabricaNivel {
         return escenario;
     }
 
-    public static Escenario crearEscenario3(Personaje personaje) {
+    public Escenario crearEscenario3(Personaje personaje) {
         Nivel nivel = crearContenidoEscenario3(personaje);
 
         return new Escenario(ESCENARIO_3, nivel, "src/assets/lvl-bg/Nivel1_3.png");
     }
 
+    @Override
     public int getMonedasTotales() {
         if (monedasTotales == null) {
             Personaje personaje = crearPersonajeInicial();
@@ -92,11 +68,11 @@ public class FabricaNivel1 implements FabricaNivel {
         return monedasTotales;
     }
 
-    private static Nivel crearContenidoEscenario1(Personaje personaje) {
+    private Nivel crearContenidoEscenario1(Personaje personaje) {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<ArmaRecolectable> recolectables = new ArrayList<>();
 
         // Suelo del escenario, cubre todo el ancho.
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
@@ -128,11 +104,11 @@ public class FabricaNivel1 implements FabricaNivel {
         return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), muro);
     }
 
-    private static Nivel crearContenidoEscenario2(Personaje personaje) {
+    private Nivel crearContenidoEscenario2(Personaje personaje) {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<ArmaRecolectable> recolectables = new ArrayList<>();
 
         // Suelo del escenario
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
@@ -160,29 +136,29 @@ public class FabricaNivel1 implements FabricaNivel {
         return new Nivel(NUMERO_NIVEL, personaje, null, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), null);
     }
 
-    private static Nivel crearContenidoEscenario3(Personaje personaje) {
+    private Nivel crearContenidoEscenario3(Personaje personaje) {
         List<Plataforma> plataformas = new ArrayList<>();
         List<Moneda> monedas = new ArrayList<>();
         List<Enemigo> enemigos = new ArrayList<>();
-        List<Recolectable> recolectables = new ArrayList<>();
+        List<ArmaRecolectable> recolectables = new ArrayList<>();
 
         // Sala final
         plataformas.add(new Plataforma(0, Configuracion.SUELO_Y, Configuracion.ANCHO, 30));
 
         // Pelota de hielo
-        recolectables.add(new Recolectable(new ArmaHielo(10, 12.0, 5000, 0, 0, 16, 16),
+        recolectables.add(new ArmaRecolectable(new ArmaHielo(10, 12.0, 5000),
                 50, 780, 40, 40));
 
         //Tres enemigos voladores
-        EnemigoVolador voladorBajo = new EnemigoVolador(20, EnemigoVolador.ANCHO,EnemigoVolador.ALTO, 2.2, 780, 660);
+        EnemigoVolador voladorBajo = new EnemigoVolador(20, 44,44, 2.2, 780, 660);
         voladorBajo.setLimites(700, 900);
         enemigos.add(voladorBajo);
 
-        EnemigoVolador voladorMedio = new EnemigoVolador(20,EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 2.0, 760, 500);
+        EnemigoVolador voladorMedio = new EnemigoVolador(20,44, 44, 2.0, 760, 500);
         voladorMedio.setLimites(680, 880);
         enemigos.add(voladorMedio);
 
-        EnemigoVolador voladorAlto = new EnemigoVolador(20, EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 1.8, 720, 340);
+        EnemigoVolador voladorAlto = new EnemigoVolador(20, 44, 44, 1.8, 720, 340);
         voladorAlto.setLimites(640, 760);
         enemigos.add(voladorAlto);
 
@@ -195,9 +171,10 @@ public class FabricaNivel1 implements FabricaNivel {
         return new Nivel(NUMERO_NIVEL, personaje, aro, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), null);
     }
 
+    @Override
     public Personaje crearPersonajeInicial() {
         Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
-        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0, 0, 0, 16, 16));
+        personaje.setArmaEquipada(new ArmaEstandar(10, 12.0));
 
         return personaje;
     }

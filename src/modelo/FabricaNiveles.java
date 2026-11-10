@@ -8,6 +8,7 @@ public final class FabricaNiveles {
             1, new FabricaNivel1(),
             2, new FabricaNivel2());
 
+    //constructor vacio para evitar instanciarla
     private FabricaNiveles() {
     }
 

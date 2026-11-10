@@ -44,9 +44,12 @@ public abstract class ObjetoDelJuego {
     }
 
     //Comportamientos
+    //colisión
     public boolean interseca(ObjetoDelJuego otro) {
-        return Colisiones.hayInterseccion(
-                this.posicionX, this.posicionY, this.ancho, this.alto,
-                otro.posicionX, otro.posicionY, otro.ancho, otro.alto);
+        return this.posicionX < otro.posicionX + otro.ancho
+                && this.posicionX + this.ancho > otro.posicionX
+                && this.posicionY < otro.posicionY + otro.alto
+                && this.posicionY + this.alto > otro.posicionY;
     }
 }
+

@@ -11,7 +11,7 @@ public final class GestorGuardado {
     
     //Lambda para implementar la creación del hilo (en este caso es uno solo)
     private static final ExecutorService EJECUTOR = Executors.newSingleThreadExecutor(tarea -> {
-        Thread hilo = new Thread(tarea, "guardado-bg-1" + CONTADOR.getAndIncrement());
+        Thread hilo = new Thread(tarea, "guardado-bg-" + CONTADOR.getAndIncrement());
         hilo.setDaemon(true);
         return hilo;
     });
@@ -20,6 +20,7 @@ public final class GestorGuardado {
     private GestorGuardado() {
     }
 
+    //Guardado de partida en segundo plano
     public static void guardarPartida(Partida partida, PartidaDAO partidaDAO) {
         //validación
         if (partida == null || partidaDAO == null) {
@@ -35,7 +36,7 @@ public final class GestorGuardado {
         });
     }
 
-    //Idem que el anterior
+    //Guardado de puntaje en segundo plano
     public static void guardarPuntaje(Puntaje puntaje, PuntajeDAO puntajeDAO) {
         if (puntaje == null || puntajeDAO == null) {
             return;

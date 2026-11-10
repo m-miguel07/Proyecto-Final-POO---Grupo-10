@@ -44,9 +44,9 @@ public class ControladorPrincipal{
 
         partidaDAO = new PartidaDAOSQLite();
         puntajeDAO = new PuntajeDAOSQLite();
-        
+
         this.partida = partidaDAO.cargar();
-        this.puntajes = new ArrayList<Puntaje>(); 
+        this.puntajes = new ArrayList<Puntaje>();
 
         if (partida == null){
             this.partida = new Partida(0,1,0,0.25,0.50);

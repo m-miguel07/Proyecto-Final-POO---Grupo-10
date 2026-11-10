@@ -19,10 +19,6 @@ public class Escenario {
         this.zonasTransicion = new ArrayList<>();
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Nivel getNivel() {
         return nivel;
     }

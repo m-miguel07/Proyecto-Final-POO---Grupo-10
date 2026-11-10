@@ -1,5 +1,6 @@
 package modelo;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Enemigo extends Entidad {
@@ -7,7 +8,6 @@ public abstract class Enemigo extends Entidad {
     //Atributos
     private static final double RANGO_CUERPO_A_CUERPO = 5.0;
 
-    private int tiempoCongeladoMS;
     private int tiempoQuemadoMS;
     private int danioPorQuemaduraTick;
     private int tiempoSiguienteTickQuemaduraMS;
@@ -16,7 +16,6 @@ public abstract class Enemigo extends Entidad {
     public Enemigo(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
         super(puntosVida, ancho, alto, velocidad, posicionX, posicionY);
 
-        this.tiempoCongeladoMS = 0;
         this.tiempoQuemadoMS = 0;
         this.danioPorQuemaduraTick = 0;
         this.tiempoSiguienteTickQuemaduraMS = 0;
@@ -26,47 +25,42 @@ public abstract class Enemigo extends Entidad {
     public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
     }
 
+    //Terrestre, Volador, A Distancia
+    public abstract TipoRenderEnemigo getTipoRender();
+
+    //agregado para evitar usar instanceof en la vista
+    public List<Proyectil> getProyectiles() {
+        return Collections.emptyList();
+    }
+
     public boolean puedeAtacar(ObjetoDelJuego objetivo) {
-        return Colisiones.hayInterseccion(
-                this.getPosicionX() - RANGO_CUERPO_A_CUERPO,
-                this.getPosicionY() - RANGO_CUERPO_A_CUERPO,
-                this.getAncho() + (int) Math.round(2 * RANGO_CUERPO_A_CUERPO),
-                this.getAlto() + (int) Math.round(2 * RANGO_CUERPO_A_CUERPO),
-                objetivo.getPosicionX(), objetivo.getPosicionY(), objetivo.getAncho(), objetivo.getAlto());
-    }
-
-    @Override
-    public void recibirCongelacion(int duracionMS) {
-        this.congelar(duracionMS);
-    }
-
-    @Override
-    public void recibirQuemadura(int duracionMS, int danioPorTick) {
-        this.quemar(duracionMS, danioPorTick);
-    }
-
-    public void congelar(int duracionMS) {
-        this.tiempoCongeladoMS = Math.min(5000, Math.max(this.tiempoCongeladoMS, duracionMS));
-    }
-
-    public boolean estaCongelado() {
-        return this.tiempoCongeladoMS > 0;
-    }
-
-    public void quemar(int duracionMS, int danioPorTick) {
-        this.tiempoQuemadoMS = duracionMS;
-        this.danioPorQuemaduraTick = danioPorTick;
-        this.tiempoSiguienteTickQuemaduraMS = 500;
+        double x1 = this.getPosicionX() - RANGO_CUERPO_A_CUERPO;
+        double y1 = this.getPosicionY() - RANGO_CUERPO_A_CUERPO;
+        int ancho1 = this.getAncho() + (int) Math.round(2 * RANGO_CUERPO_A_CUERPO);
+        int alto1 = this.getAlto() + (int) Math.round(2 * RANGO_CUERPO_A_CUERPO);
+        return x1 < objetivo.getPosicionX() + objetivo.getAncho()
+                && x1 + ancho1 > objetivo.getPosicionX()
+                && y1 < objetivo.getPosicionY() + objetivo.getAlto()
+                && y1 + alto1 > objetivo.getPosicionY();
     }
 
     public boolean estaQuemado() {
         return this.tiempoQuemadoMS > 0;
     }
 
-    public void actualizarEstados(int deltaMS) {
-        if (this.tiempoCongeladoMS > 0) {
-            this.tiempoCongeladoMS = Math.max(0, this.tiempoCongeladoMS - deltaMS);
+    @Override
+    public void recibirQuemadura(int duracionMS, int danioPorTick) {
+        if (duracionMS <= 0 || danioPorTick <= 0) {
+            return;
         }
+        this.tiempoQuemadoMS = duracionMS;
+        this.danioPorQuemaduraTick = danioPorTick;
+        this.tiempoSiguienteTickQuemaduraMS = 500;
+    }
+
+    @Override
+    public void actualizarEstados(int deltaMS) {
+        super.actualizarEstados(deltaMS);
 
         if (this.tiempoQuemadoMS > 0) {
             this.tiempoQuemadoMS = Math.max(0, this.tiempoQuemadoMS - deltaMS);

@@ -5,6 +5,7 @@ import java.util.List;
 public class SistemaColisiones {
 
     //Constantes
+    //Puntajes
     private static final int PUNTAJE_MONEDA = 100;
     private static final int PUNTAJE_ENEMIGO = 150;
 
@@ -48,8 +49,8 @@ public class SistemaColisiones {
         });
     }
 
-    public void eliminarRecolectados(Personaje personaje, List<Recolectable> recolectables) {
-        for (Recolectable recolectable : recolectables) {
+    public void eliminarRecolectados(Personaje personaje, List<ArmaRecolectable> recolectables) {
+        for (ArmaRecolectable recolectable : recolectables) {
             if (recolectable.isRecolectado()) {
                 continue;
             }

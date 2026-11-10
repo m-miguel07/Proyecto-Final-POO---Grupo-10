@@ -22,6 +22,11 @@ public final class EstadoJuegoCompletado implements EstadoJuego {
     }
 
     @Override
+    public void evaluarTransiciones(ControladorJuego controlador) {
+        // Estado terminal.
+    }
+
+    @Override
     public boolean permiteJugar() {
         return false;
     }

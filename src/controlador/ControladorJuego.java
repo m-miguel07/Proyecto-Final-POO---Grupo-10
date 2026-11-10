@@ -40,6 +40,7 @@ public class ControladorJuego {
     private ControladorPrincipal controladorPrincipal;
 
     //Constantes
+    //Tiempos
     private static final int INTERVALO_TIMER_MS = 16;
     private static final long DELTA_MAXIMO_MS = 50;
     private static final long COOLDOWN_DISPARO_MS = 2000;
@@ -48,7 +49,7 @@ public class ControladorJuego {
     private final PanelJuego panel;
     private Escenario escenarioActual;
     private FabricaNivel fabricaNivel;
-    private EstadoJuego estado;
+    private EstadoJuego estado = EstadoInactivo.INSTANCIA; //ya no arranca en null como antes
 
     //Guardado
     private Partida partida;
@@ -65,7 +66,7 @@ public class ControladorJuego {
     private long ultimoPasoNanos;
 
     //Generador de items aleatorios con un hilo daemon
-    private static final AtomicInteger CONTADOR_SPAWNER = new AtomicInteger(1);
+    private final AtomicInteger CONTADOR_SPAWNER = new AtomicInteger(1);
     
     private final ScheduledExecutorService spawnerExecutor = Executors.newSingleThreadScheduledExecutor(tarea -> {
         Thread hilo = new Thread(tarea, "spawner-monedas-" + CONTADOR_SPAWNER.getAndIncrement());
@@ -102,6 +103,9 @@ public class ControladorJuego {
         this.fabricaNivel = FabricaNiveles.para(this.partida.getNivelActual());
         this.escenarioActual = this.fabricaNivel.crearEscenario(1, this.fabricaNivel.crearPersonajeInicial());
 
+        //Audio
+        this.gestorAudio = GestorAudio.getInstancia();
+
         if (this.partida.getNivelActual() == 2) {
             this.escenarioActual.getNivel().getPersonaje().setPuntaje(partida.getPuntajeAcumulado());
         }
@@ -113,9 +117,6 @@ public class ControladorJuego {
         //Gameloop
         this.timer = new Timer(INTERVALO_TIMER_MS, e -> this.paso());
         this.ultimoPasoNanos = System.nanoTime();
-
-        //Audio
-        this.gestorAudio = GestorAudio.getInstancia();
         
         //Panel pausa
         panel.getPanelPausa().getBotonSalir().addActionListener(e -> {
@@ -246,7 +247,7 @@ public class ControladorJuego {
         
         this.panel.ocultarPaneles();
         reiniciarEstado();
-        this.estado = null;
+        this.cambiarEstado(EstadoInactivo.INSTANCIA); //Ya no hace estado = null
         DetenerGeneradorMonedas();
         
         this.controladorPrincipal.volverAlMenu(); 
@@ -266,7 +267,7 @@ public class ControladorJuego {
     //generador de monedas aleatorio (tiene un limite de 3 monedas por escenario)
     private void GeneradorMonedas() {
         this.spawnerExecutor.scheduleWithFixedDelay(() -> {
-            if (this.estado == null || !this.estado.permiteJugar()) {
+            if (!this.estado.permiteJugar()) {
                 return;
             }
 
@@ -278,7 +279,7 @@ public class ControladorJuego {
             int y = (int) (Math.random() * 400) + 150;
 
             SwingUtilities.invokeLater(() -> {
-                if (this.estado == null || !this.estado.permiteJugar()) {
+                if (!this.estado.permiteJugar()) {
                     return;
                 }
 
@@ -315,10 +316,8 @@ public class ControladorJuego {
         gestorAudio.pausarMusica();
     }
 
-    public void pausar(){
-        if (this.estado != null) {
-            this.estado.pausar(this);
-        }
+    public void pausar() {
+        this.estado.pausar(this);
     }
 
     public void reiniciar() {
@@ -366,15 +365,13 @@ public class ControladorJuego {
     }
 
     void cambiarEstado(EstadoJuego nuevoEstado) {
-        if (this.estado != null) {
-            this.estado.salir(this);
+        if (nuevoEstado == null) {
+            nuevoEstado = EstadoInactivo.INSTANCIA;
         }
-        
-        this.estado = nuevoEstado;
 
-        if (this.estado != null) {
-            this.estado.entrar(this);
-        }
+        this.estado.salir(this);
+        this.estado = nuevoEstado;
+        this.estado.entrar(this);
     }
 
     void iniciarTimer() {
@@ -399,12 +396,16 @@ public class ControladorJuego {
 
     void mostrarDerrota(boolean visible) {
         this.panel.mostrarDerrota(visible);
-        GestorAudio.getInstancia().reproducirEfecto(GestorAudio.NIVEL_FALLIDO);
+        if (visible) {
+            GestorAudio.getInstancia().reproducirEfecto(GestorAudio.NIVEL_FALLIDO);
+        }
     }
 
     void mostrarVictoria(boolean visible) {
         this.panel.mostrarVictoria(visible);
-        GestorAudio.getInstancia().reproducirEfecto(GestorAudio.MONEDA);
+        if (visible) {
+            GestorAudio.getInstancia().reproducirEfecto(GestorAudio.MONEDA);
+        }
     }
 
     void mostrarFinJuego(boolean visible){
@@ -498,7 +499,7 @@ public class ControladorJuego {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (estado != null && estado.permiteDisparar()) {
+                    if (ControladorJuego.this.estado.permiteDisparar()) {
                         mouseX = e.getX();
                         mouseY = e.getY();
                         ControladorJuego.this.disparar();
@@ -512,7 +513,7 @@ public class ControladorJuego {
     private void disparar() {
         Personaje personaje = this.getNivel().getPersonaje();
 
-        if (this.estado == null || !this.estado.permiteDisparar()) {
+        if (!this.estado.permiteDisparar()) {
             return;
         }
 
@@ -587,32 +588,20 @@ public class ControladorJuego {
     }
 
     private void paso() {
-        if (this.estado == null || !this.estado.permiteJugar()) {
+        if (!this.estado.permiteJugar()) {
             return;
         }
 
         int deltaMS = this.calcularDeltaMS();
 
+        this.estado.evaluarTransiciones(this);
+        if (!this.estado.permiteJugar()) {
+            this.panel.repaint();
+            return;
+        }
+
         Nivel nivel = this.getNivel();
         Personaje personaje = nivel.getPersonaje();
-
-        if (!personaje.estaVivo()) {
-            this.cambiarEstado(EstadoDerrota.INSTANCIA);
-            this.panel.repaint();
-            return;
-        }
-
-        if (nivel.estaCompleto()) {
-            if (nivel.getNumeroNivel() == 1) {
-                this.cambiarEstado(EstadoVictoria.INSTANCIA);
-            } else {
-                this.cambiarEstado(EstadoJuegoCompletado.INSTANCIA);
-                
-            }
-
-            this.panel.repaint();
-            return;
-        }
 
         // Solo sumamos tiempo si el juego está activo
         this.tiempoTranscurridoMS += deltaMS;
@@ -620,14 +609,28 @@ public class ControladorJuego {
 
         List<Plataforma> plataformas = nivel.getPlataformas();
 
-        int direccion = 0;
-        if (this.teclaIzquierda && !this.teclaDerecha) {
-            direccion = -1;
-        } else if (this.teclaDerecha && !this.teclaIzquierda) {
-            direccion = 1;
-        }
+        // Actualiza estados temporales de la entidad (congelación, etc.)
+        personaje.actualizarEstados(deltaMS);
+        personaje.actualizarArmaTemporal(deltaMS);
 
-        personaje.actualizarHorizontal(direccion, Configuracion.ANCHO);
+        if (personaje.estaCongelado()) {
+            this.saltoPendiente = false;
+            personaje.actualizarHorizontal(0, Configuracion.ANCHO);
+        } else {
+            int direccion = 0;
+            if (this.teclaIzquierda && !this.teclaDerecha) {
+                direccion = -1;
+            } else if (this.teclaDerecha && !this.teclaIzquierda) {
+                direccion = 1;
+            }
+
+            personaje.actualizarHorizontal(direccion, Configuracion.ANCHO);
+
+            if (this.saltoPendiente) {
+                personaje.saltar();
+                this.saltoPendiente = false;
+            }
+        }
 
         //El muro del escenario inicial bloquea el paso hasta encestar en el aro de basquet
         Muro muro = nivel.getMuro();
@@ -635,16 +638,9 @@ public class ControladorJuego {
             muro.bloquearPersonaje(personaje);
         }
 
-        if (this.saltoPendiente) {
-            personaje.saltar();
-            this.saltoPendiente = false;
-        }
-
         personaje.aplicarGravedad();
         personaje.actualizarVertical(plataformas, nivel.getEnemigos(), Configuracion.ALTO);
         detectarTransicion(personaje);
-
-        personaje.actualizarArmaTemporal(deltaMS);
 
         for (Enemigo enemigo : nivel.getEnemigos()) {
             enemigo.actualizarEstados(deltaMS);

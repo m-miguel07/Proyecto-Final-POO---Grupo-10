@@ -6,8 +6,8 @@ public class ArmaHielo extends Arma {
     private int duracionRalentizacion;
 
     //Constructor
-    public ArmaHielo(int danioBase, double velocidad, int duracionRalentizacion, double posicionX, double posicionY, int ancho, int alto) {
-        super(danioBase, velocidad, posicionX, posicionY, ancho, alto);
+    public ArmaHielo(int danioBase, double velocidad, int duracionRalentizacion) {
+        super(danioBase, velocidad);
 
         if (duracionRalentizacion <= 0) {
             throw new IllegalArgumentException("La duracion de la ralentizacion debe ser positiva");
@@ -19,7 +19,17 @@ public class ArmaHielo extends Arma {
     //Comportamientos
     @Override
     public void aplicarDanio(Entidad objetivo) {
-        objetivo.recibirDanioDeHielo(this.getDanioBase());
+        super.aplicarDanio(objetivo);
         objetivo.recibirCongelacion(this.duracionRalentizacion);
+    }
+
+    @Override
+    protected TipoDanio getTipoDanio() {
+        return TipoDanio.HIELO;
+    }
+
+    @Override
+    public TipoRenderArma getTipoRender() {
+        return TipoRenderArma.HIELO;
     }
 }

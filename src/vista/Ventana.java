@@ -2,7 +2,6 @@ package vista;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -84,10 +83,6 @@ public class Ventana extends JFrame {
 
     public PanelMenuPrincipal getPanelMenu(){
         return this.panelMenu;
-    }
-
-    public int getVolumenMusica(){
-        return panelMenu.getPanelOpciones().getSliderMusica().getValue();
     }
 
     public void mostrarTarjeta(String nombre){

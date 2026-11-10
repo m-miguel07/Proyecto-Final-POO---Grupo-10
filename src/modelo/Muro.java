@@ -16,6 +16,11 @@ public class Muro extends Plataforma {
         this.abierto = false;
     }
 
+    @Override
+    public TipoRenderPlataforma getTipoRender() {
+        return TipoRenderPlataforma.MURO;
+    }
+
     //Getters
     //verifica si el muro bajo completo, sino sigue bloqueando el paso al siguiente nivel.
     public boolean isBloqueando() {
@@ -72,19 +77,18 @@ public class Muro extends Plataforma {
     }
 
     //prohibe a los enemigos atravesar el muro.
-    public void bloquearEnemigo(EnemigoTerrestre enemigo) {
+    public void bloquearEnemigo(Enemigo enemigo) {
         if (!this.isBloqueando() || !this.colisionaCon(enemigo)) {
             return;
         }
 
         enemigo.setPosicion(this.getPosicionX() - enemigo.getAncho(), enemigo.getPosicionY());
-        enemigo.invertirDireccion();
+        if (enemigo instanceof EnemigoTerrestre terrestre) {
+            terrestre.invertirDireccion();
+        }
     }
 
     private boolean colisionaCon(ObjetoDelJuego objeto) {
-        return objeto.getPosicionX() + objeto.getAncho() > this.getPosicionX()
-                && objeto.getPosicionX() < this.getPosicionX() + this.getAncho()
-                && objeto.getPosicionY() + objeto.getAlto() > this.getPosicionY()
-                && objeto.getPosicionY() < this.getPosicionY() + this.getAlto();
+        return this.interseca(objeto);
     }
 }

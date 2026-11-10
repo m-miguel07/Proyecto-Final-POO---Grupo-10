@@ -5,13 +5,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class EnemigoADistancia extends Enemigo {
+    //Atributos
 
+    //Limites
     private static final int INTERVALO_DISPARO_MS = 2000;
     private static final double VELOCIDAD_PROYECTIL = 7.0;
     private static final int PROYECTIL_ANCHO = 16;
     private static final int PROYECTIL_ALTO = 16;
-
-    //Atributos
+    
     private int alcance;
     private int tiempoSiguienteDisparoMS;
     private Personaje objetivo;
@@ -33,23 +34,17 @@ public class EnemigoADistancia extends Enemigo {
     }
 
     //Getters
-    public int getAlcance() {
-        return this.alcance;
+    @Override
+    public TipoRenderEnemigo getTipoRender() {
+        return TipoRenderEnemigo.A_DISTANCIA;
     }
 
+    @Override
     public List<Proyectil> getProyectiles() {
         return this.proyectilesVista;
     }
 
     //Setters
-    public void setAlcance(int alcance) {
-        if (alcance <= 0) {
-            throw new IllegalArgumentException("El alcance debe ser positivo");
-        }
-
-        this.alcance = alcance;
-    }
-
     public void setObjetivo(Personaje objetivo) {
         this.objetivo = objetivo;
     }

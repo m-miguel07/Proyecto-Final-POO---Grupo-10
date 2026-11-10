@@ -52,7 +52,9 @@ public class GestorPelotas {
                 if (!aro.isEncestado()) {
                     aro.encestar();
                     personaje.sumarPuntaje(PUNTAJE_ENCESTADO);
-                    gestorAudio.reproducirEfecto(GestorAudio.ENCESTADO);
+                    if (gestorAudio != null) {
+                        gestorAudio.reproducirEfecto(GestorAudio.ENCESTADO);
+                    }
                 }
                 pelota.desactivar();
                 this.pelotas.remove(i);
@@ -87,7 +89,9 @@ public class GestorPelotas {
                 Arma arma = pelota.getArma();
                 arma.aplicarDanio(enemigo);
 
-                gestorAudio.reproducirEfecto(GestorAudio.GOLPE_PELOTA);
+                if (gestorAudio != null) {
+                    gestorAudio.reproducirEfecto(GestorAudio.GOLPE_PELOTA);
+                }
                 impactoEnemigo = true;
                 break;
             }
@@ -135,11 +139,11 @@ public class GestorPelotas {
                         if (pelota.getVelocidadY() >= 0) {
                             sonidoRebote = pelota.rebotarVertical(plataforma.getPosicionY() - pelota.getAlto(), Pelota.RESTITUCION);
                         } else {
-                            sonidoRebote = pelota.rebotarVertical(plataforma.getPosicionY() + plataforma.getAlto(), Pelota.RESTITUCION);
+                            sonidoRebote = pelota.rebotarVertical(plataforma.getPosicionY() + plataforma.getAlto(),  Pelota.RESTITUCION);
                         }
                     }
 
-                    if (sonidoRebote) {
+                    if (sonidoRebote && gestorAudio != null) {
                         gestorAudio.reproducirEfecto(GestorAudio.BOTE_PELOTA);
                     }
                 }
@@ -147,11 +151,11 @@ public class GestorPelotas {
 
             // La pelota rebota en los limites lataerales de la pantalla.
             if (pelota.getPosicionX() < 0) {
-                if (pelota.rebotarHorizontal(0, Pelota.RESTITUCION)) {
+                if (pelota.rebotarHorizontal(0, Pelota.RESTITUCION) && gestorAudio != null) {
                     gestorAudio.reproducirEfecto(GestorAudio.BOTE_PELOTA);
                 }
-            } else if (pelota.getPosicionX() + pelota.getAncho() > anchoPantalla) {
-                if (pelota.rebotarHorizontal(anchoPantalla - pelota.getAncho(), Pelota.RESTITUCION)) {
+            } else if (pelota.getPosicionX() + pelota.getAncho()  > anchoPantalla) {
+                if (pelota.rebotarHorizontal(anchoPantalla - pelota.getAncho(), Pelota.RESTITUCION) && gestorAudio != null) {
                     gestorAudio.reproducirEfecto(GestorAudio.BOTE_PELOTA);
                 }
             }

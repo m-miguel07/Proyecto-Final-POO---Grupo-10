@@ -5,7 +5,8 @@ public abstract class Entidad extends ObjetoDelJuego {
     //Atributos
     private int puntosVida;
     private double velocidad;
-
+    private int tiempoCongeladoMS;
+    
     //Constructor
     public Entidad(int puntosVida, int ancho, int alto, double velocidad, double posicionX, double posicionY) {
         super(ancho, alto, posicionX, posicionY);
@@ -20,6 +21,7 @@ public abstract class Entidad extends ObjetoDelJuego {
 
         this.puntosVida = puntosVida;
         this.velocidad = velocidad;
+        this.tiempoCongeladoMS = 0;
     }
 
     //Getters
@@ -41,6 +43,10 @@ public abstract class Entidad extends ObjetoDelJuego {
     }
 
     //Comportamientos
+    public boolean esInmuneA(TipoDanio tipo) {
+        return false; // Por defecto, ninguna entidad es inmune
+    }
+
     public void recibirDanio(int danio) {
         if (danio < 0) {
             throw new IllegalArgumentException("El danio recibido no puede ser negativo");
@@ -49,11 +55,30 @@ public abstract class Entidad extends ObjetoDelJuego {
         this.puntosVida = Math.max(0, this.puntosVida - danio);
     }
 
-    public void recibirDanioDeHielo(int danio) {
+    public void recibirDanio(int danio, TipoDanio tipo) {
+        if (this.esInmuneA(tipo)) {
+            return;
+        }
+
         this.recibirDanio(danio);
     }
 
     public void recibirCongelacion(int duracionMS) {
+        this.congelar(duracionMS);
+    }
+
+    public void congelar(int duracionMS) {
+        this.tiempoCongeladoMS = Math.min(5000, Math.max(this.tiempoCongeladoMS, duracionMS));
+    }
+
+    public boolean estaCongelado() {
+        return this.tiempoCongeladoMS > 0;
+    }
+
+    public void actualizarEstados(int deltaMS) {
+        if (this.tiempoCongeladoMS > 0) {
+            this.tiempoCongeladoMS = Math.max(0, this.tiempoCongeladoMS - deltaMS);
+        }
     }
 
     public void recibirQuemadura(int duracionMS, int danioPorTick) {

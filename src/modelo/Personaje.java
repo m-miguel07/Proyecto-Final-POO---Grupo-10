@@ -5,6 +5,8 @@ import java.util.List;
 public class Personaje extends Entidad {
 
     //Constantes
+
+    //Fisicas, reglas
     public static final double GRAVEDAD = 0.9;
     public static final double FUERZA_SALTO = -19.0;
     public static final double VELOCIDAD_MAXIMA_CAIDA = 18.0;
@@ -264,7 +266,7 @@ public class Personaje extends Entidad {
         boolean cayendo = this.velocidadY >= 0;
 
         boolean haySolapeHorizontal = this.posicionX + this.ancho > objeto.getPosicionX()
-                && this.posicionX < objeto.getPosicionX() + objeto.getAncho();
+                && this.posicionX < objeto.getPosicionY();
 
         return cayendo
                 && haySolapeHorizontal

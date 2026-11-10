@@ -47,11 +47,11 @@ public class Pelota extends ObjetoDelJuego {
     }
 
     public boolean esDeFuego() {
-        return this.arma instanceof ArmaFuego;
+        return this.arma.getTipoDanio() == TipoDanio.FUEGO;
     }
 
     public boolean esDeHielo() {
-        return this.arma instanceof ArmaHielo;
+        return this.arma.getTipoDanio() == TipoDanio.HIELO;
     }
 
     //Comportamientos

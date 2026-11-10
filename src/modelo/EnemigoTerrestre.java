@@ -14,16 +14,22 @@ public class EnemigoTerrestre extends Enemigo {
         this.direccion = 1;
     }
 
-
     public int getDireccion(){
         return this.direccion;
     }
+
+    @Override
+    public TipoRenderEnemigo getTipoRender() {
+        return TipoRenderEnemigo.TERRESTRE;
+    }
+
     //Comportamientos
-    //Invierte el sentido de la patrulla (por ejemplo, al chocar con el muro).
+    //Invierte la dirección
     public void invertirDireccion() {
         this.direccion *= -1;
     }
 
+    @Override
     public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
         if (!this.estaCongelado()) {
             this.mover(plataformas, anchoPantalla);

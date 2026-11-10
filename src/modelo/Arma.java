@@ -1,15 +1,13 @@
 package modelo;
 
-public abstract class Arma extends ObjetoDelJuego{
+public abstract class Arma {
 
     //Atributos
     private int danioBase;
     private double velocidad;
 
     //Constructor
-    public Arma(int danioBase, double velocidad, double posicionX, double posicionY, int ancho, int alto) {
-        super(ancho,alto,posicionX,posicionY);
-
+    public Arma(int danioBase, double velocidad) {
         if (danioBase <= 0) {
             throw new IllegalArgumentException("El danio base debe ser positivo");
         }
@@ -32,5 +30,14 @@ public abstract class Arma extends ObjetoDelJuego{
     }
 
     //Comportamientos
-    public abstract void aplicarDanio(Entidad objetivo);
+    public void aplicarDanio(Entidad objetivo) {
+        objetivo.recibirDanio(this.getDanioBase(), this.getTipoDanio());
+    }
+
+    protected TipoDanio getTipoDanio() {
+        return TipoDanio.NORMAL; // Las armas sin elemento no cambian el daño
+    }
+
+    //Estandar, Hielo, Fuego (renders para evitar instanceof en la vista)
+    public abstract TipoRenderArma getTipoRender();
 }

@@ -1,9 +1,7 @@
 import controlador.ControladorPrincipal;
-import persistencia.Conexion;
-
 import java.sql.SQLException;
-
 import javax.swing.SwingUtilities;
+import persistencia.Conexion;
 
 public class App {
     public static void main(String[] args) throws Exception {

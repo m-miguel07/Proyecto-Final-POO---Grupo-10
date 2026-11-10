@@ -16,30 +16,26 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
 import modelo.Arma;
-import modelo.ArmaFuego;
-import modelo.ArmaHielo;
 import modelo.Aro;
 import modelo.Boton;
 import modelo.Configuracion;
 import modelo.Enemigo;
-import modelo.EnemigoADistancia;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
+import modelo.Escenario;
+import modelo.FabricaNiveles;
 import modelo.Moneda;
 import modelo.Nivel;
 import modelo.Pelota;
 import modelo.Personaje;
 import modelo.Plataforma;
 import modelo.Proyectil;
-import modelo.Muro;
-import modelo.Recolectable;
-import modelo.Escenario;
-import modelo.FabricaNiveles;
+import modelo.ArmaRecolectable;
+import modelo.TipoRenderArma;
+import modelo.TipoRenderPlataforma;
 
 public class PanelJuego extends JPanel {
 
@@ -165,10 +161,6 @@ public class PanelJuego extends JPanel {
 
     public long getTiempoTranscurrido(){
         return this.tiempoTranscurrido;
-    }
-
-    public Escenario getEscenario() {
-        return escenario;
     }
     
     public PanelPausa getPanelPausa(){
@@ -396,8 +388,8 @@ public class PanelJuego extends JPanel {
                 continue;
             }
 
-            if (plataforma instanceof Muro) {
-                this.dibujarMuro(g2, (Muro) plataforma);
+            if (plataforma.getTipoRender() == TipoRenderPlataforma.MURO) {
+                this.dibujarMuro(g2, plataforma);
                 continue;
             }
 
@@ -446,7 +438,7 @@ public class PanelJuego extends JPanel {
 
     //El muro se dibuja translucido, con tonos del fondo, y recortado en la plataforma blanca:
     //al bajar se apoya en el suelo sin salirse del escenario.
-    private void dibujarMuro(Graphics2D g2, Muro muro) {
+    private void dibujarMuro(Graphics2D g2, Plataforma muro) {
         double x = muro.getPosicionX();
         double y = muro.getPosicionY();
         double w = muro.getAncho();
@@ -482,7 +474,7 @@ public class PanelJuego extends JPanel {
     }
 
     private void dibujarRecolectables(Graphics2D g2) {
-        for (Recolectable recolectable : this.nivel.getRecolectables()) {
+        for (ArmaRecolectable recolectable : this.nivel.getRecolectables()) {
             if (recolectable.isRecolectado()) {
                 continue;
             }
@@ -492,13 +484,13 @@ public class PanelJuego extends JPanel {
             int w = (int) recolectable.getAncho();
             int h = (int) recolectable.getAlto();
 
-
-            if (recolectable.getArma() instanceof ArmaHielo) {
+            TipoRenderArma tipoArma = recolectable.getArma().getTipoRender();
+            if (tipoArma == TipoRenderArma.HIELO) {
                 g2.drawImage(imgArmaHielo, x, y, w, h, this);
-            } else if (recolectable.getArma() instanceof ArmaFuego) {
+            } else if (tipoArma == TipoRenderArma.FUEGO) {
                 g2.drawImage(imgArmaFuego, x, y, w, h, this);
             } else {
-               g2.drawImage(imgMoneda, x, y, w, h, this);
+                g2.drawImage(imgMoneda, x, y, w, h, this);
             }
         }
     }
@@ -525,12 +517,10 @@ public class PanelJuego extends JPanel {
 
     private void dibujarEnemigos(Graphics2D g2) {
         for (Enemigo enemigo : this.nivel.getEnemigos()) {
-            if (enemigo instanceof EnemigoVolador) {
-                this.dibujarVolador(g2, (EnemigoVolador) enemigo);
-            } else if (enemigo instanceof EnemigoTerrestre) {
-                this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
-            } else {
-                this.dibujarEnemigoADistancia(g2, enemigo);
+            switch (enemigo.getTipoRender()) {
+                case VOLADOR -> this.dibujarVolador(g2, (EnemigoVolador) enemigo);
+                case TERRESTRE -> this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
+                case A_DISTANCIA -> this.dibujarEnemigoADistancia(g2, enemigo);
             }
 
             if (enemigo.estaQuemado()) {
@@ -541,13 +531,7 @@ public class PanelJuego extends JPanel {
 
     private void dibujarProyectiles(Graphics2D g2) {
         for (Enemigo enemigo : this.nivel.getEnemigos()) {
-            if (!(enemigo instanceof EnemigoADistancia)) {
-                continue;
-            }
-
-            EnemigoADistancia aDistancia = (EnemigoADistancia) enemigo;
-
-            for (Proyectil proyectil : aDistancia.getProyectiles()) {
+            for (Proyectil proyectil : enemigo.getProyectiles()) {
                 g2.setColor(COLOR_VOLADOR);
                 g2.fill(new Ellipse2D.Double(
                         proyectil.getPosicionX(), proyectil.getPosicionY(),
@@ -566,7 +550,7 @@ public class PanelJuego extends JPanel {
         boolean mirandoIzquierda = enemigo.getDireccion() == 1;
 
         if(mirandoIzquierda) {
-            g2.drawImage(imgEnemigo, (int)enemigo.getPosicionX() + enemigo.getAncho(), (int) enemigo.getPosicionY(), -enemigo.getAncho(), enemigo.getAlto(), this);
+            g2.drawImage(imgEnemigo, (int) enemigo.getPosicionX() + enemigo.getAncho(), (int) enemigo.getPosicionY(), -enemigo.getAncho(), enemigo.getAlto(), this);
         } else {
             g2.drawImage(imgEnemigo, (int)enemigo.getPosicionX(), (int) enemigo.getPosicionY(), enemigo.getAncho(), enemigo.getAlto(), this);
         }
@@ -649,9 +633,9 @@ public class PanelJuego extends JPanel {
 
         BufferedImage spritePelota;
 
-        if (armaEquipada instanceof ArmaFuego) {
+        if (armaEquipada != null && armaEquipada.getTipoRender() == TipoRenderArma.FUEGO) {
             spritePelota = imgArmaFuego;
-        } else if (armaEquipada instanceof ArmaHielo) {
+        } else if (armaEquipada != null && armaEquipada.getTipoRender() == TipoRenderArma.HIELO) {
             spritePelota = imgArmaHielo;
         } else {
             spritePelota = imgArmaEstandar;
@@ -681,35 +665,20 @@ public class PanelJuego extends JPanel {
 
     private void dibujarPelotas(Graphics2D g2) {
         for (Pelota pelota : this.nivel.getPelotas()) {
-            if (pelota.esDeFuego()) {
-                g2.drawImage(
-                            imgArmaFuego, 
-                            (int) pelota.getPosicionX(), 
-                            (int) pelota.getPosicionY(),
-                            pelota.getAncho(), 
-                            pelota.getAlto(), 
-                            this
-                        );
+            BufferedImage sprite = switch (pelota.getArma().getTipoRender()) {
+                case FUEGO -> imgArmaFuego;
+                case HIELO -> imgArmaHielo;
+                case ESTANDAR -> imgArmaEstandar;
+            };
 
-            } else if (pelota.esDeHielo()) {
-                g2.drawImage(
-                            imgArmaHielo, 
-                            (int) pelota.getPosicionX(), 
-                            (int) pelota.getPosicionY(),
-                            pelota.getAncho(), 
-                            pelota.getAlto(), 
-                            this
-                        );
-            } else {
-                g2.drawImage(
-                            imgArmaEstandar, 
-                            (int) pelota.getPosicionX(), 
-                            (int) pelota.getPosicionY(),
-                            pelota.getAncho(), 
-                            pelota.getAlto(), 
-                            this
-                        );
-            }
+            g2.drawImage(
+                        sprite,
+                        (int) pelota.getPosicionX(),
+                        (int) pelota.getPosicionY(),
+                        pelota.getAncho(),
+                        pelota.getAlto(),
+                        this
+                    );
         }
     }
 

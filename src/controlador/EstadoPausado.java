@@ -25,6 +25,11 @@ public final class EstadoPausado implements EstadoJuego {
     }
 
     @Override
+    public void evaluarTransiciones(ControladorJuego controlador) {
+        // No evalúa fin de partida mientras está en pausa.
+    }
+
+    @Override
     public boolean permiteJugar() {
         return false;
     }

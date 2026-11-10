@@ -1,5 +1,6 @@
 package modelo;
 
+//Recogible, todo lo que se puede recolectar
 public abstract class Recogible extends ObjetoDelJuego {
 
     //Atributos

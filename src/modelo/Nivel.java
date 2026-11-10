@@ -14,22 +14,21 @@ public class Nivel {
     private final List<Enemigo> enemigos;
     private final List<Moneda> monedas;
     private final List<Plataforma> plataformas;
-    private final List<Recolectable> recolectables;
+    private final List<ArmaRecolectable> recolectables;
     private final List<Boton> botones;
 
     private final List<Enemigo> enemigosVista;
     private final List<Moneda> monedasVista;
     private final List<Plataforma> plataformasVista;
-    private final List<Recolectable> recolectablesVista;
+    private final List<ArmaRecolectable> recolectablesVista;
     private final List<Boton> botonesVista;
 
     private final GestorPelotas gestorPelotas;
     private final SistemaColisiones sistemaColisiones;
-    private final Marcador marcador;
 
     //Constructor
     public Nivel(int numeroNivel, Personaje personaje, Aro aro, List<Enemigo> enemigos, List<Moneda> monedas,
-                 List<Plataforma> plataformas, List<Recolectable> recolectables, List<Boton> botones, Muro muro) {
+                 List<Plataforma> plataformas, List<ArmaRecolectable> recolectables, List<Boton> botones, Muro muro) {
         if (personaje == null) {
             throw new IllegalArgumentException("El personaje es obligatorio");
         }
@@ -52,7 +51,6 @@ public class Nivel {
 
         this.gestorPelotas = new GestorPelotas();
         this.sistemaColisiones = new SistemaColisiones();
-        this.marcador = new Marcador();
     }
 
     //Getters
@@ -83,7 +81,7 @@ public class Nivel {
         return this.plataformasVista;
     }
 
-    public List<Recolectable> getRecolectables() {
+    public List<ArmaRecolectable> getRecolectables() {
         return this.recolectablesVista;
     }
 
@@ -128,11 +126,17 @@ public class Nivel {
     }
 
     public int contarMonedasRecolectadas() {
-        return this.marcador.contarMonedasRecolectadas(this.monedas);
+        int cantidad = 0;
+        for (Moneda moneda : this.monedas) {
+            if (moneda.isRecolectado()) {
+                cantidad++;
+            }
+        }
+        return cantidad;
     }
 
     public int getMonedasTotales() {
-        return this.marcador.contarMonedasTotales(this.monedas);
+        return this.monedas.size();
     }
 
     public void agregarPelota(Pelota pelota) {

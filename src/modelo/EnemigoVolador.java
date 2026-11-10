@@ -4,9 +4,6 @@ import java.util.List;
 
 public class EnemigoVolador extends Enemigo {
 
-    public static int ANCHO = 85;
-    public static int ALTO = 65;
-
     //Atributos
     private double limiteIzquierdo;
     private double limiteDerecho;
@@ -31,11 +28,17 @@ public class EnemigoVolador extends Enemigo {
         this.limiteDerecho = limiteDerecho;
     }
 
-    //Comportamientos
     @Override
-    public void recibirDanioDeHielo(int danio) {
+    public TipoRenderEnemigo getTipoRender() {
+        return TipoRenderEnemigo.VOLADOR;
     }
 
+    @Override
+    public boolean esInmuneA(TipoDanio tipo) {
+        return tipo == TipoDanio.HIELO; // es inmune al daño de hielo
+    }
+
+    //Comportamientos
     public void moverHorizontal() {
         double nuevaX = this.posicionX + (this.getVelocidad() * this.direccion);
 
@@ -46,7 +49,8 @@ public class EnemigoVolador extends Enemigo {
 
         this.posicionX = Math.max(this.limiteIzquierdo, Math.min(nuevaX, this.limiteDerecho - this.ancho));
     }
-
+    
+    @Override
     public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {
         if (this.estaCongelado()) {
             return;
