@@ -19,8 +19,8 @@ public class EnemigoTerrestre extends Enemigo {
     }
 
     @Override
-    public TipoRenderEnemigo getTipoRender() {
-        return TipoRenderEnemigo.TERRESTRE;
+    public TipoEnemigo getTipo() {
+        return TipoEnemigo.TERRESTRE;
     }
 
     //Comportamientos

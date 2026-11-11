@@ -26,7 +26,6 @@ import modelo.Enemigo;
 import modelo.EnemigoTerrestre;
 import modelo.EnemigoVolador;
 import modelo.Escenario;
-import modelo.FabricaNiveles;
 import modelo.Moneda;
 import modelo.Nivel;
 import modelo.Pelota;
@@ -34,8 +33,8 @@ import modelo.Personaje;
 import modelo.Plataforma;
 import modelo.Proyectil;
 import modelo.ArmaRecolectable;
-import modelo.TipoRenderArma;
-import modelo.TipoRenderPlataforma;
+import modelo.TipoElemento;
+import modelo.TipoPlataforma;
 
 public class PanelJuego extends JPanel {
 
@@ -73,7 +72,6 @@ public class PanelJuego extends JPanel {
     private static final Map<String, BufferedImage> CACHE_FONDOS_ESCALADOS = new HashMap<>();
 
     private Nivel nivel;
-    private Escenario escenario;
 
     private BufferedImage imgFondoEscenario;
     private BufferedImage fondoEscalado;
@@ -109,12 +107,12 @@ public class PanelJuego extends JPanel {
 
     private HUD hud;
 
-    public PanelJuego(Escenario escenario) {
+    public PanelJuego(Escenario escenario, int monedasTotales) {
         super(new GridBagLayout());
 
         this.mensaje = "";
         this.tiempoTranscurrido = 0;
-        this.monedasTotales = FabricaNiveles.para(escenario.getNivel().getNumeroNivel()).getMonedasTotales();
+        this.monedasTotales = monedasTotales;
 
         this.setPreferredSize(new Dimension(Ventana.ANCHO_PANTALLA,Ventana.ALTO_PANTALLA));
         this.setFocusable(true);
@@ -155,14 +153,6 @@ public class PanelJuego extends JPanel {
     }
 
     //Getters
-    public Nivel getNivel() {
-        return this.nivel;
-    }
-
-    public long getTiempoTranscurrido(){
-        return this.tiempoTranscurrido;
-    }
-    
     public PanelPausa getPanelPausa(){
         return this.panelPausa;
     }
@@ -247,7 +237,6 @@ public class PanelJuego extends JPanel {
     }
 
     public void escenarioCambiado(Escenario escenario){
-        this.escenario = escenario;
         this.nivel = escenario.getNivel();
 
         this.rutaFondoActual = escenario.getRutaFondo();
@@ -388,7 +377,7 @@ public class PanelJuego extends JPanel {
                 continue;
             }
 
-            if (plataforma.getTipoRender() == TipoRenderPlataforma.MURO) {
+            if (plataforma.getTipo() == TipoPlataforma.MURO) {
                 this.dibujarMuro(g2, plataforma);
                 continue;
             }
@@ -484,10 +473,10 @@ public class PanelJuego extends JPanel {
             int w = (int) recolectable.getAncho();
             int h = (int) recolectable.getAlto();
 
-            TipoRenderArma tipoArma = recolectable.getArma().getTipoRender();
-            if (tipoArma == TipoRenderArma.HIELO) {
+            TipoElemento elemento = recolectable.getArma().getElemento();
+            if (elemento == TipoElemento.HIELO) {
                 g2.drawImage(imgArmaHielo, x, y, w, h, this);
-            } else if (tipoArma == TipoRenderArma.FUEGO) {
+            } else if (elemento == TipoElemento.FUEGO) {
                 g2.drawImage(imgArmaFuego, x, y, w, h, this);
             } else {
                 g2.drawImage(imgMoneda, x, y, w, h, this);
@@ -517,7 +506,7 @@ public class PanelJuego extends JPanel {
 
     private void dibujarEnemigos(Graphics2D g2) {
         for (Enemigo enemigo : this.nivel.getEnemigos()) {
-            switch (enemigo.getTipoRender()) {
+            switch (enemigo.getTipo()) {
                 case VOLADOR -> this.dibujarVolador(g2, (EnemigoVolador) enemigo);
                 case TERRESTRE -> this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
                 case A_DISTANCIA -> this.dibujarEnemigoADistancia(g2, enemigo);
@@ -633,9 +622,9 @@ public class PanelJuego extends JPanel {
 
         BufferedImage spritePelota;
 
-        if (armaEquipada != null && armaEquipada.getTipoRender() == TipoRenderArma.FUEGO) {
+        if (armaEquipada != null && armaEquipada.getElemento() == TipoElemento.FUEGO) {
             spritePelota = imgArmaFuego;
-        } else if (armaEquipada != null && armaEquipada.getTipoRender() == TipoRenderArma.HIELO) {
+        } else if (armaEquipada != null && armaEquipada.getElemento() == TipoElemento.HIELO) {
             spritePelota = imgArmaHielo;
         } else {
             spritePelota = imgArmaEstandar;
@@ -665,10 +654,10 @@ public class PanelJuego extends JPanel {
 
     private void dibujarPelotas(Graphics2D g2) {
         for (Pelota pelota : this.nivel.getPelotas()) {
-            BufferedImage sprite = switch (pelota.getArma().getTipoRender()) {
+            BufferedImage sprite = switch (pelota.getArma().getElemento()) {
                 case FUEGO -> imgArmaFuego;
                 case HIELO -> imgArmaHielo;
-                case ESTANDAR -> imgArmaEstandar;
+                case NORMAL -> imgArmaEstandar;
             };
 
             g2.drawImage(

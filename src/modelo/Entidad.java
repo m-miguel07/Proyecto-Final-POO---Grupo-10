@@ -43,11 +43,11 @@ public abstract class Entidad extends ObjetoDelJuego {
     }
 
     //Comportamientos
-    public boolean esInmuneA(TipoDanio tipo) {
+    public boolean esInmuneA(TipoElemento tipo) {
         return false; // Por defecto, ninguna entidad es inmune
     }
 
-    public void recibirDanio(int danio) {
+    protected void recibirDanio(int danio) {
         if (danio < 0) {
             throw new IllegalArgumentException("El danio recibido no puede ser negativo");
         }
@@ -55,7 +55,7 @@ public abstract class Entidad extends ObjetoDelJuego {
         this.puntosVida = Math.max(0, this.puntosVida - danio);
     }
 
-    public void recibirDanio(int danio, TipoDanio tipo) {
+    public void recibirDanio(int danio, TipoElemento tipo) {
         if (this.esInmuneA(tipo)) {
             return;
         }

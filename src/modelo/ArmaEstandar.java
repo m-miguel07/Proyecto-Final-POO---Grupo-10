@@ -9,7 +9,7 @@ public class ArmaEstandar extends Arma {
     }
 
     @Override
-    public TipoRenderArma getTipoRender() {
-        return TipoRenderArma.ESTANDAR;
+    public TipoElemento getElemento() {
+        return TipoElemento.NORMAL;
     }
 }

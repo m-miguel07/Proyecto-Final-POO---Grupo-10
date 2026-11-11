@@ -24,12 +24,7 @@ public class ArmaFuego extends Arma {
     }
 
     @Override
-    protected TipoDanio getTipoDanio() {
-        return TipoDanio.FUEGO;
-    }
-
-    @Override
-    public TipoRenderArma getTipoRender() {
-        return TipoRenderArma.FUEGO;
+    public TipoElemento getElemento() {
+        return TipoElemento.FUEGO;
     }
 }

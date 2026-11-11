@@ -35,8 +35,8 @@ public class EnemigoADistancia extends Enemigo {
 
     //Getters
     @Override
-    public TipoRenderEnemigo getTipoRender() {
-        return TipoRenderEnemigo.A_DISTANCIA;
+    public TipoEnemigo getTipo() {
+        return TipoEnemigo.A_DISTANCIA;
     }
 
     @Override

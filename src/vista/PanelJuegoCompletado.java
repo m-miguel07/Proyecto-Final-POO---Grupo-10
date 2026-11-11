@@ -96,8 +96,12 @@ public class PanelJuegoCompletado extends PanelBase{
 
     }
 
-    public JTextField getCampoNombre(){
-        return this.campoNombre;
+    public String getNombreJugador() {
+        return this.campoNombre.getText();
+    }
+
+    public void alConfirmarNombre(Runnable accion) {
+        this.campoNombre.addActionListener(e -> accion.run());
     }
 
     public void mostrarStats(int puntaje, long tiempo){

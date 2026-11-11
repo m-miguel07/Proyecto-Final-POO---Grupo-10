@@ -266,7 +266,7 @@ public class Personaje extends Entidad {
         boolean cayendo = this.velocidadY >= 0;
 
         boolean haySolapeHorizontal = this.posicionX + this.ancho > objeto.getPosicionX()
-                && this.posicionX < objeto.getPosicionY();
+                && this.posicionX < objeto.getPosicionX() + objeto.getAncho();
 
         return cayendo
                 && haySolapeHorizontal

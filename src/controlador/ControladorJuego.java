@@ -110,7 +110,7 @@ public class ControladorJuego {
             this.escenarioActual.getNivel().getPersonaje().setPuntaje(partida.getPuntajeAcumulado());
         }
 
-        this.panel = new PanelJuego(escenarioActual);
+        this.panel = new PanelJuego(escenarioActual, this.fabricaNivel.getMonedasTotales());
         this.tiempoTranscurridoMS = partida.getTiempoAcumulado();
         this.panel.setTiempoTranscurrido(this.tiempoTranscurridoMS);
 
@@ -150,9 +150,7 @@ public class ControladorJuego {
         });
 
         //Panel de juego completado
-        panel.getPanelFinJuego().getCampoNombre().addActionListener(e ->{
-           guardarPuntaje();
-        });
+        panel.getPanelFinJuego().alConfirmarNombre(this::guardarPuntaje);
 
         this.registrarTeclado();
         this.registrarMouse();
@@ -167,7 +165,7 @@ public class ControladorJuego {
     }
 
     public Nivel getNivel() {
-        return this.panel.getNivel();
+        return this.escenarioActual.getNivel();
     }
 
     //Comportamientos
@@ -191,12 +189,12 @@ public class ControladorJuego {
 
         partida.setNivelActual(nivelActual.getNumeroNivel());
         partida.setPuntaje(nivelActual.getPersonaje().getPuntaje());
-        partida.setTiempo(panel.getTiempoTranscurrido());
+        partida.setTiempo(this.tiempoTranscurridoMS);
     }
 
     private void guardarPuntaje(){
         PanelJuegoCompletado panelFinJuego = panel.getPanelFinJuego();
-        String nombreJugador = panelFinJuego.getCampoNombre().getText();
+        String nombreJugador = panelFinJuego.getNombreJugador();
 
         if (nombreJugador.length() < 1 || nombreJugador.length() > 10) {
             panelFinJuego.informar(PanelJuegoCompletado.INVALIDO);

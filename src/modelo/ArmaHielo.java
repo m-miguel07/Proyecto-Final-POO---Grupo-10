@@ -24,12 +24,7 @@ public class ArmaHielo extends Arma {
     }
 
     @Override
-    protected TipoDanio getTipoDanio() {
-        return TipoDanio.HIELO;
-    }
-
-    @Override
-    public TipoRenderArma getTipoRender() {
-        return TipoRenderArma.HIELO;
+    public TipoElemento getElemento() {
+        return TipoElemento.HIELO;
     }
 }

@@ -26,7 +26,7 @@ public abstract class Enemigo extends Entidad {
     }
 
     //Terrestre, Volador, A Distancia
-    public abstract TipoRenderEnemigo getTipoRender();
+    public abstract TipoEnemigo getTipo();
 
     //agregado para evitar usar instanceof en la vista
     public List<Proyectil> getProyectiles() {

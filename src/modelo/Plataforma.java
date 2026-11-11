@@ -56,7 +56,7 @@ public class Plataforma extends ObjetoDelJuego {
             this.destruida = true;
         }
     }
-    public TipoRenderPlataforma getTipoRender() {
-        return TipoRenderPlataforma.NORMAL;
+    public TipoPlataforma getTipo() {
+        return TipoPlataforma.NORMAL;
     }
 }

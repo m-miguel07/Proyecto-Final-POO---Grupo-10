@@ -29,13 +29,13 @@ public class EnemigoVolador extends Enemigo {
     }
 
     @Override
-    public TipoRenderEnemigo getTipoRender() {
-        return TipoRenderEnemigo.VOLADOR;
+    public TipoEnemigo getTipo() {
+        return TipoEnemigo.VOLADOR;
     }
 
     @Override
-    public boolean esInmuneA(TipoDanio tipo) {
-        return tipo == TipoDanio.HIELO; // es inmune al daño de hielo
+    public boolean esInmuneA(TipoElemento tipo) {
+        return tipo == TipoElemento.HIELO; // es inmune al daño de hielo
     }
 
     //Comportamientos

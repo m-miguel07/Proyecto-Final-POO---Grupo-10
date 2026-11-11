@@ -31,13 +31,9 @@ public abstract class Arma {
 
     //Comportamientos
     public void aplicarDanio(Entidad objetivo) {
-        objetivo.recibirDanio(this.getDanioBase(), this.getTipoDanio());
+        objetivo.recibirDanio(this.getDanioBase(), this.getElemento());
     }
 
-    protected TipoDanio getTipoDanio() {
-        return TipoDanio.NORMAL; // Las armas sin elemento no cambian el daño
-    }
-
-    //Estandar, Hielo, Fuego (renders para evitar instanceof en la vista)
-    public abstract TipoRenderArma getTipoRender();
+    //Estandar, Hielo, Fuego (tipo de dominio: define el danio y el sprite)
+    public abstract TipoElemento getElemento();
 }

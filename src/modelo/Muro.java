@@ -17,8 +17,8 @@ public class Muro extends Plataforma {
     }
 
     @Override
-    public TipoRenderPlataforma getTipoRender() {
-        return TipoRenderPlataforma.MURO;
+    public TipoPlataforma getTipo() {
+        return TipoPlataforma.MURO;
     }
 
     //Getters
