@@ -17,7 +17,7 @@ public final class CargadorAssets {
 
     private static final AtomicInteger CONTADOR_HILOS = new AtomicInteger(1);
 
-    private static final ExecutorService EJECUTOR = Executors.newFixedThreadPool(2, tarea -> {
+    private static final ExecutorService EJECUTOR = Executors.newFixedThreadPool(4, tarea -> {
         Thread hilo = new Thread(tarea, "carga-assets-" + CONTADOR_HILOS.getAndIncrement());
         hilo.setDaemon(true);
         return hilo;

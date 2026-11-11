@@ -18,11 +18,37 @@ public final class EstadoDerrota implements EstadoJuego {
         controlador.mostrarDerrota(false);
     }
 
+    @Override 
+    public void iniciar(ControladorJuego controlador){
+        return;
+    }
+
     @Override
     public void pausar(ControladorJuego controlador) {
         return; //No existe pausa en el estado de derrota
     }
 
+    @Override 
+    public void reiniciar(ControladorJuego controlador){
+        controlador.reiniciar();
+        controlador.cambiarEstado(EstadoJugando.INSTANCIA);
+    }
+
+    @Override 
+    public void salirAlMenu(ControladorJuego controlador){
+        controlador.cambiarEstado(EstadoInactivo.INSTANCIA);
+    }
+
+    @Override
+    public void terminarNivel(ControladorJuego controlador){
+        return;
+    }
+
+    @Override 
+    public void perder(ControladorJuego controlador){
+        return;
+    }
+    
     @Override
     public boolean permiteJugar() {
         return false;

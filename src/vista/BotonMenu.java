@@ -19,10 +19,9 @@ public class BotonMenu extends JButton {
 
     private boolean hover;
 
-    private transient Image imgNormal; 
-    private transient Image imgHover;
+    private Image imgNormal; 
+    private Image imgHover;
 
-    @SuppressWarnings("this-escape")
     public BotonMenu(String rutaImagen, String rutaHover){
         if (rutaImagen != null){
             this.imgNormal = new ImageIcon(rutaImagen).getImage();
@@ -77,6 +76,7 @@ public class BotonMenu extends JButton {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
         Image imgActual; 
 
@@ -92,7 +92,6 @@ public class BotonMenu extends JButton {
         g2.drawImage(imgActual,0,0, getWidth(), getHeight(), this);
         g2.dispose();
 
-        super.paintComponent(g);
     }
 
 }

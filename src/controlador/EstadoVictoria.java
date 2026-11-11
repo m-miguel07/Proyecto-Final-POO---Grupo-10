@@ -18,8 +18,33 @@ public final class EstadoVictoria implements EstadoJuego {
         controlador.mostrarVictoria(false);
     }
 
+    @Override 
+    public void iniciar(ControladorJuego controlador){
+        return;
+    }
+
     @Override
     public void pausar(ControladorJuego controlador) {
+        return;
+    }
+
+    @Override 
+    public void reiniciar(ControladorJuego controlador){
+        return;
+    }
+
+    @Override 
+    public void salirAlMenu(ControladorJuego controlador){
+        controlador.cambiarEstado(EstadoInactivo.INSTANCIA);
+    }
+
+    @Override 
+    public void terminarNivel(ControladorJuego controlador){
+        controlador.cambiarEstado(EstadoJugando.INSTANCIA);
+    }
+
+    @Override 
+    public void perder(ControladorJuego controlador){
         return;
     }
 

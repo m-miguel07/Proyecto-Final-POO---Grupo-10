@@ -254,11 +254,10 @@ public class ControladorPrincipal{
                 this.controladorJuego = new ControladorJuego(this.partida, this.puntajeDAO, this);
             }
 
-            gestorAudio.reproducirMusica("src/assets/Musica/musica_fondo_1.mp3", true);
             this.ventana.setPanelJuego(this.controladorJuego.getPanel());
             this.ventana.mostrarTarjeta(Ventana.CARD_JUEGO);
             this.ventana.getPanelJuego().requestFocusInWindow();
-            this.controladorJuego.iniciar();
+            this.controladorJuego.getEstado().iniciar(controladorJuego);
         });
     }
 

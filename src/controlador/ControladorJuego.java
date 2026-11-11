@@ -104,7 +104,7 @@ public class ControladorJuego {
         });
 
         panel.getPanelPausa().getBotonReiniciar().addActionListener(e ->{
-            reiniciar();
+            estado.reiniciar(this);
         });
 
         panel.getPanelPausa().getBotonSalida().addActionListener(e ->{
@@ -113,8 +113,7 @@ public class ControladorJuego {
 
         //Paneles de fin de nivel (Perdiste | Ganaste)
         panel.getPanelDerrota().getBoton().addActionListener(e ->{
-            reiniciar();
-            
+            estado.reiniciar(this);
         });
 
         panel.getPanelDerrota().getBotonSalir().addActionListener(e -> {
@@ -146,6 +145,10 @@ public class ControladorJuego {
 
     public Nivel getNivel() {
         return this.panel.getNivel();
+    }
+
+    public EstadoJuego getEstado(){
+        return this.estado;
     }
 
     //Comportamientos
@@ -230,26 +233,24 @@ public class ControladorJuego {
     private void salirAlMenu(Integer nivelDeContinuacion, boolean guardarPartida){
         detenerMusica();
 
-        if (guardarPartida){
+        if (guardarPartida && partida.getNivelActual() == 1){
             guardarPartida(nivelDeContinuacion);
         }
         
         reiniciarEstado();
-        cambiarEstado(EstadoInactivo.INSTANCIA);
+        estado.salirAlMenu(this);
 
-        
         this.controladorPrincipal.volverAlMenu(); 
     }
 
-    public void iniciar() {
+    //ADAPTAR A CAMBIOS
+    public void inicializar() {
         this.teclaIzquierda = false;
         this.teclaDerecha = false;
         this.teclaSaltar = false;
         this.saltoPendiente = false;
         this.teclaDisparo = false;
         this.ultimoPasoNanos = System.nanoTime();
-
-        this.cambiarEstado(EstadoJugando.INSTANCIA);
     }
 
     public void pausar(){
@@ -262,8 +263,6 @@ public class ControladorJuego {
         reiniciarEstado();
 
         iniciarMusica();
-
-        this.cambiarEstado(EstadoJugando.INSTANCIA);
     }
 
     private void reiniciarEstado() {
@@ -289,12 +288,14 @@ public class ControladorJuego {
         
     }
 
-    private void pasarDeNivel(){ 
+    public void pasarDeNivel(){ 
         actualizarDatosPartida();
         this.partida.setNivelActual(2);
         this.fabricaNivel = FabricaNiveles.para(2);
         reiniciar();
         guardarPartida();
+
+        estado.terminarNivel(this); //Transiciona el estado a jugando
     }
 
     void cambiarEstado(EstadoJuego nuevoEstado) {
@@ -350,11 +351,19 @@ public class ControladorJuego {
                 int codigo = e.getKeyCode();
 
                 if (codigo == KeyEvent.VK_R) {
-                    ControladorJuego.this.reiniciar();
+                    ControladorJuego.this.estado.reiniciar(ControladorJuego.this);
                     return;
                 }
 
-                if (!getNivel().getPersonaje().estaVivo() || getNivel().estaCompleto()) {
+                if (codigo == KeyEvent.VK_ESCAPE) {
+                    pausar();
+                    return;
+                }
+
+                if (!estado.permiteJugar() 
+                    || !getNivel().getPersonaje().estaVivo() 
+                    || getNivel().estaCompleto()
+                ) {
                     return;
                 }
 
@@ -374,9 +383,6 @@ public class ControladorJuego {
                     }
                 }
 
-                if (codigo == KeyEvent.VK_ESCAPE){
-                    pausar();
-                }
             }
 
             @Override
@@ -515,18 +521,13 @@ public class ControladorJuego {
         Personaje personaje = nivel.getPersonaje();
 
         if (!personaje.estaVivo()) {
-            this.cambiarEstado(EstadoDerrota.INSTANCIA);
-            this.panel.repaint();
+            estado.perder(this);
+            panel.repaint();
             return;
         }
 
         if (nivel.estaCompleto()) {
-            if (nivel.getNumeroNivel() == 1) {
-                this.cambiarEstado(EstadoVictoria.INSTANCIA);
-            } else {
-                this.cambiarEstado(EstadoJuegoCompletado.INSTANCIA);
-                
-            }
+            estado.terminarNivel(this);
 
             this.panel.repaint();
             return;

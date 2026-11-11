@@ -1,5 +1,6 @@
 package controlador;
 
+
 public final class EstadoPausado implements EstadoJuego {
 
     public static final EstadoPausado INSTANCIA = new EstadoPausado();
@@ -19,9 +20,35 @@ public final class EstadoPausado implements EstadoJuego {
         controlador.mostrarPausa(false);
     }
 
+    @Override 
+    public void iniciar(ControladorJuego controlador){
+        return;
+    }
+    
     @Override
     public void pausar(ControladorJuego controlador) {
         controlador.cambiarEstado(EstadoJugando.INSTANCIA);
+    }
+
+    @Override
+    public void reiniciar(ControladorJuego controlador){
+        controlador.reiniciar();
+        controlador.cambiarEstado(EstadoJugando.INSTANCIA);
+    }
+
+    @Override 
+    public void salirAlMenu(ControladorJuego controlador){
+        controlador.cambiarEstado(EstadoInactivo.INSTANCIA);
+    }
+
+    @Override 
+    public void terminarNivel(ControladorJuego controlador){
+        return;
+    }
+
+    @Override 
+    public void perder(ControladorJuego controlador){
+        return;
     }
 
     @Override
