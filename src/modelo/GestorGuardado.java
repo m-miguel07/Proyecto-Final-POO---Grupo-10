@@ -9,7 +9,7 @@ public final class GestorGuardado {
     //Un solo hilo daemon para el guardado en segundo plano
     private static final AtomicInteger CONTADOR = new AtomicInteger(1);
     
-    //Lambda para implementar la creación del hilo (en este caso es uno solo)
+    //Lambda para implementar la creación del unico hilo
     private static final ExecutorService EJECUTOR = Executors.newSingleThreadExecutor(tarea -> {
         Thread hilo = new Thread(tarea, "guardado-bg-1" + CONTADOR.getAndIncrement());
         hilo.setDaemon(true);

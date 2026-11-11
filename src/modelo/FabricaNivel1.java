@@ -196,7 +196,7 @@ public class FabricaNivel1 implements FabricaNivel {
     }
 
     public Personaje crearPersonajeInicial() {
-        Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 6.0, 120, 756);
+        Personaje personaje = new Personaje(Personaje.VIDAS_INICIALES, 44, 64, 7.0, 120, 756);
         personaje.setArmaEquipada(new ArmaEstandar(10, 12.0));
 
         return personaje;

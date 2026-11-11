@@ -19,7 +19,7 @@ public class Conexion {
         
     }
 
-    public static Conexion getInstancia() throws SQLException {
+    public static synchronized Conexion getInstancia() throws SQLException {
         if (instancia == null){
             instancia = new Conexion();
         }

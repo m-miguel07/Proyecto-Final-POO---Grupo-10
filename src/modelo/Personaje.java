@@ -10,7 +10,6 @@ public class Personaje extends Entidad {
     public static final double VELOCIDAD_MAXIMA_CAIDA = 18.0;
     public static final double TOLERANCIA_CONTACTO = 6.0;
 
-    public static final double VELOCIDAD_MAXIMA = 7.0;
     public static final double ACELERACION_SUELO = 1.8;
     public static final double ACELERACION_AIRE = 1.2;
     public static final double ROZAMIENTO_SUELO = 2.4;
@@ -130,7 +129,7 @@ public class Personaje extends Entidad {
 
     public void perderVida() {
         if (this.estaVivo()) {
-            this.setPuntosVida(this.getPuntosVida() - 1);
+            recibirDanio(1);
         }
 
         this.invulnerableHasta = System.currentTimeMillis() + INVULNERABILIDAD_MS;
@@ -154,8 +153,8 @@ public class Personaje extends Entidad {
 
             this.velocidadX += aceleracion * direccion;
 
-            if (Math.abs(this.velocidadX) > VELOCIDAD_MAXIMA) {
-                this.velocidadX = Math.signum(this.velocidadX) * VELOCIDAD_MAXIMA;
+            if (Math.abs(this.velocidadX) > getVelocidad()) {
+                this.velocidadX = Math.signum(this.velocidadX) * getVelocidad();
             }
         } else {
             if (Math.abs(this.velocidadX) <= rozamiento) {
