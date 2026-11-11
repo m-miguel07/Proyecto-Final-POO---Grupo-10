@@ -156,6 +156,10 @@ public class FabricaNivel1 implements FabricaNivel {
         enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.0, 200, 656));
         enemigos.add(new EnemigoTerrestre(20, 44, 44, 2.1, 920, 336));
 
+        EnemigoPerseguidor perseguidor = new EnemigoPerseguidor(30, 44, 64, 3.5, 800, 756);
+        perseguidor.setObjetivo(personaje); 
+        enemigos.add(perseguidor);
+
         // Este escenario no tiene aro: la meta esta en el ultimo escenario del nivel.
         return new Nivel(NUMERO_NIVEL, personaje, null, enemigos, monedas, plataformas, recolectables, new ArrayList<Boton>(), null);
     }
@@ -185,6 +189,10 @@ public class FabricaNivel1 implements FabricaNivel {
         EnemigoVolador voladorAlto = new EnemigoVolador(20, EnemigoVolador.ANCHO, EnemigoVolador.ALTO, 1.8, 720, 340);
         voladorAlto.setLimites(640, 760);
         enemigos.add(voladorAlto);
+
+        EnemigoPerseguidor perseguidor = new EnemigoPerseguidor(30, 44, 64, 3.5, 800, 756);
+        perseguidor.setObjetivo(personaje); 
+        enemigos.add(perseguidor);
 
         // Monedas
         monedas.add(new Moneda(765, 460, 30, 30));

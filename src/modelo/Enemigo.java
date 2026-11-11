@@ -21,6 +21,9 @@ public abstract class Enemigo extends Entidad {
         this.danioPorQuemaduraTick = 0;
         this.tiempoSiguienteTickQuemaduraMS = 0;
     }
+    
+      public void invertirDireccion() {
+    }
 
     //Comportamientos
     public void actualizar(List<Plataforma> plataformas, int anchoPantalla, Muro muro) {

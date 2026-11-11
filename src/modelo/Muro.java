@@ -72,7 +72,7 @@ public class Muro extends Plataforma {
     }
 
     //prohibe a los enemigos atravesar el muro.
-    public void bloquearEnemigo(EnemigoTerrestre enemigo) {
+    public void bloquearEnemigo(Enemigo enemigo) {
         if (!this.isBloqueando() || !this.colisionaCon(enemigo)) {
             return;
         }

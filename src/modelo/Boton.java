@@ -1,6 +1,6 @@
 package modelo;
 
-public class Boton extends ObjetoDelJuego {
+public class Boton extends Interaccion {
 
     private boolean activado;
 
@@ -16,5 +16,10 @@ public class Boton extends ObjetoDelJuego {
 
     public void activar() {
         this.activado = true;
+    }
+
+    @Override
+    public void reaccionInteraccion(Pelota pelota) {
+        this.activar();
     }
 }

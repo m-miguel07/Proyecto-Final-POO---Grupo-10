@@ -49,14 +49,17 @@ public class GestorPelotas {
 
             // Detecta si la pelota impacto con el aro.
             if (aro != null && pelota.interseca(aro)) {
-                if (!aro.isEncestado()) {
-                    aro.encestar();
-                    personaje.sumarPuntaje(PUNTAJE_ENCESTADO);
-                    gestorAudio.reproducirEfecto(GestorAudio.ENCESTADO);
-                }
-                pelota.desactivar();
-                this.pelotas.remove(i);
-                continue;
+               boolean eraEncestado = aro.isEncestado();
+               aro.reaccionInteraccion(pelota);
+
+               if (!eraEncestado && aro.isEncestado()) {
+                   personaje.sumarPuntaje(PUNTAJE_ENCESTADO);
+                   gestorAudio.reproducirEfecto(GestorAudio.ENCESTADO);
+               
+                   pelota.desactivar();
+                   this.pelotas.remove(i);
+                   continue;
+               }
             }
 
             // Detecta si la pelota activo un boton.
@@ -66,7 +69,7 @@ public class GestorPelotas {
                     continue;
                 }
 
-                boton.activar();
+                boton.reaccionInteraccion(pelota);
                 activoBoton = true;
                 break;
             }
@@ -109,12 +112,16 @@ public class GestorPelotas {
                 if (plataforma.permitePasarPelota() && pelota.getVelocidadY() <= 0) {
                     continue;
                 }
+                if (!pelota.interseca(plataforma)) {
+                    continue;
+                }
 
-                if (pelota.interseca(plataforma)) {
-                    if (pelota.esDeFuego() && plataforma.esDestructible()) {
-                        plataforma.destruir();
-                        continue;
-                    }
+                boolean eraDestruida = plataforma.isDestruida();
+                plataforma.reaccionInteraccion(pelota); 
+
+                if (!eraDestruida && plataforma.isDestruida()) {
+                    break;
+                }
 
                     boolean rebotarArriba = (prevY + pelota.getAlto() <= plataforma.getPosicionY());
                     boolean rebotarAbajo = (prevY >= plataforma.getPosicionY() + plataforma.getAlto());
@@ -143,7 +150,7 @@ public class GestorPelotas {
                         gestorAudio.reproducirEfecto(GestorAudio.BOTE_PELOTA);
                     }
                 }
-            }
+            
 
             // La pelota rebota en los limites lataerales de la pantalla.
             if (pelota.getPosicionX() < 0) {

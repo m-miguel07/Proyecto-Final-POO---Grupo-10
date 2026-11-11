@@ -1,6 +1,6 @@
 package modelo;
 
-public class Plataforma extends ObjetoDelJuego {
+public class Plataforma extends Interaccion {
 
     //Atributos
     private MaterialPlataforma material;
@@ -56,4 +56,11 @@ public class Plataforma extends ObjetoDelJuego {
             this.destruida = true;
         }
     }
+        @Override
+    public void reaccionInteraccion(Pelota pelota) {
+        if (pelota.esDeFuego() && this.esDestructible()) {
+            this.destruir();
+        }
+    }
+
 }

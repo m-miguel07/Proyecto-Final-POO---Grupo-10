@@ -199,6 +199,10 @@ public class FabricaNivel2 implements FabricaNivel {
         volador.setLimites(220, 480);
         enemigos.add(volador);
 
+        EnemigoPerseguidor perseguidor = new EnemigoPerseguidor(30, 44, 64, 3.5, 800, 756);
+        perseguidor.setObjetivo(personaje); 
+        enemigos.add(perseguidor);
+
         plataformas.add(new Plataforma(0, 380, 720, 24));
 
         Muro muro = new Muro(380, 270, 70, 110);

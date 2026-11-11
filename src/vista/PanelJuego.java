@@ -29,6 +29,7 @@ import modelo.Configuracion;
 import modelo.Enemigo;
 import modelo.EnemigoADistancia;
 import modelo.EnemigoTerrestre;
+import modelo.EnemigoPerseguidor;
 import modelo.EnemigoVolador;
 import modelo.Moneda;
 import modelo.Nivel;
@@ -65,6 +66,9 @@ public class PanelJuego extends JPanel {
     private static final Color COLOR_PERSONAJE = new Color(37, 99, 235);
     private static final Color COLOR_PERSONAJE_CABEZA = new Color(253, 224, 71);
     private static final Color COLOR_PERSONAJE_PIERNAS = new Color(30, 41, 59);
+    private static final Color COLOR_ENEMIGO_ROJO = new Color(220, 38, 38); 
+    private static final Color COLOR_ENEMIGO_ROJO_CABEZA = new Color(252, 165, 165); 
+    private static final Color ENEMIGO_ROJO_PIERNAS = new Color(30, 41, 59);
 
     private static final BasicStroke TRAZO_FINO = new BasicStroke(2f);
     private static final BasicStroke TRAZO_MEDIO = new BasicStroke(3f);
@@ -525,7 +529,9 @@ public class PanelJuego extends JPanel {
 
     private void dibujarEnemigos(Graphics2D g2) {
         for (Enemigo enemigo : this.nivel.getEnemigos()) {
-            if (enemigo instanceof EnemigoVolador) {
+            if (enemigo instanceof EnemigoPerseguidor) {
+                this.dibujarPerseguidor(g2, (EnemigoPerseguidor) enemigo);
+            } else if (enemigo instanceof EnemigoVolador) {
                 this.dibujarVolador(g2, (EnemigoVolador) enemigo);
             } else if (enemigo instanceof EnemigoTerrestre) {
                 this.dibujarTerrestre(g2, (EnemigoTerrestre) enemigo);
@@ -676,6 +682,35 @@ public class PanelJuego extends JPanel {
                         25,
                         this
                     );
+        }
+    }
+
+      private void dibujarPerseguidor(Graphics2D g2, EnemigoPerseguidor enemigo) {
+        int x = (int) enemigo.getPosicionX();
+        int y = (int) enemigo.getPosicionY();
+        int w = (int) enemigo.getAncho();
+        int h = (int) enemigo.getAlto();
+
+        // Cuerpo (Usando tu color rojo)
+        g2.setColor(COLOR_ENEMIGO_ROJO);
+        g2.fill(new RoundRectangle2D.Double(x + 4, y + h * 0.42, w - 8, h * 0.58, 10, 10));
+
+        // Cabeza (Usando tu color rojo claro)
+        g2.setColor(COLOR_ENEMIGO_ROJO_CABEZA);
+        g2.fill(new Ellipse2D.Double(x + w / 4.0, y + h * 0.08, w / 2.0, h * 0.36));
+
+        // Piernas (Usando tu color de piernas)
+        double pieIzq = enemigo.isEnElSuelo() ? 0 : 10;
+        g2.setColor(ENEMIGO_ROJO_PIERNAS); 
+        g2.setStroke(TRAZO_PIERNAS);
+        g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 - 12, y + h + pieIzq));
+        g2.draw(new java.awt.geom.Line2D.Double(x + w / 2.0, y + h, x + w / 2.0 + 12, y + h + pieIzq));
+
+        // Si le pegaste un pelotazo, dibuja el asterisco de aturdido
+        if (enemigo.estaAturdido()) {
+            g2.setColor(Color.YELLOW);
+            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30)); 
+            g2.drawString("*", (int) (x + w / 2.0 - 8), (int) (y - 10));
         }
     }
 

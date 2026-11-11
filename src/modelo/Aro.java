@@ -1,6 +1,6 @@
 package modelo;
 
-public class Aro extends ObjetoDelJuego {
+public class Aro extends Interaccion {
 
     //Atributos
     private final boolean esMeta;
@@ -69,5 +69,10 @@ public class Aro extends ObjetoDelJuego {
         }
 
         this.setPosicion(nuevaX, this.getPosicionY());
+
     }
+    @Override 
+    public void reaccionInteraccion(Pelota pelota) {
+        this.encestar();
+    }    
 }
