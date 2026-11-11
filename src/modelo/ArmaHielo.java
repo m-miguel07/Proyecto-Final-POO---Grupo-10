@@ -3,24 +3,24 @@ package modelo;
 public class ArmaHielo extends Arma {
 
     //Atributos
-    private int duracionRalentizacion;
+    private int duracionCongelacion;
 
     //Constructor
-    public ArmaHielo(int danioBase, double velocidad, int duracionRalentizacion) {
+    public ArmaHielo(int danioBase, double velocidad, int duracionCongelacion) {
         super(danioBase, velocidad);
 
-        if (duracionRalentizacion <= 0) {
-            throw new IllegalArgumentException("La duracion de la ralentizacion debe ser positiva");
+        if (duracionCongelacion <= 0) {
+            throw new IllegalArgumentException("La duracion de la congelación debe ser positiva");
         }
 
-        this.duracionRalentizacion = duracionRalentizacion;
+        this.duracionCongelacion = duracionCongelacion;
     }
 
     //Comportamientos
     @Override
     public void aplicarDanio(Entidad objetivo) {
         super.aplicarDanio(objetivo);
-        objetivo.recibirCongelacion(this.duracionRalentizacion);
+        objetivo.recibirCongelacion(this.duracionCongelacion);
     }
 
     @Override

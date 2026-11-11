@@ -34,7 +34,7 @@ public class FabricaNivel2 extends FabricaNivelBase {
     public Escenario crearEscenario1(Personaje personaje) {
         Nivel nivel = crearContenidoEscenario1(personaje);
 
-        Escenario escenario = new Escenario(ESCENARIO_1, nivel, "src/assets/lvl-bg/Nivel2_1.jpg");
+        Escenario escenario = new Escenario(nivel, "src/assets/lvl-bg/Nivel2_1.jpg");
 
         //Al final del escenario esta el muro; se abre al encestar en el aro de basquet.
         escenario.agregarZonaTransicion(
@@ -45,7 +45,7 @@ public class FabricaNivel2 extends FabricaNivelBase {
     public Escenario crearEscenario2(Personaje personaje) {
         Nivel nivel = crearContenidoEscenario2(personaje);
 
-        Escenario escenario = new Escenario(ESCENARIO_2, nivel, "src/assets/lvl-bg/Nivel2_2.jpg");
+        Escenario escenario = new Escenario(nivel, "src/assets/lvl-bg/Nivel2_2.jpg");
 
         //Transición del nivel, solo ocurre si la cabeza del personaje toca el fondo del nivel.
         escenario.agregarZonaTransicion(
@@ -58,7 +58,7 @@ public class FabricaNivel2 extends FabricaNivelBase {
     public Escenario crearEscenario3(Personaje personaje) {
         Nivel nivel = crearContenidoEscenario3(personaje);
 
-        return new Escenario(ESCENARIO_3, nivel, "src/assets/lvl-bg/Nivel3_3.jpg");
+        return new Escenario(nivel, "src/assets/lvl-bg/Nivel3_3.jpg");
     }
 
     @Override

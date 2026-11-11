@@ -1,6 +1,6 @@
 package modelo;
 
-public class Partida {
+public class Partida { // Modela los datos que describen una partida.
 
     private int puntajeAcumulado;
     private int nivelActual;

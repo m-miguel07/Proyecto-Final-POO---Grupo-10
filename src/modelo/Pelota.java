@@ -51,7 +51,7 @@ public class Pelota extends ObjetoDelJuego {
     }
 
     public boolean esDeHielo() {
-        return this.arma.getElemento() == TipoElemento.HIELO;
+        return this.arma.getElemento() == TipoElemento.HIELO; //actualmente sin uso
     }
 
     //Comportamientos

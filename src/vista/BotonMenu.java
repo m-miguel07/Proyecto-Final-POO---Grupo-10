@@ -9,10 +9,8 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-
 import modelo.GestorAudio;
 
 public class BotonMenu extends JButton {
@@ -62,17 +60,6 @@ public class BotonMenu extends JButton {
                 repaint();
             }
         });
-    }
-
-    public void actualizarImagenes(String rutaNormal, String rutaHover) {
-        if (rutaNormal != null) {
-            this.imgNormal = new ImageIcon(rutaNormal).getImage();
-        }
-        if (rutaHover != null) {
-            this.imgHover = new ImageIcon(rutaHover).getImage();
-        }
-        
-        repaint();
     }
 
     @Override

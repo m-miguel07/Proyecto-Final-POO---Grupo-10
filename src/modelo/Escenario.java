@@ -5,15 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Escenario {
+public class Escenario { // Modela un escenario del juego.
 
-    private final int id;
     private final Nivel nivel;
     private final String rutaFondo;
     private final List<ZonaTransicion> zonasTransicion;
 
-    public Escenario(int id, Nivel nivel, String rutaFondo) {
-        this.id = id;
+    public Escenario(Nivel nivel, String rutaFondo) {
         this.nivel = nivel;
         this.rutaFondo = rutaFondo;
         this.zonasTransicion = new ArrayList<>();

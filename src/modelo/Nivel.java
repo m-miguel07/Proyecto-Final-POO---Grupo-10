@@ -125,16 +125,6 @@ public class Nivel {
         return this.aro != null && this.aro.isEncestado() && this.aro.esMeta();
     }
 
-    public int contarMonedasRecolectadas() {
-        int cantidad = 0;
-        for (Moneda moneda : this.monedas) {
-            if (moneda.isRecolectado()) {
-                cantidad++;
-            }
-        }
-        return cantidad;
-    }
-
     public int getMonedasTotales() {
         return this.monedas.size();
     }

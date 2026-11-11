@@ -25,7 +25,6 @@ public class GestorAudio { //Aplica patron Singleton
     public static final String PERDER_VIDA = "PERDER_VIDA";
     public static final String SALTO = "SALTO";
     public static final String NIVEL_FALLIDO = "NIVEL_FALLIDO";
-    public static final String NIVEL_COMPLETO = "NIVEL_COMPLETO";
     public static final String FIN_JUEGO = "FIN_JUEGO";
 
     private volatile double volumenBGM = 0.10;
